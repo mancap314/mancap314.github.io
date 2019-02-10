@@ -27,7 +27,7 @@ unpublished         : false
 
 # Plugins
 whitelist           : []
-plugins             : []
+plugins             : [github-pages, jekyll-sitemap, jekyll-feed, jekyll-seo-tag]
 
 # Conversion
 markdown            : kramdown
