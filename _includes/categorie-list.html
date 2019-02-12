@@ -1,0 +1,14 @@
+<div class="categories">
+<h2>Categories</h2>
+{% assign categories_list = site.categories %}
+  {% if categories_list.first[0] == null %}
+    {% for category in categories_list %}
+      <a href="#{{ category }}">{{ category | capitalize }} ({{ site.tags[category].size }})</a>
+    {% endfor %}
+  {% else %}
+    {% for category in categories_list %}
+      <a href="#{{ tag[0] }}">{{ category[0] | capitalize }} ({{ category[1].size }})</a>
+    {% endfor %}
+  {% endif %}
+{% assign categories_list = nil %}
+</div>

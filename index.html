@@ -1,6 +1,6 @@
 ---
 layout: default
-title: Home
+title: Last news...
 ---
 
 <!doctype html>
@@ -10,7 +10,19 @@ title: Home
     <title>{{ page.title }}</title>
   </head>
   <body>
-    <h1>{{ "Hello World!" | downcase }}</h1>
+    <div class="main">
+      <h1>{{ "Last news..." | downcase }}</h1>
+      <ul>
+      {% for post in site.posts %}
+        <li>
+          {% include article-header.html %}
+          <a href="{{ post.url }}">{{ post.title }}</a>
+          {{ post.excerpt }}
+        </li>
+        {% endfor %}
+      </ul>
+    </div>
+    {% include categorie-list.html %}
   </body>
 </html>
 
