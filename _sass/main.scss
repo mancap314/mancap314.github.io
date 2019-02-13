@@ -170,3 +170,28 @@ body {
     background-color: #444444;
 }
 
+.horizontal-list ul li {
+    display: inline; 
+    white-space: pre;
+}
+.horizontal-list ul li:after {
+    content: " \2022 ";
+}
+.horizontal-list ul li:last-child:after {
+    content: "";
+}
+
+.post-desc {
+    font-size: small;
+}
+.post-desc a {
+    border-bottom: 1px dotted;
+    text-decoration: none; 
+    margin: 0px 3px 0px 2px;
+}
+
+hr { 
+    width:100%;
+    width: 50%;
+    margin-left: 0px;
+}

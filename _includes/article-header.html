@@ -1,13 +1,12 @@
-<div class="post-categories">
-  {% if post %}
-    {% assign article = post %}
-  {% else %}
-    {% assign article = page %}
-  {% endif %}
-  <p class="date-author">{{ article.date | date_to_string }} - {{ article.author }}</p>
-  Tags:
-  {% for category in article.categories %}
-  <a href="{{site.baseurl}}/categories/#{{category|slugize}}">{{category}}</a>
-  {% unless forloop.last %}&nbsp;{% endunless %}
-  {% endfor %}
+{% if post %}
+  {% assign article = post %}
+{% else %}
+  {% assign article = page %}
+{% endif %}
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>{{ article.date | date_to_string }}</li>
+    <li>{{ article.author }}</li>
+    <li>Tags: {% for category in article.categories %}<a href="/category/{{ category | slugify }}/index.html">{{category}}</a>{% unless forloop.last %}&nbsp;{% endunless %}{% endfor %}</li>
+  </ul>
 </div>
