@@ -1,0 +1,64 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> pygments-css</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>pygments-css | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="pygments-css" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Blog about data science, computer virology, served with a bit of mathematics and miscellaneous topics" />
+<meta property="og:description" content="Blog about data science, computer virology, served with a bit of mathematics and miscellaneous topics" />
+<link rel="canonical" href="http://localhost:4000/assets/css/" />
+<meta property="og:url" content="http://localhost:4000/assets/css/" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<script type="application/ld+json">
+{"description":"Blog about data science, computer virology, served with a bit of mathematics and miscellaneous topics","@type":"WebPage","url":"http://localhost:4000/assets/css/","headline":"pygments-css","@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+
+    <div class="main-content">
+      <h1 id="pygments-css">pygments-css</h1>
+
+<p><a href="http://pygments.org">Pygments</a>, a Python-based code highlighting tool, comes with a set of builtin styles (not css files) for code highlighting. You have to generate a CSS file using the command line.</p>
+
+<p>You can generate these yourself, but this git repository has already generated them for you.</p>
+
+<h2 id="build">build</h2>
+
+<p>These css files were generated using pygmentize on the command line like so::</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pygmentize -S default -f html -a .highlight &gt; default.css
+</code></pre></div></div>
+
+<p>You can remove or change the top-level class by removing or modifying <code class="highlighter-rouge">-a .highlight</code> in the <code class="highlighter-rouge">makefile</code>.</p>
+
+<p>To regenerate them all with whichever <code class="highlighter-rouge">pygments</code> version you are using, run</p>
+
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;this repo&gt;
+cd pygments-css
+make cssfiles
+</code></pre></div></div>
+
+    </div>
+  </body>
+</html>

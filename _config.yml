@@ -6,6 +6,7 @@ baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://mancap314.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  mancap314
 permalink: /:title:output_ext
+highlighter: rouge
 
 # Categories
 # Liste des catégories
@@ -26,4 +27,3 @@ disqus:
     # Leave shortname blank to disable comments site-wide.
     # Disable comments for any post by adding `comments: false` to that post's YAML Front Matter.
     shortname: mc-data
-

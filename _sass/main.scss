@@ -1,5 +1,13 @@
+@import url(monokai.css);
+
 body {
   font-family: "Lato", sans-serif;
+}
+
+.main-content {
+  max-width: 1024px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 /* Categories bar */
@@ -49,6 +57,13 @@ body {
   top: -1;
 }
 
+.navigation div {
+  max-width: 1042px;
+  margin-left: auto;
+  margin-right: auto;
+
+}
+
 .navigation a {
   float: left;
   color: #f2f2f2;
@@ -66,6 +81,13 @@ body {
 .navigation a.current {
   background-color: #4CAF50;
   color: white;
+}
+
+.navigation em {
+  color: #f2f2f2;
+  text-align: center;
+  font-size: 24px;
+  padding: 14px 60px 0px 5px;
 }
 
 .contact {
@@ -192,6 +214,6 @@ body {
 
 hr { 
     width:100%;
-    width: 50%;
+    width: 75%;
     margin-left: 0px;
 }
