@@ -13,7 +13,6 @@ highlighter: rouge
 collections:
   category:
     output: true # generate HTML page
-    permalink: /:collection/:name/index.html
 
 defaults:
   - scope:

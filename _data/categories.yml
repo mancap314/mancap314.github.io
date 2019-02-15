@@ -1,5 +1,0 @@
-- name: Fruits
-  file: fruits
-
-- name: Colors
-  file: colors

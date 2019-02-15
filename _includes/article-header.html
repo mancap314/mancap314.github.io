@@ -7,6 +7,6 @@
   <ul>
     <li>{{ article.date | date_to_string }}</li>
     <li>{{ article.author }}</li>
-    <li>Tags: {% for category in article.categories %}<a href="/category/{{ category | slugify }}/index.html">{{category}}</a>{% unless forloop.last %}&nbsp;{% endunless %}{% endfor %}</li>
+    <li>Tags: {% for category in article.categories %}<a href="/{{ category | slugify }}/">{{category}}</a>{% unless forloop.last %}&nbsp;{% endunless %}{% endfor %}</li>
   </ul>
 </div>

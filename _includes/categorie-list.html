@@ -2,7 +2,7 @@
 <h2>Categories</h2>
 {% assign categories_list = site.categories %}
     {% for category in categories_list %}
-      <a href="/category/{{ category[0] | slugify }}/index.html">{{ category[0] | capitalize }} ({{ category[1].size }})</a>
+      <a href="/{{ category[0] | slugify }}/">{{ category[0] | capitalize }} ({{ category[1].size }})</a>
     {% endfor %}
 {% assign categories_list = nil %}
 </div>
