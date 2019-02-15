@@ -6,7 +6,7 @@ body { font-family: "Lato", sans-serif; }
 /* Categories bar */
 .categories { height: 100%; width: 200px; position: fixed; z-index: 1; top: 8px; right: 6px; background-color: #111; overflow-x: hidden; padding-top: 10px; }
 
-.categories h2 { padding: 20px 0px 20px 8px; text-decoration: none; font-size: 30px; color: #f8f8ff; display: block; }
+.categories h2 { padding: 20px 0px 0px 8px; text-decoration: none; font-size: 30px; color: #f8f8ff; display: block; }
 
 .categories a { padding: 6px 8px 6px 16px; text-decoration: none; font-size: 25px; color: #818181; display: block; }
 
@@ -94,3 +94,5 @@ body { font-family: "Lato", sans-serif; }
 .post-desc a { border-bottom: 1px dotted; text-decoration: none; margin: 0px 3px 0px 2px; }
 
 hr { width: 100%; width: 75%; margin-left: 0px; }
+
+.article-summary { padding-left: 27px; }

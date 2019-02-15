@@ -24,7 +24,7 @@ body {
 }
 
 .categories h2 {
-  padding: 20px 0px 20px 8px;
+  padding: 20px 0px 0px 8px;
   text-decoration: none;
   font-size: 30px;
   color: #f8f8ff;
@@ -216,4 +216,8 @@ hr {
     width:100%;
     width: 75%;
     margin-left: 0px;
+}
+
+.article-summary {
+  padding-left: 27px;
 }
