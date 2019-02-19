@@ -12,6 +12,7 @@ if [ ! -f ${name}.md ] ; then
   exit 1
 fi
 
+rm ${name}.md
 
 capitalized=${name^}  # capitalize first letter
 
@@ -19,9 +20,9 @@ cd ../_posts/
 
 # Remove category from the first line starting with "categories:" in each post file
 for filename in *; do
-  sed "0,/^categories:/s/[,]*[ ]*${capitalized}//" ${filename} > ${filename}_
-  rm ${filename}
-  mv ${filename}_ ${filename}
+  if [ -f "${filename}" ]; then
+    sed "0,/^categories:/s/[,]*[ ]*${capitalized}//" ${filename} > ${filename}_
+    rm ${filename}
+    mv ${filename}_ ${filename}
+  fi
 done
-
-rm ${name}.md
