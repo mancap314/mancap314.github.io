@@ -248,16 +248,16 @@ hr {
 }
 
 @media screen and ( max-width: 40em ) {
-  .categories {
+  .category-menu.categories {
     display: none;
   }
 
-  .categories a {
+  .category-menu.categories a {
     font-size: 1.2em;
     display: block;
   }
 
-  .categories a.icon {
+  .category-menu a.icon {
     background: black;
     display: block;
     position: absolute;
