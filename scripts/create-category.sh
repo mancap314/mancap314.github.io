@@ -3,15 +3,15 @@
 
 cd ../_category/
 
-# name="${1,,}"  # convert first arg (category name) to lower case
 echo "Enter category name:"
 while true; do
   read name
-  category_name=$( echo ${name} | sed 's/[^a-zA-Z0-9]\+/-/g' | iconv -f utf8 -t ascii//TRANSLIT//IGNORE | tr [:upper:] [:lower:] )
-  [[ ${category_name: -1} == "-" ]] && category_name=${category_name%?}
-  if [[ -z "$category_name" ]]; then
+  category_name=$( echo ${name} | sed 's/[^a-zA-Z0-9 ]\+/-/g' | sed 's/[ ]\+/ /g' | sed 's/[ ]\+-//g' )
+  title_name=$( echo ${category_name} | sed 's/[ ]\+/-/g' | tr [:upper:] [:lower:]  )
+  file_name=$( echo ${title_name} | iconv -f utf8 -t ascii//TRANSLIT//IGNORE )
+  if [[ -z $( echo ${title_name} | tr -d '-' ) ]]; then
     echo category name must contain at least one alphanumerical character, please enter another name:
-  elif [[ -f ${category_name}.md ]]; then
+  elif [[ -f ${file_name}.md ]]; then
     echo Category \"${category_name}\" already exists, please enter another name:
   else
     break
@@ -21,19 +21,16 @@ done
 echo Enter description \(optional\):
 read description
 
-# Capitalize the first letter of each word in category_name and lower the others
-capitalized=$( echo ${name}  | sed 's/[^a-zA-Z0-9]\+/ /g' | tr [:upper:] [:lower:] | sed 's/\(^\| \)\([a-z]\)/\1\u\2/g'  )
+touch ${file_name}.md
+echo --- >> ${file_name}.md
+echo title: ${title_name} >> ${file_name}.md
+echo category: ${category_name} >> ${file_name}.md
+[[ ! -z description ]] && echo description: ${description} >> ${file_name}.md
+echo permalink: /${title_name}/ >> ${file_name}.md
+echo --- >> ${file_name}.md
 
-touch ${category_name}.md
-echo --- >> ${category_name}.md
-echo title: ${category_name} >> ${category_name}.md
-echo category: ${capitalized} >> ${category_name}.md
-[[ ! -z description ]] && echo description: ${description} >> ${category_name}.md
-echo permalink: /${category_name}/ >> ${category_name}.md
-echo --- >> ${category_name}.md
-
-echo category ${category_name} created with following properties:
+echo category \'${category_name}\' created in \'_category/${file_name}.md\' with following properties:
 while IFS= read -r line
 do
   echo "$line"
-done < ${category_name}.md
+done < ${file_name}.md

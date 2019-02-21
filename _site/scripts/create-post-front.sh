@@ -46,16 +46,14 @@ author=$DEFAULT_AUTHOR
 categories=()
 for filename in ../_category/*; do
   if [ -f "${filename}" ]; then
-    fbname=$(basename "$filename" | cut -d. -f1)
-    categories+=( ${fbname} )
+    category_name=$( grep -m 1  '^category: ' ${filename} | sed "s/^category: //g" | sed "s/ /-/g" )
+    categories+=( ${category_name} )
   fi
 done
 
-i=0
 echo Provide categories for the article:
-for categorie in ${categories[@]}; do
-  echo ${categorie} [${i}]
-  (( i++ ))
+for ((i = 0; i < ${#categories[@]}; i++)); do
+  echo $( echo "${categories[$i]}" ["$i"] | sed "s/-/ /g" )
 done
 echo finish [f]
 
@@ -66,7 +64,7 @@ while true; do
     if [ ${#article_categories} -eq 0 ]; then
       echo Article must belong to at least one category, add one:
     else
-      article_categories=$(IFS=, ; echo "${article_categories[*]}")  # concatenate categories
+      article_categories=$(IFS=, ; echo "${article_categories[*]}" | sed "s/-/ /g" )  # concatenate categories
       echo article categories: ${article_categories}
       break
     fi
@@ -74,10 +72,10 @@ while true; do
     if [ "$(( entry ))" -ge 0 ] && [ "$(( entry ))" -lt ${#categories[@]} ]; then
       category_to_add=${categories[$(( entry ))]}
       if [[ " ${article_categories[@]} " =~ " ${category_to_add} " ]]; then  # check if it's already contained
-        echo \"${category_to_add}\" already in article categories
+        echo \"$( echo  ${category_to_add} | sed "s/-/ /g" )\" already in article categories
       else
         article_categories+=( ${categories[$(( entry ))]} )
-        echo category \"${category_to_add}\" added
+        echo category \"$( echo ${category_to_add} | sed "s/-/ /g")\" added
       fi
     else
       echo invalid category number

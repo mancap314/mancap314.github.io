@@ -1,7 +1,8 @@
 ---
 layout: default
 ---
-<h1>{{ page.description }}</h1>
+<h1>Articles about {{ page.title }}</h1>
+<em>{{ page.description }}</em>
 
 {% for post in site.categories[page.category] %}
   {% include article-summary.html %}

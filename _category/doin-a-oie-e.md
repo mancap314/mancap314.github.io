@@ -1,6 +1,6 @@
 ---
-title: doin-a-oie-e
-category: DÖin Ä Oië Ë
+title: doin ljkflk
+category: doin-a-oie-e
 description: category à la con
 permalink: /doin-a-oie-e/
 ---

@@ -5,6 +5,9 @@
     <title> pygments-css</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
     <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
     <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <!-- Begin Jekyll SEO tag v2.5.0 -->
@@ -35,6 +38,9 @@
     
   </div>
 </nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
 
     <div class="main-content">
       <h1 id="pygments-css">pygments-css</h1>
@@ -47,17 +53,21 @@
 
 <p>These css files were generated using pygmentize on the command line like so::</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pygmentize -S default -f html -a .highlight &gt; default.css
-</code></pre></div></div>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>pygmentize -S default -f html -a .highlight &gt; default.css
+</pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>You can remove or change the top-level class by removing or modifying <code class="highlighter-rouge">-a .highlight</code> in the <code class="highlighter-rouge">makefile</code>.</p>
 
 <p>To regenerate them all with whichever <code class="highlighter-rouge">pygments</code> version you are using, run</p>
 
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>git clone &lt;this repo&gt;
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+</pre></td><td class="rouge-code"><pre>git clone &lt;this repo&gt;
 cd pygments-css
 make cssfiles
-</code></pre></div></div>
+</pre></td></tr></tbody></table></code></pre></div></div>
 
     </div>
   </body>

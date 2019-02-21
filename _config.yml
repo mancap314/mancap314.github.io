@@ -8,7 +8,11 @@ github_username:  mancap314
 permalink: /:title:output_ext
 highlighter: rouge
 
-# Categories
+kramdown:
+    syntax_highlighter_opts:
+        block:
+            line_numbers: true
+
 # Liste des catégories
 collections:
   category:

@@ -1,45 +1,49 @@
 @import url(monokai.css);
 body { font-family: "Lato", sans-serif; }
 
-.main-content { max-width: 1024px; margin-left: auto; margin-right: auto; }
+.spacer-top { height: 7em; }
+
+.spacer-side { width: 17em; }
+
+.main-content { max-width: 60%; margin-left: auto; margin-right: auto; padding-left: 4em; }
 
 /* Categories bar */
-.categories { height: 100%; width: 200px; position: fixed; z-index: 1; top: 8px; right: 6px; background-color: #111; overflow-x: hidden; padding-top: 10px; }
+.categories { height: 100%; width: 16em; position: fixed; z-index: 1; top: 0.5em; right: 0em; background-color: #111; overflow-x: hidden; padding-top: 0.5em; }
 
-.categories h2 { padding: 20px 0px 0px 8px; text-decoration: none; font-size: 30px; color: #f8f8ff; display: block; }
+.categories h2 { padding: 1em 0em 0em 0.2em; text-decoration: none; font-size: 2em; color: #f8f8ff; display: block; }
 
-.categories a { padding: 6px 8px 6px 16px; text-decoration: none; font-size: 25px; color: #818181; display: block; }
+.categories a { padding: 0.3em 0em 0.3em 0.5em; text-decoration: none; font-size: 1.5em; color: #818181; display: block; }
 
 .categories a:hover { color: #f1f1f1; }
 
-@media screen and (max-height: 450px) { .categories { padding-top: 15px; }
-  .categories a { font-size: 18px; } }
+.categories a.icon { display: none; }
+
 /* Navigation bar */
-.navigation { overflow: hidden; background-color: #111; width: 100%; top: -1; }
+.navigation { overflow: hidden; background-color: #111; width: 100%; top: 0; position: fixed; }
 
 .navigation div { max-width: 1042px; margin-left: auto; margin-right: auto; }
 
-.navigation a { float: left; color: #f2f2f2; text-align: center; padding: 14px 16px; text-decoration: none; font-size: 17px; }
+.navigation a { float: left; color: #f2f2f2; text-align: center; text-decoration: none; padding: 0.5em 1em; font-size: 1.1em; }
 
 .navigation a:hover { background-color: #ddd; color: black; }
 
 .navigation a.current { background-color: #4CAF50; color: white; }
 
-.navigation em { color: #f2f2f2; text-align: center; font-size: 24px; padding: 14px 60px 0px 5px; }
+.navigation em { color: #f2f2f2; text-align: center; font-size: 1.5em; padding: 1em 1em 0em 0.5em; }
 
-.contact { padding-left: 15px; }
+.contact { padding-left: 1em; }
 
-.contact img { vertical-align: top; padding-right: 5px; }
+.contact img { vertical-align: top; padding-right: 0.4em; }
 
 /* Share Bar */
-#share-bar { font-size: 20px; }
+#share-bar { font-size: 1.3em; }
 
 /* Title */
-#share-bar h4 { margin-bottom: 10px; font-weight: 500; }
+#share-bar h4 { margin-bottom: 0.5em; font-weight: 400; }
 
 /* All buttons */
 /* Each button */
-.share-button { margin: 0px; margin-bottom: 10px; margin-right: 3px; border: 1px solid #D3D6D2; padding: 5px 10px 5px 10px; }
+.share-button { margin: 0em; margin-bottom: 0.7em; margin-right: 0.1em; border: 1px solid #D3D6D2; padding: 0.2em 0.4em 0.2em 0.4em; }
 
 .share-button:hover { opacity: 1; color: #ffffff; }
 
@@ -91,8 +95,18 @@ body { font-family: "Lato", sans-serif; }
 
 .post-desc { font-size: small; }
 
-.post-desc a { border-bottom: 1px dotted; text-decoration: none; margin: 0px 3px 0px 2px; }
+.post-desc a { border-bottom: 1px dotted; text-decoration: none; margin: 0em 0.1em 0em 0.1em; }
 
-hr { width: 100%; width: 75%; margin-left: 0px; }
+hr { width: 75%; margin-left: 0em; }
 
-.article-summary { padding-left: 27px; }
+.article-summary { padding-left: 2em; }
+
+.highlight { width: 60%; }
+
+.lineno { color: #696969; display: inline-block; padding: 0 5px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+
+@media screen and (max-width: 40em) { .categories { display: none; }
+  .categories a { font-size: 1.2em; display: block; }
+  .categories a.icon { background: black; display: block; position: absolute; right: 0; top: 0; }
+  .main-content { max-width: 100%; }
+  .navigation { max-width: 100%; } }
