@@ -1,6 +1,6 @@
 /* Toggle between showing and hiding the navigation menu links when the user clicks on the hamburger menu / bar icon */
 function switchMenu() {
-  var x = document.getElementById("categories");
+  var x = document.getElementsByClassName("categories")[0];
   if (x.style.display === "block") {
     x.style.display = "none";
   } else {
