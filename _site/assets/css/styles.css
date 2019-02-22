@@ -105,7 +105,7 @@ hr { width: 75%; margin-left: 0em; }
 
 .lineno { color: #696969; display: inline-block; padding: 0 5px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
-@media screen and (max-width: 600px) { .category-menu .categories { display: none; }
+@media screen and (max-device-width: 600px) { .category-menu .categories { display: none; }
   .category-menu .categories a { font-size: 1.2em; display: block; }
   .category-menu .icon { background: black; display: block; position: absolute; right: 0; top: 0; }
   .main-content { max-width: 100%; padding-left: 0; }
