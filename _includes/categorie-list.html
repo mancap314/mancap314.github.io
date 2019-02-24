@@ -1,7 +1,9 @@
 <div class="category-menu">
-  <a href="javascript:void(0);" class="icon" onclick="switchMenu()">
-    <i class="fa fa-bars"></i>
-  </a>
+  <div class="hamburger" onclick="switchMenu(this)">
+    <div class="bar1"></div>
+    <div class="bar2"></div>
+    <div class="bar3"></div>
+  </div>
   <div class="categories">
     <h2>Categories</h2>
     {% assign categories_list = site.categories %}
@@ -9,9 +11,6 @@
         <a href="/{{ category[0] | downcase | url_escape | strip | replace: ' ', '-' | strip_html }}/">{{ category[0] | replace: '-', ' ' | camelcase }} ({{ category[1].size }})</a>    
       {% endfor %}
     {% assign categories_list = nil %}
-    <a href="javascript:void(0);" class="icon" onclick="switchMenu()">
-      <i class="fa fa-bars"></i>
-    </a>
   </div>
   <div class="spacer-side">
     &nbsp;

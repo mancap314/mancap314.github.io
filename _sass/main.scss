@@ -17,6 +17,7 @@ body {
   margin-left: auto;
   margin-right: auto;
   padding-left: 4em;
+  font-size: 1em;
 }
 
 /* Categories bar */
@@ -48,11 +49,8 @@ body {
   display: block;
 }
 
-.categories a:hover {
-  color: #f1f1f1;
-}
 
-.categories a.icon {
+.hamburger {
   display: none;
 }
 
@@ -248,6 +246,27 @@ hr {
 }
 
 @media screen and ( max-device-width: 600px ) {
+  .hamburger {
+    display: inline-block;
+    cursor: pointer;
+    position: fixed;
+    top: 0;
+    right: 0;
+    z-index: 2;
+  }
+
+  .bar1, .bar2, .bar3 { 
+    width: 4.5em;
+    height: 0.7em;
+    background-color: white;
+    margin: 0.5em 0;
+    transition: 0.4s; 
+  }
+
+  .change .bar1, .change .bar2, .change .bar3 {
+    background-color: #777;
+  }
+
   .category-menu .categories {
     display: none;
   }
@@ -257,20 +276,29 @@ hr {
     display: block;
   }
 
-  .category-menu .icon {
-    background: black;
-    display: block;
-    position: absolute;
-    right: 0;
-    top: 0;
-  }
-
  .main-content{
     max-width: 100%;
     padding-left:0;
+    font-size: 2em;
   }
 
   .navigation {
     max-width: 100%;
+  }
+
+  .navigation a {
+    font-size: 2.2em;
+  }
+
+  .navigation em {
+    font-size: 3em;
+  }
+
+  .spacer-top {
+    height: 14em;
+  }
+
+  .spacer-side {
+    width: 0;
   }
 }

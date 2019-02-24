@@ -5,7 +5,7 @@ body { font-family: "Lato", sans-serif; }
 
 .spacer-side { width: 17em; }
 
-.main-content { max-width: 60%; margin-left: auto; margin-right: auto; padding-left: 4em; }
+.main-content { max-width: 60%; margin-left: auto; margin-right: auto; padding-left: 4em; font-size: 1em; }
 
 /* Categories bar */
 .categories { height: 100%; width: 16em; position: fixed; z-index: 1; top: 0.5em; right: 0em; background-color: #111; overflow-x: hidden; padding-top: 0.5em; }
@@ -14,9 +14,7 @@ body { font-family: "Lato", sans-serif; }
 
 .categories a { padding: 0.3em 0em 0.3em 0.5em; text-decoration: none; font-size: 1.5em; color: #818181; display: block; }
 
-.categories a:hover { color: #f1f1f1; }
-
-.categories a.icon { display: none; }
+.hamburger { display: none; }
 
 /* Navigation bar */
 .navigation { overflow: hidden; background-color: #111; width: 100%; top: 0; position: fixed; }
@@ -105,8 +103,14 @@ hr { width: 75%; margin-left: 0em; }
 
 .lineno { color: #696969; display: inline-block; padding: 0 5px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
-@media screen and (max-device-width: 600px) { .category-menu .categories { display: none; }
+@media screen and (max-device-width: 600px) { .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
+  .bar1, .bar2, .bar3 { width: 4.5em; height: 0.7em; background-color: white; margin: 0.5em 0; transition: 0.4s; }
+  .change .bar1, .change .bar2, .change .bar3 { background-color: #777; }
+  .category-menu .categories { display: none; }
   .category-menu .categories a { font-size: 1.2em; display: block; }
-  .category-menu .icon { background: black; display: block; position: absolute; right: 0; top: 0; }
-  .main-content { max-width: 100%; padding-left: 0; }
-  .navigation { max-width: 100%; } }
+  .main-content { max-width: 100%; padding-left: 0; font-size: 2em; }
+  .navigation { max-width: 100%; }
+  .navigation a { font-size: 2.2em; }
+  .navigation em { font-size: 3em; }
+  .spacer-top { height: 14em; }
+  .spacer-side { width: 0; } }
