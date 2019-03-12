@@ -1,0 +1,89 @@
+<p>To open this blog, a few <em>bash</em> tricks used to manage it. This blog is runned with <a href="https://jekyllrb.com/">jekyll</a>, and I created some scripts to create posts, and create/remove categories (tags) associated to posts.</p>
+
+<h2 id="iterate-through-properties-in-files">Iterate through properties in files</h2>
+<p>Each category is associated with a file in the <code class="highlighter-rouge">_category</code> folder. In each of those files, there is a line starting with <code class="highlighter-rouge">category: </code> followed by the category (name). We want to retrieve the file name and the category name it contains:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">categories</span><span class="o">=()</span>
+<span class="nv">category_files</span><span class="o">=()</span>
+<span class="k">for </span>filename <span class="k">in</span> ../_category/<span class="k">*</span><span class="p">;</span> <span class="k">do
+  if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="k">${</span><span class="nv">filename</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nv">category_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">grep</span> <span class="nt">-m</span> 1  <span class="s1">'^category: '</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s2">"s/^category: //g"</span> | <span class="nb">sed</span> <span class="s2">"s/ /-/g"</span> <span class="k">)</span>
+    categories+<span class="o">=(</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> <span class="o">)</span>
+    category_files+<span class="o">=(</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">)</span>
+  <span class="k">fi
+done</span>
+</code></pre></div></div>
+<p>On l.1-2 we initialize the array that will contain the category names and the files they are in. On l.3 we iterate through the files in the <code class="highlighter-rouge">_category</code> folder (and check for each one if it’s actually a file in the following line). The real trick is on l.5. There are 3 commands piped with another inside <code class="highlighter-rouge">$( )</code>:</p>
+<ol>
+  <li><code class="highlighter-rouge">grep -m 1  '^category: ' ${filename}</code>: Take the first line in the file starting with <code class="highlighter-rouge">category</code></li>
+  <li><code class="highlighter-rouge">sed "s/^category: //g"</code>: Remove <code class="highlighter-rouge">category: </code> at the beginning of the line, resp. replace it with empty string.</li>
+  <li><code class="highlighter-rouge">sed "s/ /-/g</code>: Replace spaces by <code class="highlighter-rouge">-</code> (otherwise it confuses the array)
+The following lines just append the extracted data to the lists and close the loop.</li>
+</ol>
+
+<h2 id="check-a-user-entry">Check a user entry</h2>
+<p>When a user wants to remove a category, the categories are listed with an associated number:</p>
+<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code>-first category [0]
+-category 2 [1]
+- etc.
+</code></pre></div></div>
+
+<p>There are 3 constraints for the user entry:</p>
+<ol>
+  <li>it must be a number (an integer)</li>
+  <li>it must be larger or equal 0</li>
+  <li>it must be less or equal the number of categories</li>
+</ol>
+
+<p>This is handled in l.4 of the following snippet:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">article_categories</span><span class="o">=()</span>
+<span class="k">while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
+  </span><span class="nb">read </span>entry
+  <span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$entry</span><span class="s2">"</span> <span class="o">=</span>~ ^[0-9]+<span class="nv">$ </span><span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">"</span><span class="k">$((</span> entry <span class="k">))</span><span class="s2">"</span> <span class="nt">-ge</span> 0 <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">"</span><span class="k">$((</span> entry <span class="k">))</span><span class="s2">"</span> <span class="nt">-lt</span> <span class="k">${#</span><span class="nv">categories</span><span class="p">[@]</span><span class="k">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+    </span><span class="nv">category_to_remove</span><span class="o">=</span><span class="k">${</span><span class="nv">categories</span><span class="p">[</span><span class="k">$((</span> entry <span class="k">))</span><span class="p">]</span><span class="k">}</span>
+    <span class="nv">file_to_remove</span><span class="o">=</span><span class="k">${</span><span class="nv">category_files</span><span class="p">[</span><span class="k">$((</span> entry <span class="k">))</span><span class="p">]</span><span class="k">}</span>
+    <span class="nb">break</span><span class="p">;</span>
+  <span class="k">else
+    </span><span class="nb">echo </span>invalid entry: must be an integer between 0 and <span class="k">$((</span> <span class="k">${#</span><span class="nv">categories</span><span class="p">[@]</span><span class="k">}</span> <span class="o">-</span> <span class="m">1</span> <span class="k">))</span>
+  <span class="k">fi
+done</span>
+</code></pre></div></div>
+<p>The first condition in <code class="highlighter-rouge">if</code> checks by regular expression that <code class="highlighter-rouge">$entry</code> has the form of an integer (must be done, since also letters can be interpreted as numbers). The second checks the second contraint, same for the third.</p>
+
+<h2 id="checking-and-transforming-strings">Checking and transforming strings</h2>
+<p>When a user enters a name for a category, this name is processed to generate <code class="highlighter-rouge">category_name</code>, <code class="highlighter-rouge">title_name</code> and <code class="highlighter-rouge">file_name</code></p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">read </span>name
+<span class="nv">category_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">name</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s1">'s/[^a-zA-Z0-9 ]\+/-/g'</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/ /g'</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+-//g'</span> <span class="k">)</span>
+<span class="nv">title_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/-/g'</span> | <span class="nb">tr</span> <span class="o">[</span>:upper:] <span class="o">[</span>:lower:]  <span class="k">)</span>
+<span class="nv">file_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> ascii//TRANSLIT//IGNORE <span class="k">)</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s1">'-'</span> <span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nb">echo </span>category name must contain at least one alphanumerical character, please enter another name:
+</code></pre></div></div>
+<p>On l.2 we have <code class="highlighter-rouge">sed 's/[^a-zA-Z0-9 ]\+/-/g'</code> replacing all non-alphanumerical characters by <code class="highlighter-rouge">-</code>, followed by <code class="highlighter-rouge">sed 's/[ ]\+/ /g'</code> replacing all multiple spaces by single spaces, itself followed by <code class="highlighter-rouge">sed 's/[ ]\+-//g'</code> removing <code class="highlighter-rouge">-</code> (and the spaces before) as it can occur at the end of the string. For example, <code class="highlighter-rouge">Ca&amp;tegory   name</code> would be transformed in <code class="highlighter-rouge">Category name</code>.</p>
+
+<p>On l.3 the spaces are replaced by <code class="highlighter-rouge">-</code> and the letter in upper case by lower cases. <code class="highlighter-rouge">Category name</code> gets <code class="highlighter-rouge">category-name</code>. And on l.4, the result of the previous transformation is formatted to be compatible with a file name (format conversion).</p>
+
+<p>If the entered category name was empty or contained just non-alphanumerical characters, then <code class="highlighter-rouge">$title_name</code> is empty or contains just <code class="highlighter-rouge">-</code> characters, and the user has to enter another name.</p>
+
+<h2 id="check-if-a-date-is-in-the-valid-format">Check if a date is in the valid format</h2>
+<p>When a user creates an article, the default date is today. However s/he can enter another date if wished, but this date has to be in the format ‘YYYY-MM-DD’. The trick here is to try to transform the entry to a date in this format, and if it fails, it means the entry was not in the right format:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">default_date</span><span class="o">=</span><span class="k">$(</span><span class="nb">date</span> +<span class="s2">"%Y-%m-%d"</span><span class="k">)</span>
+<span class="nv">article_date</span><span class="o">=</span><span class="nv">$default_date</span>
+<span class="k">while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
+  </span><span class="nb">echo </span>Enter <span class="nb">date</span> <span class="se">\(</span>default: <span class="k">${</span><span class="nv">default_date</span><span class="k">}</span><span class="se">\)</span>:
+  <span class="nb">read </span>line
+  <span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
+    if </span><span class="nb">date</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> +<span class="s2">"%Y-%m-%d"</span> <span class="o">&gt;</span> /dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then
+      </span><span class="nv">article_date</span><span class="o">=</span><span class="k">$(</span> <span class="nb">date</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> +<span class="s2">"%Y-%m-%d"</span> <span class="k">)</span>
+      <span class="nb">break
+    </span><span class="k">else
+      </span><span class="nb">echo </span>invalid <span class="nb">date </span>format
+    <span class="k">fi
+  else
+    </span><span class="nb">break
+  </span><span class="k">fi
+done</span>
+</code></pre></div></div>
+<p>On l1-2, the default date (today) is created, and assigned per default to the article date. If the user entered an non-empty string (l.6), then we try to transform it to a date of the expected format (l.7). If this successes, the entry (formatted) is assigned to the article date.</p>
