@@ -1,0 +1,203 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> What is a computer virus ?</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.5.0 -->
+<title>What is a computer virus ? | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.7.4" />
+<meta property="og:title" content="What is a computer virus ?" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:" />
+<meta property="og:description" content="There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:" />
+<link rel="canonical" href="https://mancap314.github.io/what-is-a-computer-virus.html" />
+<meta property="og:url" content="https://mancap314.github.io/what-is-a-computer-virus.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2019-03-15T00:00:00+01:00" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","url":"https://mancap314.github.io/what-is-a-computer-virus.html","headline":"What is a computer virus ?","dateModified":"2019-03-15T00:00:00+01:00","datePublished":"2019-03-15T00:00:00+01:00","author":{"@type":"Person","name":"Manuel Capel"},"description":"There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:","mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/what-is-a-computer-virus.html"},"@context":"http://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <h1>What is a computer virus ?</h1>
+
+
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>15 Mar 2019</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/virus/">virus</a></li>
+  </ul>
+</div>
+
+
+<p>There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A <em>computer virus</em> is not necessarily a <em>malware</em>, and there are many other types of malwares than viruses. This is better summarized with a small schema:</p>
+
+<p><img src="assets/virus-malware.png" alt="Malware vs. Virus" /></p>
+
+<p>Most viruses are malwares currently, but many malwares are not viruses.</p>
+
+<p>So the question still holds: What is precisely a virus? Tada… suspens… it’s a program that creates a variant of itself in a given environment.</p>
+
+<p>NB:</p>
+<ul>
+  <li>a variant of itself can be precisely itself, but doesn’t have to</li>
+  <li>the environment may be a computer, or a browser in the case of a javascript virus etc.</li>
+</ul>
+
+<h2 id="a-bit-of-history">A bit of history</h2>
+<p>The word <em>virus</em> applied to computer programs was first coined by <a href="https://en.wikipedia.org/wiki/Fred_Cohen">Leonard Adleman</a> as he was supervising the PhD of <a href="https://en.wikipedia.org/wiki/Fred_Cohen">Fred Cohen</a> at the University of South California (4 miles from where I am writing this article btw.). This dissertation was completed in 1986 and was the first to formalize computer viruses. However, there were already viruses at that time, like <a href="https://en.wikipedia.org/wiki/Elk_Cloner">Elk Cloner</a>. At that time it was just a timid beginning, nothing compared to what is going on nowadays…</p>
+
+<h2 id="formalization">Formalization</h2>
+<p>Before diving into the formalization of a virus, we should first introduce what is a <em>Turing Machine</em></p>
+<h3 id="formalization-of-a-turing-machine">Formalization of a Turing Machine</h3>
+<p>A <em>Turing Machine</em> is the abstraction of a computer program (whereas the formalization of a computer would be a <em>Universal Turing Machine</em>). So what is a Turing Machine? There are many ways of formalizing it. You can get a good overview in this <a href="https://en.wikipedia.org/wiki/Turing_machine">Wikipedia article</a>. Basically, it consists in two parts:</p>
+<ul>
+  <li>a <em>band</em> (also called <em>tape</em>) containing symbols, let say <em>0</em> and <em>1</em>. This band is of infinite length</li>
+  <li>a <em>head</em> reading symbols on the band. This head has a <em>Reader/Writer</em> that can read the current symbol on the band and eventually replace it by another one, and a <em>state</em>. Depending on the current read symbol and its current state, the head can perform 3 actions:
+    <ol>
+      <li>Write another symbol on the current position of the band</li>
+      <li>Move of 1 position on the right or on the left (or stay at the same place)</li>
+      <li>Update its own internal state</li>
+    </ol>
+  </li>
+</ul>
+
+<p>Illustration of a Turing Machine:</p>
+
+<p><img src="assets/turing-machine.png" alt="Illustration of a Turing Machine" /></p>
+
+<p>If the head comes to a point where it does nothing, then the program is executed and <em>halts</em>.</p>
+
+<p>The formalization we adopt here for a Turing Machine is the following:</p>
+<ul>
+  <li><script type="math/tex">S(t)</script>: state of the head at time (indice) <script type="math/tex">t</script></li>
+  <li><script type="math/tex">C(t, i)</script>: content of the cell <script type="math/tex">i</script> (on the band) at time <script type="math/tex">t</script></li>
+  <li><script type="math/tex">P(t)</script>: position of the head (indice of the cell where it’s positioned) at time <script type="math/tex">t</script></li>
+</ul>
+
+<h3 id="formalization-of-a-virus">Formalization of a virus</h3>
+<p>Now the question is, what is a virus on a Turing machine? It’s simply a sequence on the band of a Turing Machine <script type="math/tex">M</script> that gets reproduced to itself or a variant (evolution) of itself. Note that the same sequence on the band of another Turing Machine <script type="math/tex">M'</script> may not reproduce: a virus is a virus only relatively to a given machine (environment).</p>
+
+<p>Here a schematic illustration:
+<img src="assets/virus-turing-machine.png" alt="virus on a turing machine" /></p>
+
+<p>NB: The <em>virus reproduction</em> can be an exact copy of the virus itself, or a variant of it. On the machine <script type="math/tex">M</script>, a virus <script type="math/tex">v</script> can produce first a variant <script type="math/tex">v_1</script> of itself, <script type="math/tex">v_1</script> producing then a variant <script type="math/tex">v_2</script> of itself etc. The set <script type="math/tex">\{v, v_1, v_2, \dots\}</script> is called the <em>viral set</em> of <script type="math/tex">v</script>. A <em>viral set</em> can be be of size 1 (the virus produces each time an exact copy of itself), of size 2, 3 etc. until infinity, means there are in this case infinitely many variations of the virus. The viral set of a virus <script type="math/tex">v</script> is noted <script type="math/tex">V</script>.</p>
+
+<p>Now the formal definition of a virus… Brace yourself and don’t worry, the explanation follows:</p>
+
+<p><script type="math/tex">V</script> is a viral set (for a Turing Machine <script type="math/tex">M</script>) if:
+<script type="math/tex">% <![CDATA[
+\forall v \in V: \\ 
+[\exists t, j \in \mathbb{N}\space such\space that: \\
+P(t) = j\space (1.1) \\
+and\space S(t) = S(0)\space (1.2) \\
+and\space \big(C(t, j), \dots, C(t, j + \mid v\mid -1)\big) = v\space (1.3)] \\
+\Rightarrow \\
+[\exists v'\in V, t', j' \in \mathbb{N} \space with\space t'>t \space such\space that: \\
+j' + \mid v'\mid \leq j\space or\space j + \mid v\mid \leq j'\space (2.1) \\
+and\space \big(C(t', j'),\dots,C(t', j'+\mid v'\mid-1)\big)=v'\space (2.2) \\
+and\space \exists t'' \space such\space that:\space t<t''<t'\space and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)] %]]></script></p>
+
+<p><strong>Explanation</strong></p>
+
+<p>If:</p>
+<ul>
+  <li>1.1: at time <script type="math/tex">t</script>, the head of <script type="math/tex">M</script> is at the cell <script type="math/tex">j</script></li>
+  <li>1.2: and the head is at its initial state</li>
+  <li>1.3: and the cell <script type="math/tex">j</script> and the following cells contain <script type="math/tex">v</script> [ <script type="math/tex">\mid v\mid</script> is the length (number of fields) occupied by <script type="math/tex">v</script> on the band]</li>
+</ul>
+
+<p>Then later at time <script type="math/tex">t'</script> the head is at the cell <script type="math/tex">j'</script> such that:</p>
+<ul>
+  <li>2.2: <script type="math/tex">j'</script> and the following cells contain <script type="math/tex">v'</script></li>
+  <li>2.1: the cells containing <script type="math/tex">v</script> and <script type="math/tex">v'</script> are separated, they don’t overlap</li>
+  <li>2.3: the head was positioned at a cell belonging to <script type="math/tex">v'</script> at a time <script type="math/tex">t''</script> after <script type="math/tex">t</script> but before <script type="math/tex">t'</script> (<script type="math/tex">t'</script> is the time where the head finishes to write <script type="math/tex">v'</script> on the band, so it just means that the head was previously writing <script type="math/tex">v'</script>)</li>
+</ul>
+
+<p>And because <script type="math/tex">v</script> and <script type="math/tex">v'</script> belong the the same viral set <script type="math/tex">V</script>, <script type="math/tex">v'</script> is an reproduction/evolution of <script type="math/tex">v</script>.</p>
+
+<h2 id="remarks">Remarks</h2>
+<ul>
+  <li>A virus doesn’t have to contain a damaging payload. It’s not part of the definition.</li>
+  <li>In its article <em>Computer Viruses: Theory and Experiments</em> (1987), Fred Cohen gives an example of a legitimate virus: a compiler compiling a copy of itself. Hence in the first figure, the set of viruses is not completely contained inside the set of malwares.</li>
+  <li>There is no antivirus capable of detecting any virus. This can be easily proved by contradiction. Imagine such an antivirus, let’s call it <em>AV</em>, exists. Now imagine a programm <em>w</em> that reproduces itself if <em>AV</em> says it’s not a virus: then <em>w</em> is by definition a virus ; and doesn’t reproduce itself if <em>AV</em> says it’s a virus: then <em>w</em> is by definition not a virus: the existence of such an antivirus would lead to a contradiction.</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>This article is a purely formal definition of what is (and by contrast what is not) a virus. It bases in a large part on the book <em>Computer Viruses: from theory to applications</em> by <a href="https://sites.google.com/site/ericfiliol/">Éric Filiol</a> which I warmly recommend. I hope it demystified a bit the notion of <em>computer virus</em> and made you curious. I will probably come later with more practical articles about viruses, but at least we know now what we are talking about.</p>
+
+<hr>
+<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div id="share-bar">
+  <h4>Share this:</h4>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=What is a computer virus ?&url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://mancap314.github.io/what-is-a-computer-virus.html&title=What is a computer virus ?&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=What is a computer virus ?&amp;body=Check out this site https://mancap314.github.io/what-is-a-computer-virus.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+  </div>
+</div>
+
+<hr>
+
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'https://mancap314.github.io/what-is-a-computer-virus.html';
+      this.page.identifier = 'https://mancap314.github.io/what-is-a-computer-virus.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+
+    </div>
+  </body>
+</html>
