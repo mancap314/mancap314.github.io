@@ -57,7 +57,7 @@ model_cnn_0.compile(loss=tf.keras.losses.categorical_crossentropy,
                     metrics=['accuracy'])
 ```
 
-## Building and using an Estimator
+## Building and using an `Estimator`
 There is a simple ingredient to transform a Keras model to a Tensorflow `Estimator`, this is the method `model_to_estimator` from [tensorflow.keras.estimator](https://www.tensorflow.org/api_docs/python/tf/keras/estimator/) that takes the model we just built as argument:
 
 ```python
