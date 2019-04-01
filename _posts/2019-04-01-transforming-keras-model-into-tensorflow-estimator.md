@@ -100,6 +100,7 @@ eval_input_fn = tf.estimator.inputs.numpy_input_fn(
 ```
 Remarks:
 * Setting the parameter `shuffle` to `True` helps for training the model, but is useless to compute estimations
+* Only one epoch is needed for evaluations
  
 The we can for example evaluate our `Estimator` on the evaluation data:
 ```python
