@@ -110,6 +110,8 @@ print(eval_results)
 
 And that's it :)
 
+
+
 ## Shortcoming
 The main shortcoming I see with this approach is the impossibility to use [Keras callbacks](https://keras.io/callbacks/) by training the `Estimator`. And it can be very convenient to have for example [early stopping](https://keras.io/callbacks/#earlystopping) or a [learning rate scheduler](https://keras.io/callbacks/#learningratescheduler) while training a Keras model.
 
@@ -144,6 +146,23 @@ After that, we can evaluate this `Estimator` again with the evaluation data:
 eval_results = est_cnn_0_trained.evaluate(input_fn=eval_input_fn)
 ```
 (Btw, thanks to the callbacks, the accuracy is a bit better than previously)
+
+We can also use the `estimator`to make predictions (also on the evaluation data, for sake of simplicity):
+
+```python
+predict_input_fn = tf.estimator.inputs.numpy_input_fn(
+    x={'x_input': eval_data},
+    y=None,
+    num_epochs=1,
+    shuffle=False)
+
+predictions = est_cnn_0_trained.predict(input_fn=predict_input_fn)
+predictions = np.array([list(p.values())[0] for p in list(predictions)])
+```
+
+Remarks:
+* The input function used for predictions does not need any value for `y` (obviously, since its  what we want to predict), thus it is set to `None`
+* The result coming from the `predict` method needs some transformations before being useable as a numpy array, shown at line 8 above.
 
 ## Conclusion
 Hope this can help to make deep learning models production-ready. You can also check the [notebook](https://github.com/mancap314/miscellanous/blob/master/cnn_estimator.ipynb) where those methods are implemented. And if you have questions, just ask.
