@@ -21,9 +21,9 @@ Then we train the model by decreasing "cosine-like" the learning rate after each
 
 ![Cycling learning rate](assets/cycle-lr.png)
 
-## Finding the optinal learning rate range
+## Finding the optimal learning rate range
 ### Principle
-For this, we use a method first described in [Smith 2015](https://arxiv.org/pdf/1506.01186v2.pdf), section *3.2.2*. It consists in incrementing the learning rate after each batch. The loss begins to drop, and at some point starts to stabilize or even increase. The learning rate range corresponding to the biggest slope before the loss reaches its minimum (or stabilize) is considered as optimal.
+For this, we use a method first described in [Smith 2015](https://arxiv.org/pdf/1506.01186v2.pdf), section *3.2.2*. It consists in incrementing the learning rate after each batch. The loss begins to drop, and at some point starts to stabilize or even increase. The learning rate range corresponding to the biggest slope before the loss reaches its minimum (or stabilizes) is considered as optimal.
 
 ![Learning Rate Range Selection](assets/learning-rate-range-selection.png)
 

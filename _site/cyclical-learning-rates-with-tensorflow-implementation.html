@@ -79,9 +79,9 @@
 
 <p><img src="assets/cycle-lr.png" alt="Cycling learning rate" /></p>
 
-<h2 id="finding-the-optinal-learning-rate-range">Finding the optinal learning rate range</h2>
+<h2 id="finding-the-optimal-learning-rate-range">Finding the optimal learning rate range</h2>
 <h3 id="principle">Principle</h3>
-<p>For this, we use a method first described in <a href="https://arxiv.org/pdf/1506.01186v2.pdf">Smith 2015</a>, section <em>3.2.2</em>. It consists in incrementing the learning rate after each batch. The loss begins to drop, and at some point starts to stabilize or even increase. The learning rate range corresponding to the biggest slope before the loss reaches its minimum (or stabilize) is considered as optimal.</p>
+<p>For this, we use a method first described in <a href="https://arxiv.org/pdf/1506.01186v2.pdf">Smith 2015</a>, section <em>3.2.2</em>. It consists in incrementing the learning rate after each batch. The loss begins to drop, and at some point starts to stabilize or even increase. The learning rate range corresponding to the biggest slope before the loss reaches its minimum (or stabilizes) is considered as optimal.</p>
 
 <p><img src="assets/learning-rate-range-selection.png" alt="Learning Rate Range Selection" /></p>
 
