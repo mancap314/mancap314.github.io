@@ -20,6 +20,11 @@ body {
   font-size: 1em;
 }
 
+.post-title a {
+  color: black;
+  text-decoration: none;
+}
+
 /* Categories bar */
 .categories {
   height: 100%;
@@ -198,6 +203,7 @@ body {
 .fa-envelope:hover {
   background-color: #444444;
 }
+
 
 .horizontal-list ul li {
   display: inline; 
