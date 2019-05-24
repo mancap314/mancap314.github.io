@@ -253,7 +253,7 @@ hr {
   user-select: none;
 }
 
-@media screen and ( max-device-width: 768px ) {
+@media screen and ( max-width: 768px ) {
   .hamburger {
     display: inline-block;
     cursor: pointer;
