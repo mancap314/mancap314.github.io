@@ -1,12 +1,24 @@
 ---
 layout: default
 ---
-<h1>{{ page.title }}</h1>
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>{{ page.title }}</title>
+  </head>
+  <body>
+    <div class="main">
 
-{% include article-header.html %}
+      <h1>{{ page.title }}</h1>
 
-{{ content }}
-<hr>
-{% include share-bar.html %}
-<hr>
-{% include disqus-comments.html %}
+      {% include article-header.html %}
+
+      {{ content }}
+      <hr>
+      {% include share-bar.html %}
+      <hr>
+      {% include disqus-comments.html %}
+    </div>
+  </body>
+</html>

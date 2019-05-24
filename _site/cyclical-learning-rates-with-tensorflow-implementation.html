@@ -54,9 +54,18 @@
 </div>
 
     <div class="main-content">
+      <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Cyclical learning rates with Tensorflow Implementation</title>
+  </head>
+  <body>
+    <div class="main">
+
       <h1>Cyclical learning rates with Tensorflow Implementation</h1>
 
-
+      
 <div class="post-desc horizontal-list">
   <ul>
     <li>21 May 2019</li>
@@ -66,7 +75,7 @@
 </div>
 
 
-<p>The learning rate is considered as the most important hyperparameter in a neural network (<a href="https://arxiv.org/abs/1206.5533">Bengio 2012</a>). Finding the right one is thus quite crucial. Even better is to find a good <em>learning rate scheduling</em>: modifying the learning rate during the training so that the model has a bigger chance to reach a better optimum. The goal of this article is to describe a learning rate scheduling that seems to work well, along its Tensorflow implementation and an example with a simple CNN on the MNIST dataset.</p>
+      <p>The learning rate is considered as the most important hyperparameter in a neural network (<a href="https://arxiv.org/abs/1206.5533">Bengio 2012</a>). Finding the right one is thus quite crucial. Even better is to find a good <em>learning rate scheduling</em>: modifying the learning rate during the training so that the model has a bigger chance to reach a better optimum. The goal of this article is to describe a learning rate scheduling that seems to work well, along its Tensorflow implementation and an example with a simple CNN on the MNIST dataset.</p>
 
 <h2 id="short-summary-of-the-method">Short summary of the method</h2>
 <p>A too big learning rate makes the model parameters react too much to the errors during the training, so that the model will probably jump over an optimum. On the other hand, a too slow learning rate makes the model move too slowly toward an optimum. So we have to find first a good range of learning rates between those two extremes.</p>
@@ -494,8 +503,8 @@
 
 <p>You can check the <a href="https://github.com/mancap314/miscellanous/blob/master/lr_optimization.ipynb">companion colab notebook</a> for more details, and also this <a href="https://www.jeremyjordan.me/nn-learning-rate/">blog article</a> where a similar technique is described.</p>
 
-<hr>
-<link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+      <hr>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 <div id="share-bar">
   <h4>Share this:</h4>
@@ -511,8 +520,8 @@
   </div>
 </div>
 
-<hr>
-
+      <hr>
+      
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
@@ -529,6 +538,9 @@
   <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
 
 
+    </div>
+  </body>
+</html>
 
     </div>
   </body>
