@@ -4,12 +4,15 @@
     <meta charset="utf-8">
     <title> Some Bash Tricks</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <link rel="shortcut icon" type="image/png" href="favicon.png">
     <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="assets/js/switch.js"></script>
-    <script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Some Bash Tricks | Data science and other stuffs</title>
 <meta name="generator" content="Jekyll v3.7.4" />
@@ -37,35 +40,28 @@
     </script>
   </head>
   <body>
-    <nav class="navigation">
+    <header class="site-header">
+  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
   <div>
-    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
-    
-      <a href="/" >Home</a>
-    
-      <a href="/about.html" >About</a>
-    
-      <a href="/contact.html" >Contact</a>
-    
-  </div>
-</nav>
-<div class="spacer-top">
-  &nbsp;
-</div>
+    <p><em> A blog about data science, IT security, mathematics etc.</em></p>
+      <div class="collapse navbar-collapse" id="navbarToggle">
+        <div class="navbar-nav mr-auto">
+          
+            <a class="nav-item nav-link" href="/" >Home</a>
+          
+            <a class="nav-item nav-link" href="/about.html" >About</a>
+          
+            <a class="nav-item nav-link" href="/contact.html" >Contact</a>
+          
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
 
-    <div class="main-content">
-      <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Some Bash Tricks</title>
-  </head>
-  <body>
-    <div class="main">
+    <main class="container">
+       <h1>Some Bash Tricks</h1>
 
-      <h1>Some Bash Tricks</h1>
-
-      
 <div class="post-desc horizontal-list">
   <ul>
     <li>12 Mar 2019</li>
@@ -74,8 +70,7 @@
   </ul>
 </div>
 
-
-      <p>To open this blog, a few <em>bash</em> tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with <a href="https://jekyllrb.com/">jekyll</a>, and I created some scripts to create posts, and create/remove categories (tags) associated to posts.</p>
+<p>To open this blog, a few <em>bash</em> tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with <a href="https://jekyllrb.com/">jekyll</a>, and I created some scripts to create posts, and create/remove categories (tags) associated to posts.</p>
 
 <h2 id="iterate-through-properties-in-files">Iterate through properties in files</h2>
 <p>Each category is associated with a file in the <code class="highlighter-rouge">_category</code> folder. In each of those files, there is a line starting with <code class="highlighter-rouge">category: </code> followed by the category (name). We want to retrieve the file name and the category name it contains:</p>
@@ -212,8 +207,8 @@ done</span>
 
 <p>The complete scripts are available in a <a href="https://github.com/mancap314/mancap314.github.io/tree/master/scripts">Github repo folder</a>. Hope it has been useful for you, and if you have any question, don’t hesitate to ask.</p>
 
-      <hr>
-      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<hr>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 <div id="share-bar">
   <h4>Share this:</h4>
@@ -229,8 +224,8 @@ done</span>
   </div>
 </div>
 
-      <hr>
-      
+<hr>
+
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
@@ -247,10 +242,11 @@ done</span>
   <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
 
 
-    </div>
-  </body>
-</html>
 
-    </div>
+    </main>
+  
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>

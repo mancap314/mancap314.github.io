@@ -4,12 +4,15 @@
     <meta charset="utf-8">
     <title> Create a Progression Bar in Bash</title>
     <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="stylesheet" href="/bootstrap/css/bootstrap.min.css">
+    <!-- Required meta tags -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
     <link rel="shortcut icon" type="image/png" href="favicon.png">
     <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
     <script type="text/javascript" src="assets/js/switch.js"></script>
-    <script type="text/javascript" async
-  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <script type="text/javascript" async src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
     <!-- Begin Jekyll SEO tag v2.5.0 -->
 <title>Create a Progression Bar in Bash | Data science and other stuffs</title>
 <meta name="generator" content="Jekyll v3.7.4" />
@@ -37,35 +40,28 @@
     </script>
   </head>
   <body>
-    <nav class="navigation">
+    <header class="site-header">
+  <nav class="navbar navbar-expand-md navbar-dark bg-steel fixed-top">
   <div>
-    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
-    
-      <a href="/" >Home</a>
-    
-      <a href="/about.html" >About</a>
-    
-      <a href="/contact.html" >Contact</a>
-    
-  </div>
-</nav>
-<div class="spacer-top">
-  &nbsp;
-</div>
+    <p><em> A blog about data science, IT security, mathematics etc.</em></p>
+      <div class="collapse navbar-collapse" id="navbarToggle">
+        <div class="navbar-nav mr-auto">
+          
+            <a class="nav-item nav-link" href="/" >Home</a>
+          
+            <a class="nav-item nav-link" href="/about.html" >About</a>
+          
+            <a class="nav-item nav-link" href="/contact.html" >Contact</a>
+          
+        </div>
+      </div>
+    </div>
+  </nav>
+</header>
 
-    <div class="main-content">
-      <!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>Create a Progression Bar in Bash</title>
-  </head>
-  <body>
-    <div class="main">
+    <main class="container">
+       <h1>Create a Progression Bar in Bash</h1>
 
-      <h1>Create a Progression Bar in Bash</h1>
-
-      
 <div class="post-desc horizontal-list">
   <ul>
     <li>07 Jun 2019</li>
@@ -74,8 +70,7 @@
   </ul>
 </div>
 
-
-      <p>We will show here how to create a bash script implementing a progression bar. Imagine you have a script creating automatically a bulk of images, this script takes time and while it is running you would like to know how far it is, how fast, and how long it still needs (easily adaptable for other cases like downloading script etc.). In brief, how to get something like that:</p>
+<p>We will show here how to create a bash script implementing a progression bar. Imagine you have a script creating automatically a bulk of images, this script takes time and while it is running you would like to know how far it is, how fast, and how long it still needs (easily adaptable for other cases like downloading script etc.). In brief, how to get something like that:</p>
 
 <p><img src="assets/progression-bar.png" alt="Progression Bar" /></p>
 
@@ -165,8 +160,8 @@
 
 <p>Thank you for reading!</p>
 
-      <hr>
-      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+<hr>
+  <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
 
 <div id="share-bar">
   <h4>Share this:</h4>
@@ -182,8 +177,8 @@
   </div>
 </div>
 
-      <hr>
-      
+<hr>
+
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
@@ -200,10 +195,11 @@
   <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
 
 
-    </div>
-  </body>
-</html>
 
-    </div>
+    </main>
+  
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+    <script src="bootstrap/js/bootstrap.min.js"></script>
   </body>
 </html>

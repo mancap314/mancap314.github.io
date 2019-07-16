@@ -1,18 +1,13 @@
-<div class="category-menu">
-  <div class="hamburger" onclick="switchMenu(this)">
-    <div class="bar1"></div>
-    <div class="bar2"></div>
-    <div class="bar3"></div>
-  </div>
-  <div class="categories">
-    <h2>Categories</h2>
-    {% assign categories_list = site.categories %}
-      {% for category in categories_list %}
-        <a href="/{{ category[0] | downcase | url_escape | strip | replace: ' ', '-' | strip_html }}/">{{ category[0] | replace: '-', ' ' | camelcase }} ({{ category[1].size }})</a>    
-      {% endfor %}
-    {% assign categories_list = nil %}
-  </div>
-  <div class="spacer-side">
-    &nbsp;
-  </div>
+<div id="content-section">
+  <!-- sidebar -->  
+  <h3>Categories</h3> 
+  <p class="text-muted">    
+    <ul class="list-group">
+      {% assign categories_list = site.categories %}
+        {% for category in categories_list %}
+          <li class="list-group"> <a href="/{{ category[0] | downcase | url_escape | strip | replace: ' ', '-' | strip_html }}/">{{ category[0] | replace: '-', ' ' | camelcase }} ({{ category[1].size }})</a> </li> 
+        {% endfor %}
+      {% assign categories_list = nil %}
+    </ul>
+  </p>
 </div>

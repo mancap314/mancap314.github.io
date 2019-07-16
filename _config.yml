@@ -1,7 +1,7 @@
 title: Data science and other stuffs
 email: manuel.capel82@gmail.com
 description: >- # this means to ignore newlines until "baseurl:"
-  Blog about data science, computer virology, served with a bit of mathematics and miscellaneous topics
+  Blog about data science, IT security, served with a bit of mathematics and miscellaneous topics
 baseurl: "" # the subpath of your site, e.g. /blog
 url: "https://mancap314.github.io" # the base hostname & protocol for your site, e.g. http://example.com
 github_username:  mancap314

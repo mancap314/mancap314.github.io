@@ -2,21 +2,18 @@
 layout: default
 title: Last news...
 ---
-
-<!doctype html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <title>{{ page.title }}</title>
-  </head>
-  <body>
-    <div class="main">
+<main role="main" class="container">
+  <div class="row">  
+    <div class="col-md-8">    
       <h1>{{ "Last news..." | downcase }}</h1>
       {% for post in site.posts %}
         {% include article-summary.html %}
       {% endfor %}
     </div>
-    {% include categorie-list.html %}
-  </body>
-</html>
+    </div>
+    <div class="col-md-4">
+      {% include categorie-list.html %}
+    </div>
+  </div>
+</main>
 
