@@ -64,7 +64,7 @@ Basically, this model considers three types of object:
 
 2. **Agent**. An *agent* has one (and only one) *state* at a given moment, and is also in one (and only one) cell. The *cell* where an *agent* is initially is considered to be its *home_cell*.
 
-3. **State**. A *state* has a predefined *severity*, *contagiousity* and *sensitivity*, all in $(0, 1)$.
+3. **State**. A *state* has a predefined *severity*, *contagiousity* and *sensitivity*, all in $$(0, 1)$$.
 
 ### Contagion
 
@@ -72,17 +72,18 @@ A contagion happens within a cell, when it contains several agents at the same t
 
 When an agent has a state with *contagiousity* > 0, then the other agents in the same cell can get infected.
 
-The probability of $Agent_A$ to contaminate $Agent_B$ in cell is given by:
+The probability of $$Agent_A$$ to contaminate $$Agent_B$$ in cell is given by:
 
-![cast-contagion-probability](assets/cast-contagion-probability.png)
+$$
+p = contagiousity(state(Agent_A)) \times sensitivity(state(Agent_B)) \times
+unsafety(cell)
+$$
 
 **Note**:
-* The highest *contagiousity* in the cell is taken to compute $p$.
+* The highest *contagiousity* in the cell is taken to compute $$p$$.
 * The *unsafety* of a *cell* measures how a cell is unsafe for contagion (social distancing respected or not inside etc.)
 
-![cast-cell-contamination](assets/cast-cell-contamination.png "contamination in a cell")
-
-If $Agent_B$ gets infected, it gets to its own state having the least strictly positive $severity$ (it can’t jump directly to a more severe state).
+If $$Agent_B$$ gets infected, it gets to its own state having the least strictly positive $severity$ (it can’t jump directly to a more severe state).
 
 ### State transition
 
@@ -100,13 +101,15 @@ A *move* consists of moving *agent*s to other *cell*s. When a move is done, all 
 
 The probability of an *agent* to be selected for a move is:
 
-![cast-move-probability](assets/cast-move-probability.png)
+$$
+p = proba\_move(agent) \times (1 - severity(state(agent))) 
+$$
 
 The first factor represents the mobility of the *agent* so to say. The second factor represents the fact that the more severe the state of an *agent*, the less the probability that it will move.
 
 ### Cell selection
 
-The map is divided into *squares* containing *cells*. Let’s take an *agent* having its *home cell* on *square* $S_0$. First, a *square* is randomly selected according to its distance to $S_0$ and to the *attractivity* of the *cell*s it contains. Let say, the *square* $S_1$ is selected. Then, within $S_1$, a cell is randomly selected according to its attractivity. Why make it like that in two steps? For 2 reasons:
+The map is divided into *squares* containing *cells*. Let’s take an *agent* having its *home cell* on *square* $$S_0$$. First, a *square* is randomly selected according to its distance to $$S_0$$ and to the *attractivity* of the *cell*s it contains. Let say, the *square* $$S_1$$ is selected. Then, within $$S_1$$, a cell is randomly selected according to its attractivity. Why make it like that in two steps? For 2 reasons:
 
 1. Reducing the memory load of the model: imagine computing and storing all the mutual distances between millions of cells, it would be very heavy. With this approach, we only have to compute and store the distances between squares. If you divide a map into 100x100 squares, those are around 50 millions of distances ( (100x100)²/2), which is manageable.
 

@@ -141,7 +141,7 @@
     <p><strong>Agent</strong>. An <em>agent</em> has one (and only one) <em>state</em> at a given moment, and is also in one (and only one) cell. The <em>cell</em> where an <em>agent</em> is initially is considered to be its <em>home_cell</em>.</p>
   </li>
   <li>
-    <p><strong>State</strong>. A <em>state</em> has a predefined <em>severity</em>, <em>contagiousity</em> and <em>sensitivity</em>, all in $(0, 1)$.</p>
+    <p><strong>State</strong>. A <em>state</em> has a predefined <em>severity</em>, <em>contagiousity</em> and <em>sensitivity</em>, all in \((0, 1)\).</p>
   </li>
 </ol>
 
@@ -151,19 +151,18 @@
 
 <p>When an agent has a state with <em>contagiousity</em> &gt; 0, then the other agents in the same cell can get infected.</p>
 
-<p>The probability of $Agent_A$ to contaminate $Agent_B$ in cell is given by:</p>
+<p>The probability of \(Agent_A\) to contaminate \(Agent_B\) in cell is given by:</p>
 
-<p><img src="assets/cast-contagion-probability.png" alt="cast-contagion-probability" /></p>
+\[p = contagiousity(state(Agent_A)) \times sensitivity(state(Agent_B)) \times
+unsafety(cell)\]
 
 <p><strong>Note</strong>:</p>
 <ul>
-  <li>The highest <em>contagiousity</em> in the cell is taken to compute $p$.</li>
+  <li>The highest <em>contagiousity</em> in the cell is taken to compute \(p\).</li>
   <li>The <em>unsafety</em> of a <em>cell</em> measures how a cell is unsafe for contagion (social distancing respected or not inside etc.)</li>
 </ul>
 
-<p><img src="assets/cast-cell-contamination.png" alt="cast-cell-contamination" title="contamination in a cell" /></p>
-
-<p>If $Agent_B$ gets infected, it gets to its own state having the least strictly positive $severity$ (it can’t jump directly to a more severe state).</p>
+<p>If \(Agent_B\) gets infected, it gets to its own state having the least strictly positive $severity$ (it can’t jump directly to a more severe state).</p>
 
 <h3 id="state-transition">State transition</h3>
 
@@ -183,13 +182,13 @@
 
 <p>The probability of an <em>agent</em> to be selected for a move is:</p>
 
-<p><img src="assets/cast-move-probability.png" alt="cast-move-probability" /></p>
+\[p = proba\_move(agent) \times (1 - severity(state(agent)))\]
 
 <p>The first factor represents the mobility of the <em>agent</em> so to say. The second factor represents the fact that the more severe the state of an <em>agent</em>, the less the probability that it will move.</p>
 
 <h3 id="cell-selection">Cell selection</h3>
 
-<p>The map is divided into <em>squares</em> containing <em>cells</em>. Let’s take an <em>agent</em> having its <em>home cell</em> on <em>square</em> $S_0$. First, a <em>square</em> is randomly selected according to its distance to $S_0$ and to the <em>attractivity</em> of the <em>cell</em>s it contains. Let say, the <em>square</em> $S_1$ is selected. Then, within $S_1$, a cell is randomly selected according to its attractivity. Why make it like that in two steps? For 2 reasons:</p>
+<p>The map is divided into <em>squares</em> containing <em>cells</em>. Let’s take an <em>agent</em> having its <em>home cell</em> on <em>square</em> \(S_0\). First, a <em>square</em> is randomly selected according to its distance to \(S_0\) and to the <em>attractivity</em> of the <em>cell</em>s it contains. Let say, the <em>square</em> \(S_1\) is selected. Then, within \(S_1\), a cell is randomly selected according to its attractivity. Why make it like that in two steps? For 2 reasons:</p>
 
 <ol>
   <li>
