@@ -241,7 +241,7 @@ hr {
 }
 
 .highlight {
-  width: 80%
+  width: 100%
 }
 
 .lineno { 
@@ -322,5 +322,9 @@ hr {
 
   .spacer-side {
     width: 0;
+  }
+
+  .highlight {
+    width: 100%
   }
 }
