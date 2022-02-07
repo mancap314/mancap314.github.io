@@ -72,7 +72,7 @@ plt.show()
 Following the formalism above:
 * $$f_w : x → w.x$$ represented by the dotted line
 * $$w$$: parameter (weight) of the model f representing its slope
-* $$C : (f_w, x, y) → (f_w(x) — y)² = (wx — y)²$$ the cost function. It’s simply the square of the difference between the value given by the model at $$x$$ (means $$wx$$) and the true value $$y$$. Its gradient is given by the partial derivative of $$C(f_w, x, y)$$ by $$w$$, means here $$2x(wx — y)$$.
+* $$C : (f_w, x, y) → (f_w(x) — y)²$$ the cost function. It’s simply the square of the difference between the value given by the model at $$x$$ (means $$wx$$) and the true value $$y$$. Its gradient is given by the partial derivative of $$C(f_w, x, y)$$ by $$w$$, means here $$2x(wx — y)$$.
 
 ## Applying gradient descent
 ### Stochastic gradient descent
@@ -229,7 +229,8 @@ descents = {alpha_:
     for alpha_ in [.0001, .001, .01]}
 
 
-def plot_descents_momentum(descents, a, lr, batch_size=None):
+def plot_descents_momentum(descents, a, lr, 
+                            batch_size=None):
     cmap = plt.cm.get_cmap('Blues', len(descents) + 1)
     plt.subplot(1, 2, 1)
     for i, (alpha, res) in enumerate(descents.items()):

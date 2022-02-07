@@ -152,7 +152,7 @@
 <ul>
   <li>\(f_w : x → w.x\) represented by the dotted line</li>
   <li>\(w\): parameter (weight) of the model f representing its slope</li>
-  <li>\(C : (f_w, x, y) → (f_w(x) — y)² = (wx — y)²\) the cost function. It’s simply the square of the difference between the value given by the model at \(x\) (means \(wx\)) and the true value \(y\). Its gradient is given by the partial derivative of \(C(f_w, x, y)\) by \(w\), means here \(2x(wx — y)\).</li>
+  <li>\(C : (f_w, x, y) → (f_w(x) — y)²\) the cost function. It’s simply the square of the difference between the value given by the model at \(x\) (means \(wx\)) and the true value \(y\). Its gradient is given by the partial derivative of \(C(f_w, x, y)\) by \(w\), means here \(2x(wx — y)\).</li>
 </ul>
 
 <h2 id="applying-gradient-descent">Applying gradient descent</h2>
@@ -416,13 +416,15 @@ m\_gradient &amp;= gradient(t) + \alpha.m\_gradient(t-1) \\
 34
 35
 36
+37
 </pre></td><td class="rouge-code"><pre><span class="n">descents</span> <span class="o">=</span> <span class="p">{</span><span class="n">alpha_</span><span class="p">:</span> 
             <span class="n">gradient_descent_linreg_batch_momentum</span><span class="p">(</span><span class="n">X</span><span class="p">,</span> <span class="n">Y</span><span class="p">,</span> 
                 <span class="n">lr</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">,</span> <span class="n">w</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">alpha</span><span class="o">=</span><span class="n">alpha_</span><span class="p">)</span> \ 
     <span class="k">for</span> <span class="n">alpha_</span> <span class="ow">in</span> <span class="p">[.</span><span class="mi">0001</span><span class="p">,</span> <span class="p">.</span><span class="mi">001</span><span class="p">,</span> <span class="p">.</span><span class="mi">01</span><span class="p">]}</span>
 
 
-<span class="k">def</span> <span class="nf">plot_descents_momentum</span><span class="p">(</span><span class="n">descents</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">plot_descents_momentum</span><span class="p">(</span><span class="n">descents</span><span class="p">,</span> <span class="n">a</span><span class="p">,</span> <span class="n">lr</span><span class="p">,</span> 
+                            <span class="n">batch_size</span><span class="o">=</span><span class="bp">None</span><span class="p">):</span>
     <span class="n">cmap</span> <span class="o">=</span> <span class="n">plt</span><span class="p">.</span><span class="n">cm</span><span class="p">.</span><span class="n">get_cmap</span><span class="p">(</span><span class="s">'Blues'</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">descents</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">plt</span><span class="p">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="n">alpha</span><span class="p">,</span> <span class="n">res</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">descents</span><span class="p">.</span><span class="n">items</span><span class="p">()):</span>
