@@ -85,11 +85,12 @@ gcloud iam service-accounts create my-service-account \
 
 #### Add role to service account
 Attach a role to our new *service account* allowing it full permissions to Cloud 
-Storage (replace `012345` below by your project ID you can see through 
-`gcloud projects list`):
+Storage (replace `my-service-account-email` below by the service account email
+you obtained when creating it just above, you can double-check it through
+`gcloud iam service-accounts list`):
 ```sh
 gcloud projects add-iam-policy-binding 123456789 \
-    --member="serviceAccount:my-service-account@12345.iam.gserviceaccount.com" \
+    --member="serviceAccount:my-service-account-email" \
     --role="roles/storage.objectAdmin"
 ```
 Now you should see `my-service-account` when entering:

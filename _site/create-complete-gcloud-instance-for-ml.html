@@ -153,13 +153,14 @@ ID), enter:</p>
 
 <h4 id="add-role-to-service-account">Add role to service account</h4>
 <p>Attach a role to our new <em>service account</em> allowing it full permissions to Cloud 
-Storage (replace <code class="language-plaintext highlighter-rouge">012345</code> below by your project ID you can see through 
-<code class="language-plaintext highlighter-rouge">gcloud projects list</code>):</p>
+Storage (replace <code class="language-plaintext highlighter-rouge">my-service-account-email</code> below by the service account email
+you obtained when creating it just above, you can double-check it through
+<code class="language-plaintext highlighter-rouge">gcloud iam service-accounts list</code>):</p>
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 </pre></td><td class="rouge-code"><pre>gcloud projects add-iam-policy-binding 123456789 <span class="se">\</span>
-    <span class="nt">--member</span><span class="o">=</span><span class="s2">"serviceAccount:my-service-account@12345.iam.gserviceaccount.com"</span> <span class="se">\</span>
+    <span class="nt">--member</span><span class="o">=</span><span class="s2">"serviceAccount:my-service-account-email"</span> <span class="se">\</span>
     <span class="nt">--role</span><span class="o">=</span><span class="s2">"roles/storage.objectAdmin"</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>Now you should see <code class="language-plaintext highlighter-rouge">my-service-account</code> when entering:</p>
