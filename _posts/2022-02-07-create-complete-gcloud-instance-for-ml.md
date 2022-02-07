@@ -85,11 +85,11 @@ gcloud iam service-accounts create my-service-account \
 
 #### Add role to service account
 Attach a role to our new *service account* allowing it full permissions to Cloud 
-Storage (replace `0123456789` below by your project ID you can see through 
+Storage (replace `012345` below by your project ID you can see through 
 `gcloud projects list`):
 ```sh
 gcloud projects add-iam-policy-binding 123456789 \
-    --member="serviceAccount:my-service-account@123456789.iam.gserviceaccount.com" \
+    --member="serviceAccount:my-service-account@12345.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
 ```
 Now you should see `my-service-account` when entering:
@@ -196,7 +196,9 @@ you should see the 300GB vreated and attached above, probably called here
 
 Then format this disk to `ext4`:
 ```sh
-sudo mkfs.ext4 -m 0 -F -E lazy_itable_init=0,lazy_journal_init=0,discard /dev/sdb
+sudo mkfs.ext4 -m 0 -F -E i \
+    lazy_itable_init=0,lazy_journal_init=0,discard \ 
+    /dev/sdb
 ```
 
 Then create a directory called `data-mount` (or whatever you want) where to mount this
