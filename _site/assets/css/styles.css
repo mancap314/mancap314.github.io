@@ -110,8 +110,8 @@ hr { width: 75%; margin-left: 0em; border: 0; height: 1px; background-image: lin
   .change .bar1, .change .bar2, .change .bar3 { background-color: #777; }
   .category-menu .categories { display: none; }
   .category-menu .categories a { font-size: 1.2em; display: block; }
-  .main-content { max-width: 100%; padding-left: 0; font-size: 2em; }
-  .main { max-width: 100%; padding-left: 1em; font-size: 2em; }
+  .main-content { max-width: 100%; padding-left: 0; font-size: 1em; }
+  .main { max-width: 100%; padding-left: 1em; font-size: 1em; }
   .navigation { max-width: 100%; }
   .navigation a { font-size: 2.2em; }
   .navigation em { font-size: 3em; }
