@@ -20,6 +20,10 @@ body {
   font-size: 1em;
 }
 
+code {
+  font-size: 1.2em;
+}
+
 .post-title a {
   color: black;
   text-decoration: none;
@@ -288,6 +292,10 @@ hr {
     max-width: 100%;
     padding-left: 0;
     font-size: 1em;
+  }
+
+  code {
+    font-size: 1.2em;
   }
 
   .main {
