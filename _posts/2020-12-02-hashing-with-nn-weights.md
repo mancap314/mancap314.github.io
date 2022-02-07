@@ -73,7 +73,7 @@ model.add(Dense(LENGTH,
                 activation='tanh', use_bias=False,
                 kernel_initializer=initializer_0, 
                 name='hashing'))
-# very high learning rate to bring "far away" any wrong input
+# very high learning rate =>  wrong input "far away"
 learning_rate = 1 
 optimizer = Adam(learning_rate=learning_rate) 
 model.compile(loss=MeanSquaredError(), 
@@ -87,7 +87,8 @@ model.fit(block, 1 - block,
           epochs=100, 
           verbose=1)
 # `hash` resulting from `hashing` layer after training
-hash = model.get_layer('hashing').get_weights()[0].flatten()
+hash = model.get_layer('hashing')\
+    .get_weights()[0].flatten()
 ```
 
 All sources of randomness have been removed from the definition and the training of the model:

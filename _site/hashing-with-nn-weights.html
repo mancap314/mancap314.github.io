@@ -153,6 +153,7 @@
 27
 28
 29
+30
 </pre></td><td class="rouge-code"><pre><span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
@@ -167,7 +168,7 @@
                 <span class="n">activation</span><span class="o">=</span><span class="s">'tanh'</span><span class="p">,</span> <span class="n">use_bias</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
                 <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer_0</span><span class="p">,</span> 
                 <span class="n">name</span><span class="o">=</span><span class="s">'hashing'</span><span class="p">))</span>
-<span class="c1"># very high learning rate to bring "far away" any wrong input
+<span class="c1"># very high learning rate =&gt;  wrong input "far away"
 </span><span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">1</span> 
 <span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span> 
 <span class="n">model</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">MeanSquaredError</span><span class="p">(),</span> 
@@ -181,7 +182,8 @@
           <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
           <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="c1"># `hash` resulting from `hashing` layer after training
-</span><span class="nb">hash</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_layer</span><span class="p">(</span><span class="s">'hashing'</span><span class="p">).</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">0</span><span class="p">].</span><span class="n">flatten</span><span class="p">()</span>
+</span><span class="nb">hash</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_layer</span><span class="p">(</span><span class="s">'hashing'</span><span class="p">)</span>\
+    <span class="p">.</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">0</span><span class="p">].</span><span class="n">flatten</span><span class="p">()</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>All sources of randomness have been removed from the definition and the training of the model:</p>
