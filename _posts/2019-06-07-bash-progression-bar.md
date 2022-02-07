@@ -37,8 +37,11 @@ In the condition of the `while` loop, we pipe a mathematical expression into `bc
 Physically: $$speed = distance / time$$. In the same vein here, the $$distance$$ is the difference between the number of images created so far - the number of images that were created at the end of the previous loop. $$time$$ is the `runtime` of the previous loop. Thus we get:
 ```bash
 runtime=$( echo "${end_time} - ${start_time}" | bc -l )
-speed=$(printf '%.1f\n' $(echo "(${n_images_created} - ${n_images_previous}) / ${runtime}" | bc -l))
-n_images_previous=${n_images_created} # re-initialize `n_images_previous` for the next loop
+speed=$(printf '%.1f\n' \
+    $(echo "(${n_images_created} - ${n_images_previous}) \
+    / ${runtime}" | bc -l))
+# Re-initialize `n_images_previous` for the next loop:
+n_images_previous=${n_images_created}
 ```
 using `bc -l` as previously. [`printf '%.1f\n'` on l.2 allows us to control the precision of the result, here 1 decimal]
 
@@ -46,7 +49,9 @@ using `bc -l` as previously. [`printf '%.1f\n'` on l.2 allows us to control the 
 How long have we roughly to wait until the monitored process is finished? We compute it as the distance left (here: number of images to be still created) divided by the current speed:
 
 ```bash
-etl=$(printf '%.0f\n' $(echo "${n_images_tocreate} / ${speed}" | bc -l))
+etl=$(printf '%.0f\n' \
+    $(echo "${n_images_tocreate} / ${speed}" \
+    | bc -l))
 ```
 That's the ETL in seconds. But we would like to have it in a more human-readable format, like 1h 23min 4s instead of 4984s. So we start with the hours:
 ```bash
@@ -59,7 +64,8 @@ On l.1 we compute the ETL in hours rounded to the previous integer. If the resul
 
 Similarly for the minutes:
 ```bash
-n_min=$(printf '%.0f\n' $(echo "scale=0; (${etl} % 3600) / 60" | bc -l))
+n_min=$(printf '%.0f\n' \
+    $(echo "scale=0; (${etl} % 3600) / 60" | bc -l))
 if [[ ${n_min} -ge 1 || ${n_hours} -ge 1 ]]; then
   etl_toprint="${etl_toprint}${n_min}min "
 fi

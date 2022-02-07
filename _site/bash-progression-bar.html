@@ -105,9 +105,15 @@
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
+4
+5
+6
 </pre></td><td class="rouge-code"><pre><span class="nv">runtime</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">end_time</span><span class="k">}</span><span class="s2"> - </span><span class="k">${</span><span class="nv">start_time</span><span class="k">}</span><span class="s2">"</span> | bc <span class="nt">-l</span> <span class="si">)</span>
-<span class="nv">speed</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.1f\n'</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"(</span><span class="k">${</span><span class="nv">n_images_created</span><span class="k">}</span><span class="s2"> - </span><span class="k">${</span><span class="nv">n_images_previous</span><span class="k">}</span><span class="s2">) / </span><span class="k">${</span><span class="nv">runtime</span><span class="k">}</span><span class="s2">"</span> | bc <span class="nt">-l</span><span class="si">))</span>
-<span class="nv">n_images_previous</span><span class="o">=</span><span class="k">${</span><span class="nv">n_images_created</span><span class="k">}</span> <span class="c"># re-initialize `n_images_previous` for the next loop</span>
+<span class="nv">speed</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.1f\n'</span> <span class="se">\</span>
+    <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"(</span><span class="k">${</span><span class="nv">n_images_created</span><span class="k">}</span><span class="s2"> - </span><span class="k">${</span><span class="nv">n_images_previous</span><span class="k">}</span><span class="s2">) </span><span class="se">\</span><span class="s2">
+    / </span><span class="k">${</span><span class="nv">runtime</span><span class="k">}</span><span class="s2">"</span> | bc <span class="nt">-l</span><span class="si">))</span>
+<span class="c"># Re-initialize `n_images_previous` for the next loop:</span>
+<span class="nv">n_images_previous</span><span class="o">=</span><span class="k">${</span><span class="nv">n_images_created</span><span class="k">}</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>using <code class="language-plaintext highlighter-rouge">bc -l</code> as previously. [<code class="language-plaintext highlighter-rouge">printf '%.1f\n'</code> on l.2 allows us to control the precision of the result, here 1 decimal]</p>
 
@@ -115,7 +121,11 @@
 <p>How long have we roughly to wait until the monitored process is finished? We compute it as the distance left (here: number of images to be still created) divided by the current speed:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="nv">etl</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">n_images_tocreate</span><span class="k">}</span><span class="s2"> / </span><span class="k">${</span><span class="nv">speed</span><span class="k">}</span><span class="s2">"</span> | bc <span class="nt">-l</span><span class="si">))</span>
+2
+3
+</pre></td><td class="rouge-code"><pre><span class="nv">etl</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="se">\</span>
+    <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">n_images_tocreate</span><span class="k">}</span><span class="s2"> / </span><span class="k">${</span><span class="nv">speed</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    | bc <span class="nt">-l</span><span class="si">))</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>That’s the ETL in seconds. But we would like to have it in a more human-readable format, like 1h 23min 4s instead of 4984s. So we start with the hours:</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
@@ -134,7 +144,9 @@
 2
 3
 4
-</pre></td><td class="rouge-code"><pre><span class="nv">n_min</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"scale=0; (</span><span class="k">${</span><span class="nv">etl</span><span class="k">}</span><span class="s2"> % 3600) / 60"</span> | bc <span class="nt">-l</span><span class="si">))</span>
+5
+</pre></td><td class="rouge-code"><pre><span class="nv">n_min</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="se">\</span>
+    <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"scale=0; (</span><span class="k">${</span><span class="nv">etl</span><span class="k">}</span><span class="s2"> % 3600) / 60"</span> | bc <span class="nt">-l</span><span class="si">))</span>
 <span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">n_min</span><span class="k">}</span> <span class="nt">-ge</span> 1 <span class="o">||</span> <span class="k">${</span><span class="nv">n_hours</span><span class="k">}</span> <span class="nt">-ge</span> 1 <span class="o">]]</span><span class="p">;</span> <span class="k">then
   </span><span class="nv">etl_toprint</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">etl_toprint</span><span class="k">}${</span><span class="nv">n_min</span><span class="k">}</span><span class="s2">min "</span>
 <span class="k">fi</span>
