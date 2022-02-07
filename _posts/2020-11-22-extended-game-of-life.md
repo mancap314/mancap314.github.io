@@ -13,9 +13,9 @@ import numpy as np
 from matplotlib import pyplot as plt
 from matplotlib import colors
 import imageio
-from IPython.display import display, Imagecmap 
+from IPython.display import display, Image 
 
-cmap = colors.ListedColormap([‘blue’, ‘white’, ‘red’])
+cmap = colors.ListedColormap(['blue', 'white', 'red'])
 N = 15
 ```
 
@@ -104,8 +104,11 @@ def get_values(arr, surrounding):
     for cell in surrounding:
         intermediary = arr.copy()
         for i in range(len(cell)):
-            intermediary = np.roll(intermediary, cell[i], axis=i)
-        values = np.add(values, intermediary).astype(np.int8)
+            intermediary = np.roll(intermediary, 
+                                   cell[i], 
+                                   axis=i)
+        values = np.add(values, intermediary)\
+                    .astype(np.int8)
     return values
 
 
@@ -113,7 +116,9 @@ def get_result(values, transitions, mask):
     """ Computes an array `value` corresponding to the
     `transitions` applied to the cells in the `mask` """
     for (inf, sup), rvalue in transitions:
-        mask_rule = (values >= inf) & (values <= sup) & mask
+        mask_rule = (values >= inf) \ 
+                    & (values <= sup) \
+                    & mask
         np.putmask(values, mask_rule, rvalue)
     return values
 
@@ -121,13 +126,13 @@ def get_result(values, transitions, mask):
 def forward(arr, rules):
     """ Compute the next step by applying successively 
     the sum for each step correponding its surrounding 
-    and then the transitions. The surroundings and the 
-    transitions are defined for each possible cell 
-    value in `rules` """
-    for value, (surrounding, transitions) in rules.items():
+    and then the transitions. The surroundings `surr` 
+    and the transitions `trans` are defined for each 
+    possible cell value in `rules` """
+    for value, (surr, trans) in rules.items():
         mask = (arr == value)
-        values = get_values(arr, surrounding)
-        arr = get_result(values, transitions, mask)
+        values = get_values(arr, surr)
+        arr = get_result(values, trans, mask)
         np.putmask(arr, mask, values)
     return arr
 ```
@@ -165,8 +170,8 @@ def generate_gif(n_steps, arr, rules,
   :param arr: numpy array of the initial grid
   :param rules: dic, value => (surrounding, transitions)
   :param path: path where to save the resulting gif
-  :param cmap: matplotlib cmap object. 
-    Must contains as many colors as possible values in `arr`
+  :param cmap: matplotlib cmap object. Must contain 
+    as many colors as possible values in `arr`
   :param figsize: size of each figure in the gif
   :param fps: frames per second for the resulting gif
   """
@@ -175,21 +180,28 @@ def generate_gif(n_steps, arr, rules,
   if i > 0:
     arr = forward(arr, rules)
   fig, ax = plt.subplots(figsize=(6, 6))
-  ax.pcolor(arr[::-1], cmap=cmap ,edgecolors='k', linewidths=1)
+  ax.pcolor(arr[::-1], 
+            cmap=cmap, 
+            edgecolors='k', 
+            linewidths=1)
   ax.set_xticks([])
   ax.set_yticks([])
   # Used to return the plot as an image rray
   fig.canvas.draw() # draw the canvas, cache the renderer
-  # Prevent each individual image for the gif to be displayed here
+  # Prevent each individual gif image to be displayed
   plt.close(fig)
-  image = np.frombuffer(fig.canvas.tostring_rgb(), dtype='uint8')
-  image = image.reshape(fig.canvas.get_width_height()[::-1] + (3,))
+  image = np.frombuffer(fig.canvas.tostring_rgb(), 
+                        dtype='uint8')
+  image = image.reshape(fig.canvas.get_width_height()\
+                        [::-1] + (3,))
   images.append(image)
   imageio.mimsave(path, images, fps=fps)
   print(f'INFO: gif saved to {path}')
 
 
-generate_gif(n_steps, arr, rules, path, cmap, figsize=(6, 6), fps=5)
+generate_gif(n_steps, arr, rules, path, cmap, 
+             figsize=(6, 6), 
+             fps=5)
 ```
 
 ![30-steps](assets/extended-gol-30-steps.gif "30 Steps in a Row")
