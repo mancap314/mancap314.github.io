@@ -74,18 +74,24 @@
 4
 5
 6
+7
+8
 </pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
 <span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span>
 <span class="kn">import</span> <span class="nn">imageio</span>
-<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Imagecmap</span> <span class="o">=</span> <span class="n">colors</span><span class="p">.</span><span class="n">ListedColormap</span><span class="p">([</span><span class="err">‘</span><span class="n">blue</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">white</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">red</span><span class="err">’</span><span class="p">])</span>
+<span class="kn">from</span> <span class="nn">IPython.display</span> <span class="kn">import</span> <span class="n">display</span><span class="p">,</span> <span class="n">Imagecmap</span> 
+
+<span class="n">cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="p">.</span><span class="n">ListedColormap</span><span class="p">([</span><span class="err">‘</span><span class="n">blue</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">white</span><span class="err">’</span><span class="p">,</span> <span class="err">‘</span><span class="n">red</span><span class="err">’</span><span class="p">])</span>
 <span class="n">N</span> <span class="o">=</span> <span class="mi">15</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>We begin with defining a <code class="language-plaintext highlighter-rouge">NxN</code> grid with random integer values in (0, 1, 2) on its squares:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span> <span class="o">*</span> <span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int8</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
+2
+</pre></td><td class="rouge-code"><pre><span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">N</span> <span class="o">*</span> <span class="n">N</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int8</span><span class="p">)</span>\
+    <span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">N</span><span class="p">,</span> <span class="n">N</span><span class="p">)</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>Then for each value we define:</p>
@@ -114,14 +120,34 @@
 12
 13
 14
-</pre></td><td class="rouge-code"><pre><span class="c1"># Tuple ind surroundings must have at most as many elements as dimensions in `arr`
-</span><span class="n">surrounding_0</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+</pre></td><td class="rouge-code"><pre><span class="c1"># Tuple ind surroundings must have at most 
+# as many elements as dimensions in `arr`
+</span><span class="n">surrounding_0</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> 
+                    <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
 
-<span class="n">transitions_0</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
-<span class="n">transitions_1</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="n">transitions_2</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">transitions_0</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">transitions_1</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">transitions_2</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
 
 <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span>
  <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="n">surrounding_0</span><span class="p">,</span> <span class="n">transitions_0</span><span class="p">),</span>
@@ -183,14 +209,37 @@
 45
 46
 47
-</pre></td><td class="rouge-code"><pre><span class="c1"># Tuple ind surroundings must have at most as many elements as dimensions in `arr`
-</span><span class="n">surrounding_0</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+</pre></td><td class="rouge-code"><pre><span class="c1"># Tuple ind surroundings must have 
+# at most as many elements as dimensions in `arr`
+</span><span class="n">surrounding_0</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
 
-<span class="n">transitions_0</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
-<span class="n">transitions_1</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="n">transitions_2</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">transitions_0</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">transitions_1</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">transitions_2</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
 
 <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span>
  <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="n">surrounding_0</span><span class="p">,</span> <span class="n">transitions_0</span><span class="p">),</span>
@@ -200,8 +249,9 @@
 
 
 <span class="k">def</span> <span class="nf">get_values</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">surrounding</span><span class="p">):</span>
-    <span class="s">""" Compute and returns an array `value` corresponding to the sum of
-    the values in the `surrounding` of each cell in `arr` """</span>
+    <span class="s">""" Compute and returns an array `value` 
+    corresponding to the sum of the values 
+    in the `surrounding` of each cell in `arr` """</span>
     <span class="n">values</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">shape</span><span class="o">=</span><span class="n">arr</span><span class="p">.</span><span class="n">shape</span><span class="p">)</span>
     <span class="k">for</span> <span class="n">cell</span> <span class="ow">in</span> <span class="n">surrounding</span><span class="p">:</span>
         <span class="n">intermediary</span> <span class="o">=</span> <span class="n">arr</span><span class="p">.</span><span class="n">copy</span><span class="p">()</span>
@@ -221,9 +271,11 @@
 
 
 <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">rules</span><span class="p">):</span>
-    <span class="s">""" Compute the next step by applying successively the sum for each step correponding its
-    surrounding and then the transitions. The surroundings and the transitions are defined
-    for each possible cell value in `rules` """</span>
+    <span class="s">""" Compute the next step by applying successively 
+    the sum for each step correponding its surrounding 
+    and then the transitions. The surroundings and the 
+    transitions are defined for each possible cell 
+    value in `rules` """</span>
     <span class="k">for</span> <span class="n">value</span><span class="p">,</span> <span class="p">(</span><span class="n">surrounding</span><span class="p">,</span> <span class="n">transitions</span><span class="p">)</span> <span class="ow">in</span> <span class="n">rules</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
         <span class="n">mask</span> <span class="o">=</span> <span class="p">(</span><span class="n">arr</span> <span class="o">==</span> <span class="n">value</span><span class="p">)</span>
         <span class="n">values</span> <span class="o">=</span> <span class="n">get_values</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">surrounding</span><span class="p">)</span>
@@ -237,8 +289,16 @@
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
-</pre></td><td class="rouge-code"><pre><span class="n">arr</span> <span class="o">=</span> <span class="n">forward</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">rules</span><span class="p">)</span><span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
-<span class="n">plt</span><span class="p">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">arr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span> <span class="p">,</span><span class="n">edgecolors</span><span class="o">=</span><span class="err">’</span><span class="n">k</span><span class="err">’</span><span class="p">,</span> <span class="n">linewidths</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+4
+5
+6
+7
+</pre></td><td class="rouge-code"><pre><span class="n">arr</span> <span class="o">=</span> <span class="n">forward</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">rules</span><span class="p">)</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">figure</span><span class="p">(</span><span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span><span class="mi">6</span><span class="p">))</span>
+<span class="n">plt</span><span class="p">.</span><span class="n">pcolor</span><span class="p">(</span><span class="n">arr</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">],</span> 
+            <span class="n">cmap</span><span class="o">=</span><span class="n">cmap</span> <span class="p">,</span>
+            <span class="n">edgecolors</span><span class="o">=</span><span class="err">’</span><span class="n">k</span><span class="err">’</span><span class="p">,</span> 
+            <span class="n">linewidths</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 <span class="n">plt</span><span class="p">.</span><span class="n">show</span><span class="p">()</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
@@ -282,20 +342,29 @@
 34
 35
 36
+37
+38
+39
+40
+41
 </pre></td><td class="rouge-code"><pre><span class="n">n_steps</span> <span class="o">=</span> <span class="mi">30</span>
 <span class="n">path</span> <span class="o">=</span> <span class="s">'./gol.gif'</span>
 <span class="n">fps</span> <span class="o">=</span> <span class="mi">5</span>
 
 
-<span class="k">def</span> <span class="nf">generate_gif</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> <span class="n">path</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">generate_gif</span><span class="p">(</span><span class="n">n_steps</span><span class="p">,</span> <span class="n">arr</span><span class="p">,</span> <span class="n">rules</span><span class="p">,</span> 
+                 <span class="n">path</span><span class="p">,</span> <span class="n">cmap</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="n">fps</span><span class="o">=</span><span class="mi">5</span><span class="p">):</span>
   <span class="s">"""
-  Generate and save a gif to `path` corresponding to `n_steps`successive
-  steps of evolution of `arr` according to `rules`
-  :param n_step: int, number of steps to make the grid `arr` evolve
+  Generate and save a gif to `path` corresponding 
+  to `n_steps`successive steps of evolution of 
+  `arr` according to `rules`
+  :param n_step: int, number of steps to make the 
+    grid `arr` evolve
   :param arr: numpy array of the initial grid
   :param rules: dic, value =&gt; (surrounding, transitions)
   :param path: path where to save the resulting gif
-  :param cmap: matplotlib cmap object. Must contains as many colors as possible values in `arr`
+  :param cmap: matplotlib cmap object. 
+    Must contains as many colors as possible values in `arr`
   :param figsize: size of each figure in the gif
   :param fps: frames per second for the resulting gif
   """</span>
@@ -309,8 +378,9 @@
   <span class="n">ax</span><span class="p">.</span><span class="n">set_yticks</span><span class="p">([])</span>
   <span class="c1"># Used to return the plot as an image rray
 </span>  <span class="n">fig</span><span class="p">.</span><span class="n">canvas</span><span class="p">.</span><span class="n">draw</span><span class="p">()</span> <span class="c1"># draw the canvas, cache the renderer
-</span>  <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span> <span class="c1"># Prevent each individual image for the gif to be displayed here
-</span>  <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">fig</span><span class="p">.</span><span class="n">canvas</span><span class="p">.</span><span class="n">tostring_rgb</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="s">'uint8'</span><span class="p">)</span>
+</span>  <span class="c1"># Prevent each individual image for the gif to be displayed here
+</span>  <span class="n">plt</span><span class="p">.</span><span class="n">close</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+  <span class="n">image</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">frombuffer</span><span class="p">(</span><span class="n">fig</span><span class="p">.</span><span class="n">canvas</span><span class="p">.</span><span class="n">tostring_rgb</span><span class="p">(),</span> <span class="n">dtype</span><span class="o">=</span><span class="s">'uint8'</span><span class="p">)</span>
   <span class="n">image</span> <span class="o">=</span> <span class="n">image</span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">fig</span><span class="p">.</span><span class="n">canvas</span><span class="p">.</span><span class="n">get_width_height</span><span class="p">()[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">+</span> <span class="p">(</span><span class="mi">3</span><span class="p">,))</span>
   <span class="n">images</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
   <span class="n">imageio</span><span class="p">.</span><span class="n">mimsave</span><span class="p">(</span><span class="n">path</span><span class="p">,</span> <span class="n">images</span><span class="p">,</span> <span class="n">fps</span><span class="o">=</span><span class="n">fps</span><span class="p">)</span>
@@ -352,22 +422,109 @@
 25
 26
 27
-</pre></td><td class="rouge-code"><pre><span class="n">cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="p">.</span><span class="n">ListedColormap</span><span class="p">([</span><span class="s">'blue'</span><span class="p">,</span> <span class="s">'white'</span><span class="p">,</span> <span class="s">'red'</span><span class="p">,</span> <span class="s">'green'</span><span class="p">,</span> <span class="s">'yellow'</span><span class="p">,</span> <span class="s">'black'</span><span class="p">])</span>
+28
+29
+30
+31
+32
+33
+34
+35
+36
+37
+38
+39
+40
+41
+42
+43
+44
+45
+46
+47
+48
+49
+50
+51
+52
+53
+54
+55
+56
+57
+58
+59
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+</pre></td><td class="rouge-code"><pre><span class="n">cmap</span> <span class="o">=</span> <span class="n">colors</span><span class="p">.</span><span class="n">ListedColormap</span><span class="p">([</span><span class="s">'blue'</span><span class="p">,</span> <span class="s">'white'</span><span class="p">,</span> <span class="s">'red'</span><span class="p">,</span> 
+                              <span class="s">'green'</span><span class="p">,</span> <span class="s">'yellow'</span><span class="p">,</span> <span class="s">'black'</span><span class="p">])</span>
 <span class="n">K</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">P</span> <span class="o">=</span> <span class="mi">15</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span> <span class="mi">30</span><span class="p">,</span> <span class="mi">10</span>
 
-<span class="n">surrounding_0</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
-<span class="n">surrounding_2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_3</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_4</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
-<span class="n">surrounding_5</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_0</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_1</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="n">surrounding_2</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_3</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_4</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
+<span class="n">surrounding_5</span> <span class="o">=</span> <span class="p">[(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)]</span>
 
-<span class="n">transitions_0</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
-<span class="n">transitions_1</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">((</span><span class="mi">11</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">1</span><span class="p">)]</span>
-<span class="n">transitions_2</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="p">((</span><span class="mi">9</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">5</span><span class="p">)]</span>
-<span class="n">transitions_3</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span> <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">4</span><span class="p">)]</span>
-<span class="n">transitions_4</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">5</span><span class="p">)]</span>
-<span class="n">transitions_5</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span> <span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
+<span class="n">transitions_0</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">0</span><span class="p">)]</span>
+<span class="n">transitions_1</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">10</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">11</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">1</span><span class="p">)]</span>
+<span class="n">transitions_2</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">3</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="mi">8</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">9</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">5</span><span class="p">)]</span>
+<span class="n">transitions_3</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">9</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">10</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">4</span><span class="p">)]</span>
+<span class="n">transitions_4</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">0</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">4</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">4</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">5</span><span class="p">)]</span>
+<span class="n">transitions_5</span> <span class="o">=</span> <span class="p">[((</span><span class="mi">0</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">3</span><span class="p">,</span> <span class="mi">4</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">5</span><span class="p">,</span> <span class="mi">6</span><span class="p">),</span> <span class="mi">2</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">7</span><span class="p">,</span> <span class="mi">7</span><span class="p">),</span> <span class="mi">5</span><span class="p">),</span> 
+                 <span class="p">((</span><span class="mi">8</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">inf</span><span class="p">),</span> <span class="mi">2</span><span class="p">)]</span>
 
 <span class="n">rules</span> <span class="o">=</span> <span class="p">{</span>
     <span class="mi">0</span><span class="p">:</span> <span class="p">(</span><span class="n">surrounding_0</span><span class="p">,</span> <span class="n">transitions_0</span><span class="p">),</span>
@@ -378,7 +535,10 @@
     <span class="mi">5</span><span class="p">:</span> <span class="p">(</span><span class="n">surrounding_5</span><span class="p">,</span> <span class="n">transitions_5</span><span class="p">)</span>
 <span class="p">}</span>
 
-<span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="n">K</span> <span class="o">*</span> <span class="n">N</span> <span class="o">*</span> <span class="n">M</span> <span class="o">*</span> <span class="n">P</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int8</span><span class="p">).</span><span class="n">reshape</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
+<span class="n">arr</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">random</span><span class="p">.</span><span class="n">randint</span><span class="p">(</span><span class="mi">6</span><span class="p">,</span> 
+                    <span class="n">size</span><span class="o">=</span><span class="n">K</span> <span class="o">*</span> <span class="n">N</span> <span class="o">*</span> <span class="n">M</span> <span class="o">*</span> <span class="n">P</span><span class="p">,</span> 
+                    <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="p">.</span><span class="n">int8</span><span class="p">)</span> \
+                <span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">K</span><span class="p">,</span> <span class="n">N</span><span class="p">,</span> <span class="n">M</span><span class="p">,</span> <span class="n">P</span><span class="p">)</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>We can represent only a 2-dimensional slice of <code class="language-plaintext highlighter-rouge">arr</code>, so let’s draw for example the slice corresponding the the position 3 in the second dimension and position 4 in the fourth dimension, the same way than before, and we get:</p>
