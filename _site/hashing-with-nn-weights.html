@@ -1,0 +1,259 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Hashing with Neural Network Weights</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Hashing with Neural Network Weights | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Hashing with Neural Network Weights" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="This articles presents a method for hashing strings based on the weights of an Artificial Neural Network trained on them." />
+<meta property="og:description" content="This articles presents a method for hashing strings based on the weights of an Artificial Neural Network trained on them." />
+<link rel="canonical" href="http://localhost:4000/hashing-with-nn-weights.html" />
+<meta property="og:url" content="http://localhost:4000/hashing-with-nn-weights.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2020-12-02T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Hashing with Neural Network Weights" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Hashing with Neural Network Weights","dateModified":"2020-12-02T00:00:00+01:00","datePublished":"2020-12-02T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/hashing-with-nn-weights.html"},"url":"http://localhost:4000/hashing-with-nn-weights.html","author":{"@type":"Person","name":"Manuel Capel"},"description":"This articles presents a method for hashing strings based on the weights of an Artificial Neural Network trained on them.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Hashing with Neural Network Weights</title>
+  </head>
+  <body>
+    <div class="main">
+
+      <h1>Hashing with Neural Network Weights</h1>
+
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>02 Dec 2020</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/deep-learning/">deep learning</a></li>
+  </ul>
+</div>
+
+
+      <p>This articles presents a method for hashing strings based on the weights of an Artificial Neural Network trained on them.</p>
+
+<p>Yesterday talking with one of my machine learning students <a href="https://www.linkedin.com/in/thomas-mathieu-b3032014a/">Thomas Mathieu</a> in <a href="https://www.lewagon.com/">Lewagon</a>, we got an idea: what if the parameters of a machine learning model could somehow encode the data used to train this model? With nice properties on top of it? Let’s go back to the hash functions:</p>
+
+<p>A <a href="https://en.wikipedia.org/wiki/Hash_function">hash function</a> is a function taking an input and giving an output such that:</p>
+<ol>
+  <li>it’s (nearly) impossible to find out the input from the output</li>
+  <li>the output is of fixed size</li>
+  <li>given an input, you get always the same output</li>
+</ol>
+
+<p>Hash functions are used for example to keep passwords safe: their hash instead of their plain value is stored. When a user authenticates, his/her hashed password is compared against the stored hash. It’s also used as <a href="https://en.wikipedia.org/wiki/Proof_of_work">proof of work</a> for mining crypto-currencies such as Bitcoin: simplified, the goal is to find a string which hash matches a given hash.</p>
+
+<p>Now let explain our method and its implementation (in Python/Tensorflow/Keras):</p>
+
+<h2 id="encoding">Encoding</h2>
+
+<p>For each character, we take its integer encoding and modify it to map it in (0, 1):</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">t_char</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">c</span><span class="p">:</span> <span class="mi">1</span> <span class="o">/</span> <span class="nb">ord</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="o">**</span> <span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>This function takes a character <code class="language-plaintext highlighter-rouge">c</code>, then its <code class="language-plaintext highlighter-rouge">ord()</code> (integer bigger than 1 unique to each character), and finally the square root (for more contrast) of its inverse (to get a value in (0, 1)).</p>
+
+<p>Then we simply define a function <code class="language-plaintext highlighter-rouge">t_char()</code> taking each character in a string <code class="language-plaintext highlighter-rouge">s</code>, transforming it with <code class="language-plaintext highlighter-rouge">t_char</code> and packing the result in a flat numpy array:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="n">t_str</span> <span class="o">=</span> <span class="k">lambda</span> <span class="n">s</span><span class="p">:</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="n">t_char</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="k">for</span> <span class="n">c</span> <span class="ow">in</span> <span class="n">s</span><span class="p">])</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>As a last pre-processing step, we transform this numpy array as a block of given width, padding it with 0 to fill the block:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="k">def</span> <span class="nf">to_blocks</span><span class="p">(</span><span class="n">arr</span><span class="p">,</span> <span class="n">width</span><span class="o">=</span><span class="mi">6</span><span class="p">):</span>
+   <span class="n">size</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">arr</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">width</span><span class="p">).</span><span class="n">astype</span><span class="p">(</span><span class="s">'int'</span><span class="p">)</span>
+   <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">size</span> <span class="o">*</span> <span class="n">width</span><span class="p">)</span>
+   <span class="n">res</span><span class="p">[:</span><span class="n">arr</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]]</span> <span class="o">=</span> <span class="n">arr</span>
+   <span class="n">res</span> <span class="o">=</span> <span class="n">res</span><span class="p">.</span><span class="n">reshape</span><span class="p">((</span><span class="n">size</span><span class="p">,</span> <span class="n">width</span><span class="p">))</span>
+   <span class="k">return</span> <span class="n">res</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="training-neural-network">Training Neural Network</h2>
+
+<p>Usually, the primary use of a neural network is to provide results from inputs. For this, it computes internally its own <em>parameters</em> or <em>weights</em> during a training phase.</p>
+
+<p>Here the trick is, we will train a neural network with the primary use of <em>getting its weights</em>. We won’t care about its output.</p>
+
+<p>With the pre-processing above, we get a 2-dimensional array of fixed width from any given string. The goal of the neural network will be to train to compute <code class="language-plaintext highlighter-rouge">1-row</code> from each <code class="language-plaintext highlighter-rouge">row</code> in this block.</p>
+
+<p>But remember from the definition of a hash function, an input must map to a unique output. So we have to remove any source of randomness in the training of our neural network.</p>
+
+<p>Let’s code it:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+</pre></td><td class="rouge-code"><pre><span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.initializers</span> <span class="kn">import</span> <span class="n">Zeros</span><span class="p">,</span> <span class="n">Ones</span>
+<span class="kn">from</span> <span class="nn">tensorflow.keras.losses</span> <span class="kn">import</span> <span class="n">MeanSquaredError</span>
+
+<span class="n">initializer_0</span> <span class="o">=</span> <span class="n">Zeros</span><span class="p">()</span>
+
+<span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">LENGTH</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">LENGTH</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'tanh'</span><span class="p">,</span> <span class="n">use_bias</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer_0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'hashing'</span><span class="p">))</span>
+<span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># very high to bring "very far away" any wrong input
+</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span>  <span class="c1"># big `learning_rate` to start
+</span><span class="n">model</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">MeanSquaredError</span><span class="p">(),</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'mse'</span><span class="p">])</span>
+
+<span class="c1"># `block` obtained from prior pre-processing, `model` "learns" to map it to 1 - block
+</span><span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">block</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">blocked</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># `hash` resulting from the weight of layer `hashing` after training
+</span><span class="nb">hash</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_layer</span><span class="p">(</span><span class="s">'hashing'</span><span class="p">).</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">0</span><span class="p">].</span><span class="n">flatten</span><span class="p">()</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>All sources of randomness have been removed from the definition and the training of the model:</p>
+
+<ul>
+  <li>weights all initialized to 0 (with <code class="language-plaintext highlighter-rouge">initializer_0</code>)</li>
+  <li><code class="language-plaintext highlighter-rouge">batch_size</code> set to the number of inputs in the training dataset (which is the <code class="language-plaintext highlighter-rouge">block</code> obtained from the pre-processing)</li>
+  <li>bias removed from the <code class="language-plaintext highlighter-rouge">Dense</code> layer</li>
+</ul>
+
+<p>The activation function for the unique layer there is <code class="language-plaintext highlighter-rouge">tanh</code>, which has the property of having larger gradients on a larger interval, convenient here. Last but not least, the <code class="language-plaintext highlighter-rouge">learning_rate</code> has been set at a very high value, 1 vs. 1e-3 usually. The purpose of it is to “push away” quite far wrong inputs.</p>
+
+<p>Finally, we take the weights of the <code class="language-plaintext highlighter-rouge">hashing</code> resulting from the <code class="language-plaintext highlighter-rouge">fit()</code> (training) as a hash. It has dimension <code class="language-plaintext highlighter-rouge">width x width</code>, no matter how high the <code class="language-plaintext highlighter-rouge">block</code> was (means how long the initial string was).</p>
+
+<p>Visually, the weights on the hashing layer correspond to this:</p>
+
+<p><img src="assets/nn-hashing-model.png" alt="structure of the hashing NN" title="Structure of the Hashing NN" /></p>
+
+<p>Each thin arrow on the top corresponds to a <em>weight</em> trained with <code class="language-plaintext highlighter-rouge">fit()</code>. Three cells here in the hashing layer correspond to a block of width 3. The values on the row are multiplied, for each cell in the hashing layer, by a value attached to each arrow pointing to it (a.k.a. the <em>weights</em>), then summed, and the <code class="language-plaintext highlighter-rouge">tanh</code> of this sum is forwarded below. At the end of the training, those weights form the hash of the initial string. Thus it is a hash of size 3x3=9</p>
+
+<p>Checking that an input string matches a hash is pretty straight-forward: pre-process it, train the model with the resulting block, check that the hash matches the resulting weights in the hashing layer.</p>
+
+<p>Downside: it’s a bit long (0.8s on my notebook). This might also be an advantage, as someone who found such a hash will barely be able to test thousands of strings per second against it (besides bearing high GPU costs…)</p>
+
+<h2 id="why-its-possibly-a-good-hash-function">Why it’s <em>possibly</em> a good hash function</h2>
+
+<p>I am not myself a crypto expert, I must confess. Just a few remarks:</p>
+
+<ul>
+  <li>a small difference in the input causes a pretty much more consequent difference in the output due to the gradient (used to adapt the weights during the training through <a href="https://en.wikipedia.org/wiki/Backpropagation">backpropagation</a>) pointing in another direction, and the very high learning rate pushing then far in that other direction.</li>
+  <li>It looks (to me at least…) quite difficult to revert the computation in order to obtain the initial hash. It would imply solving a system of equation combining variable with a <code class="language-plaintext highlighter-rouge">tanh</code> function of them where a small error would surely lead to another hash due to the 100 epochs in the training and the high learning rate.</li>
+  <li>It seems, empirically at least, to be resistant to small permutations or modifications in the input string</li>
+</ul>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>As I mentioned, I am not an expert in cryptography. If some experts could confirm or infirm this hashing function, I would be <em>very</em> grateful.</p>
+
+<p>Moreover, this method is easily extensible: one can train the neural network to map to something else than 1- itself, one can try other activation function etc.</p>
+
+<p>Thank you for reading!</p>
+
+      <hr>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div id="share-bar">
+  <h4>Share this:</h4>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/hashing-with-nn-weights.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Hashing with Neural Network Weights&url=http://localhost:4000/hashing-with-nn-weights.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=http://localhost:4000/hashing-with-nn-weights.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/hashing-with-nn-weights.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/hashing-with-nn-weights.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=http://localhost:4000/hashing-with-nn-weights.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/hashing-with-nn-weights.html&title=Hashing with Neural Network Weights&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Hashing with Neural Network Weights&amp;body=Check out this site http://localhost:4000/hashing-with-nn-weights.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+  </div>
+</div>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://localhost:4000/hashing-with-nn-weights.html';
+      this.page.identifier = 'http://localhost:4000/hashing-with-nn-weights.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+</html>
+
+    </div>
+  </body>
+</html>

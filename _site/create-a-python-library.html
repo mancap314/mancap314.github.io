@@ -1,0 +1,262 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Create a Python library</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Create a Python library | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Create a Python library" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Creating a Python package isn’t typically something a developer does routinely, so when it happens, you may end up losing time and nerves in small details you forgot. This article will show you how to make your project pip install-able." />
+<meta property="og:description" content="Creating a Python package isn’t typically something a developer does routinely, so when it happens, you may end up losing time and nerves in small details you forgot. This article will show you how to make your project pip install-able." />
+<link rel="canonical" href="http://localhost:4000/create-a-python-library.html" />
+<meta property="og:url" content="http://localhost:4000/create-a-python-library.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2021-01-14T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Create a Python library" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Create a Python library","dateModified":"2021-01-14T00:00:00+01:00","datePublished":"2021-01-14T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/create-a-python-library.html"},"url":"http://localhost:4000/create-a-python-library.html","author":{"@type":"Person","name":"Manuel Capel"},"description":"Creating a Python package isn’t typically something a developer does routinely, so when it happens, you may end up losing time and nerves in small details you forgot. This article will show you how to make your project pip install-able.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title>Create a Python library</title>
+  </head>
+  <body>
+    <div class="main">
+
+      <h1>Create a Python library</h1>
+
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>14 Jan 2021</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/programming/">programming</a></li>
+  </ul>
+</div>
+
+
+      <p>Creating a Python package isn’t typically something a developer does routinely, so when it happens, you may end up losing time and nerves in small details you forgot. This article will show you how to make your project pip install-able.</p>
+
+<p>Here is a (hopefully) simple gentle guide easy to follow for proceeding. Just take it as a small recipe when you need to cook your Python package once in a while.</p>
+
+<p>Let’s go step by step:</p>
+
+<h2 id="prerequisite">Prerequisite</h2>
+
+<p>You have first to install the packages <a href="https://pypi.org/project/setuptools/">setuptools</a>, <a href="https://pypi.org/project/wheel/">wheel</a>, and <a href="https://pypi.org/project/twine/">twine</a>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>pip <span class="nb">install </span>setuptools wheel twine
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<h2 id="project-structure">Project structure</h2>
+
+<p>The first-level folder structure of your project (from now on called <em>mypackage</em>) should look like this:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre>|___ LICENCE
+|___ mypackage/
+|___ README.md
+|___ requirements.txt
+|___ setup.py
+|___ tests/
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Let’s quickly review what’s in there:</p>
+
+<ul>
+  <li><strong>LICENCE</strong>: The license for your project. If it’s open-source, an <a href="https://en.wikipedia.org/wiki/MIT_License">MIT</a> license is probably good to go. See <a href="https://choosealicense.com/">more possible licenses</a>.</li>
+  <li><strong>mypackage/</strong>: Folder where your actual will leave. <strong>Note</strong>: this folder and every subfolder should contain an <code class="language-plaintext highlighter-rouge">__init__.py</code> file (even empty) to be accessible in mypackage.</li>
+  <li><strong>README.md</strong>: Long description of your project. It will also appear on the front page of your Github repo. Has to be written with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown syntax</a>.</li>
+  <li><strong>requirements.txt</strong>: Contains the description of the packages <em>mypackage</em> depends on. Each line of this file is of the form <em>packagename[==version]</em>. You can generate it directly through <code class="language-plaintext highlighter-rouge">pip freeze &gt; requirements.txt</code> in the terminal if you are using a virtual environment, which is highly recommended btw. See more <a href="https://blog.usejournal.com/why-and-how-to-make-a-requirements-txt-f329c685181e">there</a>.</li>
+  <li><strong>setup.py</strong>: This one is a bit more complex. It should look like this:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+22
+23
+24
+25
+</pre></td><td class="rouge-code"><pre><span class="kn">import</span> <span class="nn">setuptools</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'README.md'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+    <span class="n">long_description</span> <span class="o">=</span> <span class="n">fh</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">setuptools</span><span class="p">.</span><span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">'mypackage'</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s">'0.0.1'</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s">'My Name'</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s">'my.name@somemail.xyz'</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s">'My super duper Python package'</span><span class="p">,</span>
+    <span class="n">long_description</span><span class="o">=</span><span class="n">long_description</span><span class="p">,</span>
+    <span class="n">long_description_content_type</span><span class="o">=</span><span class="s">'text/markdown'</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s">'https://github.com/myusername/mypackage'</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="n">setuptools</span><span class="p">.</span><span class="n">find_packages</span><span class="p">(),</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span>
+        <span class="s">'Programming Language :: Python :: 3'</span><span class="p">,</span>
+        <span class="s">'License :: OSI Approved :: MIT License'</span><span class="p">,</span>
+        <span class="s">'Operating System :: OS Independent'</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">python_requires</span><span class="o">=</span><span class="s">'&gt;=3.6'</span><span class="p">,</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span>
+        <span class="s">'somepackage&gt;=1.1.0'</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>You can take this and replace the values with the ones corresponding to you resp. your project. <strong>Note</strong>: specifying your project dependencies in requirements.txt is not enough to make them get automatically installed along with your package, you have to repeat them in <code class="language-plaintext highlighter-rouge">install_requires</code>.</p>
+
+<ul>
+  <li><strong>tests/</strong>: contains the (unit) tests for your package. It can’t harm to have some tests, to say the least.</li>
+</ul>
+
+<h2 id="generate-package">Generate Package</h2>
+
+<p>This step is fairly easy. Go to the root folder of mypackage in the terminal and execute:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>python setup.py sdist bdist_wheel
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Now you should see one new file: <code class="language-plaintext highlighter-rouge">mypackage.egg-info</code> and two new folders: <code class="language-plaintext highlighter-rouge">build</code> and <code class="language-plaintext highlighter-rouge">dist</code> in your project’s root directory.
+Test locally</p>
+
+<p>For this, still, on your terminal at <em>mypackage</em>’s root directory, run:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>pip <span class="nb">install </span>mypackage/
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Now you can create a script importing your package and test if it works as expected.</p>
+
+<h2 id="publish-your-package">Publish your package</h2>
+
+<p>Ready to go, happy with the result? Then publish your new package and make it available to the world!</p>
+
+<p>First, you have to create an account on <a href="https://pypi.org/">PiPy</a>. Then, at the same place in your terminal, run:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>twine upload dist/<span class="k">*</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>A prompt will appear asking you for your user name and password on PiPy. Then your package gets uploaded and… that’s it! Now anyone in the world can use your package!</p>
+
+<p>Well, that’s hopefully not the end of the story. Your package may live, evolve and you might want to:</p>
+
+<h2 id="update-your-package">Update your package</h2>
+
+<p>For this, first, bump <em>mypackage</em>’s version in <em>setup.py</em>. Then re-run <code class="language-plaintext highlighter-rouge">python setup.py sdist bdist_wheel</code> and <code class="language-plaintext highlighter-rouge">twine upload dist/*</code>. Your new version of mypackage is now also available to the world!</p>
+
+<p>That was it. As an example you can look at <a href="https://github.com/mancap314/matrad">matrad</a>, a library I recently created for interfacing the <a href="https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md">Binance API</a> in Python (could be the subject of another story…).</p>
+
+<p>Hope this helps and thanks for reading!</p>
+
+      <hr>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div id="share-bar">
+  <h4>Share this:</h4>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/create-a-python-library.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Create a Python library&url=http://localhost:4000/create-a-python-library.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=http://localhost:4000/create-a-python-library.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/create-a-python-library.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/create-a-python-library.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=http://localhost:4000/create-a-python-library.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/create-a-python-library.html&title=Create a Python library&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Create a Python library&amp;body=Check out this site http://localhost:4000/create-a-python-library.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+  </div>
+</div>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://localhost:4000/create-a-python-library.html';
+      this.page.identifier = 'http://localhost:4000/create-a-python-library.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+</html>
+
+    </div>
+  </body>
+</html>
