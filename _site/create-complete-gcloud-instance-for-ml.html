@@ -222,7 +222,7 @@ to enable access to the port <code class="language-plaintext highlighter-rouge">
     <span class="nt">--allow</span> tcp:8080 <span class="se">\</span>
     <span class="nt">--source-tags</span><span class="o">=</span>my-instance <span class="se">\</span>
     <span class="nt">--source-ranges</span><span class="o">=</span>0.0.0.0/0 <span class="se">\</span>
-    <span class="nt">--description</span><span class="o">=</span><span class="s2">"Firewall rule for Jupyter on My Instance"</span>
+    <span class="nt">--description</span><span class="o">=</span><span class="s2">"Firewall rule for My Instance"</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>(see <a href="https://cloud.google.com/vpc/docs/using-firewalls">doc</a>)
 You should now see your new firewall rule <code class="language-plaintext highlighter-rouge">my-fw-rule-name</code> when entering:</p>
@@ -344,10 +344,14 @@ in the remote install terminal and execute:</p>
 3
 4
 5
+6
+7
 </pre></td><td class="rouge-code"><pre><span class="nb">sudo </span>apt-get update
-<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> python3-pip git zlib1g-dev <span class="se">\ </span>
-    libffi-dev libblas-dev liblapack-dev libjpeg-dev gfortran
-<span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'export PATH=$PATH:~/.local/bin'</span> <span class="o">&gt;&gt;</span> ~/.bash_profile
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> python3-pip git <span class="se">\</span>
+    zlib1g-dev libffi-dev libblas-dev <span class="se">\</span>
+    liblapack-dev libjpeg-dev gfortran
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'export PATH=$PATH:~/.local/bin'</span> <span class="se">\ </span>
+    <span class="o">&gt;&gt;</span> ~/.bash_profile
 <span class="nb">source</span> ~/.bash_profile
 </pre></td></tr></tbody></table></code></pre></div></div>
 
@@ -371,7 +375,9 @@ added above.</p>
 
 <p>On your local machine terminal:</p>
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>ssh <span class="nt">-N</span> <span class="nt">-f</span> <span class="nt">-L</span> 8080:localhost:8080 my-username@my-instance-ipaddress
+2
+</pre></td><td class="rouge-code"><pre>ssh <span class="nt">-N</span> <span class="nt">-f</span> <span class="nt">-L</span> 8080:localhost:8080 <span class="se">\</span>
+    my-username@my-instance-ipaddress
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>where <code class="language-plaintext highlighter-rouge">my-username</code> is your username in the remote instance terminal and
 <code class="language-plaintext highlighter-rouge">my-instance-ipaddress</code> it the static IP address for your instance created

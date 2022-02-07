@@ -146,7 +146,7 @@ gcloud compute firewall-rules create my-fw-rule-name \
     --allow tcp:8080 \
     --source-tags=my-instance \
     --source-ranges=0.0.0.0/0 \
-    --description="Firewall rule for Jupyter on My Instance"
+    --description="Firewall rule for My Instance"
 ```
 (see [doc](https://cloud.google.com/vpc/docs/using-firewalls))
 You should now see your new firewall rule `my-fw-rule-name` when entering:
@@ -256,9 +256,11 @@ install a few additional packages so that the main Python ML libraries can run. 
 in the remote install terminal and execute:
 ```sh
 sudo apt-get update
-sudo apt-get install -y python3-pip git zlib1g-dev \ 
-    libffi-dev libblas-dev liblapack-dev libjpeg-dev gfortran
-echo -e 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
+sudo apt-get install -y python3-pip git \
+    zlib1g-dev libffi-dev libblas-dev \
+    liblapack-dev libjpeg-dev gfortran
+echo -e 'export PATH=$PATH:~/.local/bin' \ 
+    >> ~/.bash_profile
 source ~/.bash_profile
 ```
 
@@ -282,7 +284,8 @@ It will provide you a URL to open. Don't open it yet
 
 On your local machine terminal:
 ```sh
-ssh -N -f -L 8080:localhost:8080 my-username@my-instance-ipaddress
+ssh -N -f -L 8080:localhost:8080 \
+    my-username@my-instance-ipaddress
 ```
 where `my-username` is your username in the remote instance terminal and
 `my-instance-ipaddress` it the static IP address for your instance created
