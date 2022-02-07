@@ -10,21 +10,23 @@
     <script type="text/javascript" src="assets/js/switch.js"></script>
     <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    <!-- Begin Jekyll SEO tag v2.5.0 -->
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>Some Bash Tricks | Data science and other stuffs</title>
-<meta name="generator" content="Jekyll v3.7.4" />
+<meta name="generator" content="Jekyll v3.9.0" />
 <meta property="og:title" content="Some Bash Tricks" />
 <meta name="author" content="Manuel Capel" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="To open this blog, a few bash tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with jekyll, and I created some scripts to create posts, and create/remove categories (tags) associated to posts." />
 <meta property="og:description" content="To open this blog, a few bash tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with jekyll, and I created some scripts to create posts, and create/remove categories (tags) associated to posts." />
-<link rel="canonical" href="https://mancap314.github.io/some-bash-tricks.html" />
-<meta property="og:url" content="https://mancap314.github.io/some-bash-tricks.html" />
+<link rel="canonical" href="http://localhost:4000/some-bash-tricks.html" />
+<meta property="og:url" content="http://localhost:4000/some-bash-tricks.html" />
 <meta property="og:site_name" content="Data science and other stuffs" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-03-12T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Some Bash Tricks" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","headline":"Some Bash Tricks","dateModified":"2019-03-12T00:00:00+01:00","datePublished":"2019-03-12T00:00:00+01:00","url":"https://mancap314.github.io/some-bash-tricks.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/some-bash-tricks.html"},"author":{"@type":"Person","name":"Manuel Capel"},"description":"To open this blog, a few bash tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with jekyll, and I created some scripts to create posts, and create/remove categories (tags) associated to posts.","@context":"http://schema.org"}</script>
+{"datePublished":"2019-03-12T00:00:00+01:00","@type":"BlogPosting","url":"http://localhost:4000/some-bash-tricks.html","dateModified":"2019-03-12T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/some-bash-tricks.html"},"author":{"@type":"Person","name":"Manuel Capel"},"description":"To open this blog, a few bash tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with jekyll, and I created some scripts to create posts, and create/remove categories (tags) associated to posts.","headline":"Some Bash Tricks","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -78,7 +80,7 @@
       <p>To open this blog, a few <em>bash</em> tricks used to manage it, that could be useful by occasion on many other cases. This blog is runned with <a href="https://jekyllrb.com/">jekyll</a>, and I created some scripts to create posts, and create/remove categories (tags) associated to posts.</p>
 
 <h2 id="iterate-through-properties-in-files">Iterate through properties in files</h2>
-<p>Each category is associated with a file in the <code class="highlighter-rouge">_category</code> folder. In each of those files, there is a line starting with <code class="highlighter-rouge">category: </code> followed by the category (name). We want to retrieve the file name and the category name it contains:</p>
+<p>Each category is associated with a file in the <code class="language-plaintext highlighter-rouge">_category</code> folder. In each of those files, there is a line starting with <code class="language-plaintext highlighter-rouge">category: </code> followed by the category (name). We want to retrieve the file name and the category name it contains:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -93,23 +95,23 @@
 <span class="nv">category_files</span><span class="o">=()</span>
 <span class="k">for </span>filename <span class="k">in</span> ../_category/<span class="k">*</span><span class="p">;</span> <span class="k">do
   if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="k">${</span><span class="nv">filename</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nv">category_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">grep</span> <span class="nt">-m</span> 1  <span class="s1">'^category: '</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> | sed <span class="s2">"s/^category: //g"</span> | sed <span class="s2">"s/ /-/g"</span> <span class="k">)</span>
+    </span><span class="nv">category_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">grep</span> <span class="nt">-m</span> 1  <span class="s1">'^category: '</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s2">"s/^category: //g"</span> | <span class="nb">sed</span> <span class="s2">"s/ /-/g"</span> <span class="si">)</span>
     categories+<span class="o">=(</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> <span class="o">)</span>
     category_files+<span class="o">=(</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">)</span>
   <span class="k">fi
 done</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
-<p>On l.1-2 we initialize the array that will contain the category names and the files they are in. On l.3 we iterate through the files in the <code class="highlighter-rouge">_category</code> folder (and check for each one if it’s actually a file in the following line). The real trick is on l.5. There are 3 commands piped with another inside <code class="highlighter-rouge">$( )</code>:</p>
+<p>On l.1-2 we initialize the array that will contain the category names and the files they are in. On l.3 we iterate through the files in the <code class="language-plaintext highlighter-rouge">_category</code> folder (and check for each one if it’s actually a file in the following line). The real trick is on l.5. There are 3 commands piped with another inside <code class="language-plaintext highlighter-rouge">$( )</code>:</p>
 <ol>
-  <li><code class="highlighter-rouge">grep -m 1  '^category: ' ${filename}</code>: Take the first line in the file starting with <code class="highlighter-rouge">category</code></li>
-  <li><code class="highlighter-rouge">sed "s/^category: //g"</code>: Remove <code class="highlighter-rouge">category: </code> at the beginning of the line, resp. replace it with empty string.</li>
-  <li><code class="highlighter-rouge">sed "s/ /-/g</code>: Replace spaces by <code class="highlighter-rouge">-</code> (otherwise it confuses the array)
+  <li><code class="language-plaintext highlighter-rouge">grep -m 1  '^category: ' ${filename}</code>: Take the first line in the file starting with <code class="language-plaintext highlighter-rouge">category</code></li>
+  <li><code class="language-plaintext highlighter-rouge">sed "s/^category: //g"</code>: Remove <code class="language-plaintext highlighter-rouge">category: </code> at the beginning of the line, resp. replace it with empty string.</li>
+  <li><code class="language-plaintext highlighter-rouge">sed "s/ /-/g</code>: Replace spaces by <code class="language-plaintext highlighter-rouge">-</code> (otherwise it confuses the array)
 The following lines just append the extracted data to the lists and close the loop.</li>
 </ol>
 
 <h2 id="check-a-user-entry">Check a user entry</h2>
 <p>When a user wants to remove a category, the categories are listed with an associated number:</p>
-<div class="highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
 </pre></td><td class="rouge-code"><pre>-first category [0]
@@ -148,10 +150,10 @@ The following lines just append the extracted data to the lists and close the lo
   <span class="k">fi
 done</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
-<p>The first condition in <code class="highlighter-rouge">if</code> checks by regular expression that <code class="highlighter-rouge">$entry</code> has the form of an integer (must be done, since also letters can be interpreted as numbers). The second checks the second contraint, same for the third.</p>
+<p>The first condition in <code class="language-plaintext highlighter-rouge">if</code> checks by regular expression that <code class="language-plaintext highlighter-rouge">$entry</code> has the form of an integer (must be done, since also letters can be interpreted as numbers). The second checks the second contraint, same for the third.</p>
 
 <h2 id="checking-and-transforming-strings">Checking and transforming strings</h2>
-<p>When a user enters a name for a category, this name is processed to generate <code class="highlighter-rouge">category_name</code>, <code class="highlighter-rouge">title_name</code> and <code class="highlighter-rouge">file_name</code></p>
+<p>When a user enters a name for a category, this name is processed to generate <code class="language-plaintext highlighter-rouge">category_name</code>, <code class="language-plaintext highlighter-rouge">title_name</code> and <code class="language-plaintext highlighter-rouge">file_name</code></p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
@@ -160,17 +162,17 @@ done</span>
 5
 6
 </pre></td><td class="rouge-code"><pre><span class="nb">read </span>name
-<span class="nv">category_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">name</span><span class="k">}</span> | sed <span class="s1">'s/[^a-zA-Z0-9 ]\+/-/g'</span> | sed <span class="s1">'s/[ ]\+/ /g'</span> | sed <span class="s1">'s/[ ]\+-//g'</span> <span class="k">)</span>
-<span class="nv">title_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> | sed <span class="s1">'s/[ ]\+/-/g'</span> | tr <span class="o">[</span>:upper:] <span class="o">[</span>:lower:]  <span class="k">)</span>
-<span class="nv">file_name</span><span class="o">=</span><span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> ascii//TRANSLIT//IGNORE <span class="k">)</span>
-<span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="k">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | tr <span class="nt">-d</span> <span class="s1">'-'</span> <span class="k">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+<span class="nv">category_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">name</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s1">'s/[^a-zA-Z0-9 ]\+/-/g'</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/ /g'</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+-//g'</span> <span class="si">)</span>
+<span class="nv">title_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/-/g'</span> | <span class="nb">tr</span> <span class="o">[</span>:upper:] <span class="o">[</span>:lower:]  <span class="si">)</span>
+<span class="nv">file_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> ascii//TRANSLIT//IGNORE <span class="si">)</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s1">'-'</span> <span class="si">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
   </span><span class="nb">echo </span>category name must contain at least one alphanumerical character, please enter another name:
 </pre></td></tr></tbody></table></code></pre></div></div>
-<p>On l.2 we have <code class="highlighter-rouge">sed 's/[^a-zA-Z0-9 ]\+/-/g'</code> replacing all non-alphanumerical characters by <code class="highlighter-rouge">-</code>, followed by <code class="highlighter-rouge">sed 's/[ ]\+/ /g'</code> replacing all multiple spaces by single spaces, itself followed by <code class="highlighter-rouge">sed 's/[ ]\+-//g'</code> removing <code class="highlighter-rouge">-</code> (and the spaces before) as it can occur at the end of the string. For example, <code class="highlighter-rouge">Ca&amp;tegory   name</code> would be transformed in <code class="highlighter-rouge">Category name</code>.</p>
+<p>On l.2 we have <code class="language-plaintext highlighter-rouge">sed 's/[^a-zA-Z0-9 ]\+/-/g'</code> replacing all non-alphanumerical characters by <code class="language-plaintext highlighter-rouge">-</code>, followed by <code class="language-plaintext highlighter-rouge">sed 's/[ ]\+/ /g'</code> replacing all multiple spaces by single spaces, itself followed by <code class="language-plaintext highlighter-rouge">sed 's/[ ]\+-//g'</code> removing <code class="language-plaintext highlighter-rouge">-</code> (and the spaces before) as it can occur at the end of the string. For example, <code class="language-plaintext highlighter-rouge">Ca&amp;tegory   name</code> would be transformed in <code class="language-plaintext highlighter-rouge">Category name</code>.</p>
 
-<p>On l.3 the spaces are replaced by <code class="highlighter-rouge">-</code> and the letter in upper case by lower cases. <code class="highlighter-rouge">Category name</code> gets <code class="highlighter-rouge">category-name</code>. And on l.4, the result of the previous transformation is formatted to be compatible with a file name (format conversion).</p>
+<p>On l.3 the spaces are replaced by <code class="language-plaintext highlighter-rouge">-</code> and the letter in upper case by lower cases. <code class="language-plaintext highlighter-rouge">Category name</code> gets <code class="language-plaintext highlighter-rouge">category-name</code>. And on l.4, the result of the previous transformation is formatted to be compatible with a file name (format conversion).</p>
 
-<p>If the entered category name was empty or contained just non-alphanumerical characters, then <code class="highlighter-rouge">$title_name</code> is empty or contains just <code class="highlighter-rouge">-</code> characters, and the user has to enter another name.</p>
+<p>If the entered category name was empty or contained just non-alphanumerical characters, then <code class="language-plaintext highlighter-rouge">$title_name</code> is empty or contains just <code class="language-plaintext highlighter-rouge">-</code> characters, and the user has to enter another name.</p>
 
 <h2 id="check-if-a-date-is-in-the-valid-format">Check if a date is in the valid format</h2>
 <p>When a user creates an article, the default date is today. However s/he can enter another date if wished, but this date has to be in the format ‘YYYY-MM-DD’. The trick here is to try to transform the entry to a date in this format, and if it fails, it means the entry was not in the right format:</p>
@@ -191,17 +193,17 @@ done</span>
 14
 15
 16
-</pre></td><td class="rouge-code"><pre><span class="nv">default_date</span><span class="o">=</span><span class="k">$(</span>date +<span class="s2">"%Y-%m-%d"</span><span class="k">)</span>
+</pre></td><td class="rouge-code"><pre><span class="nv">default_date</span><span class="o">=</span><span class="si">$(</span><span class="nb">date</span> +<span class="s2">"%Y-%m-%d"</span><span class="si">)</span>
 <span class="nv">article_date</span><span class="o">=</span><span class="nv">$default_date</span>
 <span class="k">while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
-  </span><span class="nb">echo </span>Enter date <span class="se">\(</span>default: <span class="k">${</span><span class="nv">default_date</span><span class="k">}</span><span class="se">\)</span>:
+  </span><span class="nb">echo </span>Enter <span class="nb">date</span> <span class="se">\(</span>default: <span class="k">${</span><span class="nv">default_date</span><span class="k">}</span><span class="se">\)</span>:
   <span class="nb">read </span>line
   <span class="k">if</span> <span class="o">[</span> <span class="o">!</span> <span class="nt">-z</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    if </span>date <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> +<span class="s2">"%Y-%m-%d"</span> <span class="o">&gt;</span> /dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then
-      </span><span class="nv">article_date</span><span class="o">=</span><span class="k">$(</span> date <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> +<span class="s2">"%Y-%m-%d"</span> <span class="k">)</span>
+    if </span><span class="nb">date</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> +<span class="s2">"%Y-%m-%d"</span> <span class="o">&gt;</span> /dev/null 2&gt;&amp;1<span class="p">;</span> <span class="k">then
+      </span><span class="nv">article_date</span><span class="o">=</span><span class="si">$(</span> <span class="nb">date</span> <span class="nt">-d</span> <span class="s2">"</span><span class="nv">$line</span><span class="s2">"</span> +<span class="s2">"%Y-%m-%d"</span> <span class="si">)</span>
       <span class="nb">break
     </span><span class="k">else
-      </span><span class="nb">echo </span>invalid date format
+      </span><span class="nb">echo </span>invalid <span class="nb">date </span>format
     <span class="k">fi
   else
     </span><span class="nb">break
@@ -218,14 +220,14 @@ done</span>
 <div id="share-bar">
   <h4>Share this:</h4>
   <div class="share-buttons">
-    <a href="https://www.facebook.com/sharer/sharer.php?u=https://mancap314.github.io/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
-    <a href="https://twitter.com/intent/tweet?text=Some Bash Tricks&url=https://mancap314.github.io/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
-    <a href="https://plus.google.com/share?url=https://mancap314.github.io/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
-    <a href="http://pinterest.com/pin/create/button/?url=https://mancap314.github.io/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
-    <a href="http://www.tumblr.com/share/link?url=https://mancap314.github.io/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
-    <a href="http://www.reddit.com/submit?url=https://mancap314.github.io/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
-    <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://mancap314.github.io/some-bash-tricks.html&title=Some Bash Tricks&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
-    <a href="mailto:?subject=Some Bash Tricks&amp;body=Check out this site https://mancap314.github.io/some-bash-tricks.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Some Bash Tricks&url=http://localhost:4000/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=http://localhost:4000/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=http://localhost:4000/some-bash-tricks.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/some-bash-tricks.html&title=Some Bash Tricks&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Some Bash Tricks&amp;body=Check out this site http://localhost:4000/some-bash-tricks.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
   </div>
 </div>
 
@@ -234,8 +236,8 @@ done</span>
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
-      this.page.url = 'https://mancap314.github.io/some-bash-tricks.html';
-      this.page.identifier = 'https://mancap314.github.io/some-bash-tricks.html';
+      this.page.url = 'http://localhost:4000/some-bash-tricks.html';
+      this.page.identifier = 'http://localhost:4000/some-bash-tricks.html';
     };
     (function() {
       var d = document, s = d.createElement('script');

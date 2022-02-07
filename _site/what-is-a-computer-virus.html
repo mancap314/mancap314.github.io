@@ -10,21 +10,23 @@
     <script type="text/javascript" src="assets/js/switch.js"></script>
     <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.5/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    <!-- Begin Jekyll SEO tag v2.5.0 -->
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
 <title>What is a computer virus ? | Data science and other stuffs</title>
-<meta name="generator" content="Jekyll v3.7.4" />
+<meta name="generator" content="Jekyll v3.9.0" />
 <meta property="og:title" content="What is a computer virus ?" />
 <meta name="author" content="Manuel Capel" />
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:" />
 <meta property="og:description" content="There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:" />
-<link rel="canonical" href="https://mancap314.github.io/what-is-a-computer-virus.html" />
-<meta property="og:url" content="https://mancap314.github.io/what-is-a-computer-virus.html" />
+<link rel="canonical" href="http://localhost:4000/what-is-a-computer-virus.html" />
+<meta property="og:url" content="http://localhost:4000/what-is-a-computer-virus.html" />
 <meta property="og:site_name" content="Data science and other stuffs" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2019-03-15T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="What is a computer virus ?" />
 <script type="application/ld+json">
-{"@type":"BlogPosting","headline":"What is a computer virus ?","dateModified":"2019-03-15T00:00:00+01:00","datePublished":"2019-03-15T00:00:00+01:00","url":"https://mancap314.github.io/what-is-a-computer-virus.html","mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/what-is-a-computer-virus.html"},"author":{"@type":"Person","name":"Manuel Capel"},"description":"There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:","@context":"http://schema.org"}</script>
+{"datePublished":"2019-03-15T00:00:00+01:00","@type":"BlogPosting","url":"http://localhost:4000/what-is-a-computer-virus.html","dateModified":"2019-03-15T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/what-is-a-computer-virus.html"},"author":{"@type":"Person","name":"Manuel Capel"},"description":"There seems to be a bit confusion about what is a computer virus, so here an article clarifying it hopefully. A computer virus is not necessarily a malware, and there are many other types of malwares than viruses. This is better summarized with a small schema:","headline":"What is a computer virus ?","@context":"https://schema.org"}</script>
 <!-- End Jekyll SEO tag -->
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -115,51 +117,50 @@
 
 <p>The formalization we adopt here for a Turing Machine is the following:</p>
 <ul>
-  <li><script type="math/tex">S(t)</script>: state of the head at time (indice) <script type="math/tex">t</script></li>
-  <li><script type="math/tex">C(t, i)</script>: content of the cell <script type="math/tex">i</script> (on the band) at time <script type="math/tex">t</script></li>
-  <li><script type="math/tex">P(t)</script>: position of the head (indice of the cell where it’s positioned) at time <script type="math/tex">t</script></li>
+  <li>\(S(t)\): state of the head at time (indice) \(t\)</li>
+  <li>\(C(t, i)\): content of the cell \(i\) (on the band) at time \(t\)</li>
+  <li>\(P(t)\): position of the head (indice of the cell where it’s positioned) at time \(t\)</li>
 </ul>
 
 <h3 id="formalization-of-a-virus">Formalization of a virus</h3>
-<p>Now the question is, what is a virus on a Turing machine? It’s simply a sequence on the band of a Turing Machine <script type="math/tex">M</script> that gets reproduced to itself or a variant (evolution) of itself. Note that the same sequence on the band of another Turing Machine <script type="math/tex">M'</script> may not reproduce: a virus is a virus only relatively to a given machine (environment).</p>
+<p>Now the question is, what is a virus on a Turing machine? It’s simply a sequence on the band of a Turing Machine \(M\) that gets reproduced to itself or a variant (evolution) of itself. Note that the same sequence on the band of another Turing Machine \(M'\) may not reproduce: a virus is a virus only relatively to a given machine (environment).</p>
 
 <p>Here a schematic illustration:
 <img src="assets/virus-turing-machine.png" alt="virus on a turing machine" /></p>
 
-<p>NB: The <em>virus reproduction</em> can be an exact copy of the virus itself, or a variant of it. On the machine <script type="math/tex">M</script>, a virus <script type="math/tex">v</script> can produce first a variant <script type="math/tex">v_1</script> of itself, <script type="math/tex">v_1</script> producing then a variant <script type="math/tex">v_2</script> of itself etc. The set <script type="math/tex">\{v, v_1, v_2, \dots\}</script> is called the <em>viral set</em> of <script type="math/tex">v</script>. A <em>viral set</em> can be be of size 1 (the virus produces each time an exact copy of itself), of size 2, 3 etc. until infinity, means there are in this case infinitely many variations of the virus. The viral set of a virus <script type="math/tex">v</script> is noted <script type="math/tex">V</script>.</p>
+<p>NB: The <em>virus reproduction</em> can be an exact copy of the virus itself, or a variant of it. On the machine \(M\), a virus \(v\) can produce first a variant \(v_1\) of itself, \(v_1\) producing then a variant \(v_2\) of itself etc. The set \(\{v, v_1, v_2, \dots\}\) is called the <em>viral set</em> of \(v\). A <em>viral set</em> can be be of size 1 (the virus produces each time an exact copy of itself), of size 2, 3 etc. until infinity, means there are in this case infinitely many variations of the virus. The viral set of a virus \(v\) is noted \(V\).</p>
 
 <p>Now the formal definition of a virus… Brace yourself and don’t worry, the explanation follows:</p>
 
-<p><script type="math/tex">V</script> is a viral set (for a Turing Machine <script type="math/tex">M</script>) if:
-<script type="math/tex">% <![CDATA[
-\forall v \in V: \\ 
+<p>\(V\) is a viral set (for a Turing Machine \(M\)) if:
+\(\forall v \in V: \\ 
 [\exists t, j \in \mathbb{N}\space such\space that: \\
 P(t) = j\space (1.1) \\
 and\space S(t) = S(0)\space (1.2) \\
 and\space \big(C(t, j), \dots, C(t, j + \mid v\mid -1)\big) = v\space (1.3)] \\
 \Rightarrow \\
-[\exists v'\in V, t', j' \in \mathbb{N} \space with\space t'>t \space such\space that: \\
+[\exists v'\in V, t', j' \in \mathbb{N} \space with\space t'&gt;t \space such\space that: \\
 j' + \mid v'\mid \leq j\space or\space j + \mid v\mid \leq j'\space (2.1) \\
 and\space \big(C(t', j'),\dots,C(t', j'+\mid v'\mid-1)\big)=v'\space (2.2) \\
-and\space \exists t'' \space such\space that:\space t<t''<t'\space and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)] %]]></script></p>
+and\space \exists t'' \space such\space that:\space t&lt;t''&lt;t'\space and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)]\)</p>
 
 <p><strong>Explanation</strong></p>
 
 <p>If:</p>
 <ul>
-  <li>1.1: at time <script type="math/tex">t</script>, the head of <script type="math/tex">M</script> is at the cell <script type="math/tex">j</script></li>
+  <li>1.1: at time \(t\), the head of \(M\) is at the cell \(j\)</li>
   <li>1.2: and the head is at its initial state</li>
-  <li>1.3: and the cell <script type="math/tex">j</script> and the following cells contain <script type="math/tex">v</script> [ <script type="math/tex">\mid v\mid</script> is the length (number of fields) occupied by <script type="math/tex">v</script> on the band]</li>
+  <li>1.3: and the cell \(j\) and the following cells contain \(v\) [ \(\mid v\mid\) is the length (number of fields) occupied by \(v\) on the band]</li>
 </ul>
 
-<p>Then later at time <script type="math/tex">t'</script> the head is at the cell <script type="math/tex">j'</script> such that:</p>
+<p>Then later at time \(t'\) the head is at the cell \(j'\) such that:</p>
 <ul>
-  <li>2.2: <script type="math/tex">j'</script> and the following cells contain <script type="math/tex">v'</script></li>
-  <li>2.1: the cells containing <script type="math/tex">v</script> and <script type="math/tex">v'</script> are separated, they don’t overlap</li>
-  <li>2.3: the head was positioned at a cell belonging to <script type="math/tex">v'</script> at a time <script type="math/tex">t''</script> after <script type="math/tex">t</script> but before <script type="math/tex">t'</script> (<script type="math/tex">t'</script> is the time where the head finishes to write <script type="math/tex">v'</script> on the band, so it just means that the head was previously writing <script type="math/tex">v'</script>)</li>
+  <li>2.2: \(j'\) and the following cells contain \(v'\)</li>
+  <li>2.1: the cells containing \(v\) and \(v'\) are separated, they don’t overlap</li>
+  <li>2.3: the head was positioned at a cell belonging to \(v'\) at a time \(t''\) after \(t\) but before \(t'\) (\(t'\) is the time where the head finishes to write \(v'\) on the band, so it just means that the head was previously writing \(v'\))</li>
 </ul>
 
-<p>And because <script type="math/tex">v</script> and <script type="math/tex">v'</script> belong the the same viral set <script type="math/tex">V</script>, <script type="math/tex">v'</script> is an reproduction/evolution of <script type="math/tex">v</script>.</p>
+<p>And because \(v\) and \(v'\) belong the the same viral set \(V\), \(v'\) is an reproduction/evolution of \(v\).</p>
 
 <h2 id="remarks">Remarks</h2>
 <ul>
@@ -177,14 +178,14 @@ and\space \exists t'' \space such\space that:\space t<t''<t'\space and\space P(t
 <div id="share-bar">
   <h4>Share this:</h4>
   <div class="share-buttons">
-    <a href="https://www.facebook.com/sharer/sharer.php?u=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
-    <a href="https://twitter.com/intent/tweet?text=What is a computer virus ?&url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
-    <a href="https://plus.google.com/share?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
-    <a href="http://pinterest.com/pin/create/button/?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
-    <a href="http://www.tumblr.com/share/link?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
-    <a href="http://www.reddit.com/submit?url=https://mancap314.github.io/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
-    <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://mancap314.github.io/what-is-a-computer-virus.html&title=What is a computer virus ?&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
-    <a href="mailto:?subject=What is a computer virus ?&amp;body=Check out this site https://mancap314.github.io/what-is-a-computer-virus.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=What is a computer virus ?&url=http://localhost:4000/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=http://localhost:4000/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=http://localhost:4000/what-is-a-computer-virus.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/what-is-a-computer-virus.html&title=What is a computer virus ?&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=What is a computer virus ?&amp;body=Check out this site http://localhost:4000/what-is-a-computer-virus.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
   </div>
 </div>
 
@@ -193,8 +194,8 @@ and\space \exists t'' \space such\space that:\space t<t''<t'\space and\space P(t
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
-      this.page.url = 'https://mancap314.github.io/what-is-a-computer-virus.html';
-      this.page.identifier = 'https://mancap314.github.io/what-is-a-computer-virus.html';
+      this.page.url = 'http://localhost:4000/what-is-a-computer-virus.html';
+      this.page.identifier = 'http://localhost:4000/what-is-a-computer-virus.html';
     };
     (function() {
       var d = document, s = d.createElement('script');

@@ -2,12 +2,10 @@
 layout: post
 comments: true
 author: Manuel Capel
-title: Transforming Keras Model into Tensorflow Estimator
+title: Create a complete instance on Google Cloud for ML
 date: 2022-02-07
 categories: [machine learning,cloud]
 ---
-# Create a new complete instance for ML on Google Cloud
-
 If the data volume to process exceeds the capacities of your local computer, it
 may be time to switch to a Google Cloud instance with more capacities.
 
@@ -15,9 +13,10 @@ Here you will see how to set up a complete compute instance on Google cloud,
 with disk and static IP address attached and finally execute locally a Jupyter
 notebook running on this instance.
 
+## Create a new complete instance for ML on Google Cloud
 For doing this, follow these steps:
 
-## Prerequisites
+### Prerequisites
 The following steps are prerequisites for working with Google Cloud. Execute
 them only if you haven't done them already.
 
@@ -54,7 +53,7 @@ Congratulations, you are all set now :) Let's now create the instance and all
 what's required around it:
 
 
-## Create static IP address
+### Create static IP address
 This will make your work easier by always accessing your instance through the
 same IP address.
 ```sh
@@ -65,7 +64,7 @@ Notes:
 - The value for *--region* is here `europe-west1`, without the `-b` at the end.
 
 
-## Give access to Google Cloud Storage
+### Give access to Google Cloud Storage
 The raw data you want to work on is probably stored on Google Cloud Storage (if
 it's not the case skip this step or give access to the resource where the raw
 data is stored e.g. BigQuery instead).
@@ -74,7 +73,7 @@ To give your instance access to Cloud Storage, you have to give it a
 *service-account* containing the *role*s required for accessing the resources
 your instance will need.
 
-### Create *service account*
+#### Create *service account*
 For creating a *service account* called `my-service-account` (that will be its
 ID), enter:
 ```sh
@@ -83,7 +82,7 @@ gcloud iam service-accounts create my-service-account \
     --display-name="My Service Account"
 ```
 
-### Add role to service account
+#### Add role to service account
 Attach a role to our new *service account* allowing it full permissions to Cloud 
 Storage (replace `012345678910` below by your project ID you can see through 
 `gcloud projects list`):
@@ -105,12 +104,14 @@ this command by the *role* corresponding to the access you want to provide to
 this service.
 
 
-## Create instance
+### Create instance
 Create a new instance by executing following in the terminal:
 ```sh
-gcloud compute instances create my-instance --machine-type=e2-standard-8
---zone=europe-west1-b --address=my-ipaddress --service-account
-my-service-account-email
+gcloud compute instances create my-instance \
+    --machine-type=e2-standard-8 \
+    --zone=europe-west1-b \
+    --address=my-ipaddress \
+    --service-account my-service-account-email
 ```
 This will create an instance with *machine-type* `e2-standard-8` (means: 8
 vCPUs, 32GB memory). This should be enough even for demanding ML projects. See
@@ -134,12 +135,16 @@ See
 for more precisions.
 
 
-## Add firewall rule
+### Add firewall rule
 Jupyter notebooks for example open by default on port `8080`. In order to access
 to a Jupyter session on your remote instance from your local computer, you have
 to enable access to the port `8080` of your remote instance:
 ```sh
-gcloud compute firewall-rules create my-fw-rule-name --allow tcp:8080 --source-tags=my-instance --source-ranges=0.0.0.0/0 --description="Firewall rule for Jupyter on My Instance"
+gcloud compute firewall-rules create my-fw-rule-name \
+    --allow tcp:8080 \
+    --source-tags=my-instance \
+    --source-ranges=0.0.0.0/0 \
+    --description="Firewall rule for Jupyter on My Instance"
 ```
 (see [doc](https://cloud.google.com/vpc/docs/using-firewalls))
 You should now see your new firewall rule `my-fw-rule-name` when entering:
@@ -147,27 +152,31 @@ You should now see your new firewall rule `my-fw-rule-name` when entering:
 gcloud compute firewall-rules list
 ```
 
-## Install disk
+### Install disk
 If your project deals with a consequent volume of data, you will probably need
 more disk space than the 10GB gigabytes provided by default on the instance you
 just created. This is the most tedious part, please follow through:
 
-### Create and attach disk
+#### Create and attach disk
 So for creating e.g. a disk of 300GB named `my-disk` in the same 
 zone `europe-west1-b`, execute:
 ```sh
-gcloud compute disks create my-disk --size 300GB --zone europe-west1-b
+gcloud compute disks create my-disk \
+    --size 300GB \
+    --zone europe-west1-b
 ```
 
 For attaching this disk to `my-instance` created above:
 ```sh
-gcloud compute instances attach-disk my-instance --disk my-disk --zone europe-west1-b
+gcloud compute instances attach-disk my-instance \
+    --disk my-disk \
+    --zone europe-west1-b
 ```
 (see
 [doc](https://cloud.google.com/sdk/gcloud/reference/compute/insoances/attach-disk))
 
 
-### Format and mount disk 
+#### Format and mount disk 
 Now the new disk is attached to your instance, but this disk still has to be
 formatted and mounted in order for your instance to be able to use it.
 
@@ -211,7 +220,7 @@ Now you should see the disk ready to use when entering:
 df -h
 ```
 
-### Enable disk on start
+#### Enable disk on start
 When restarting your instance, you probably want this disk to be available.
 For this:
 * First, back-up the fstab file:
@@ -221,7 +230,9 @@ sudo cp /etc/fstab /etc/fstab.backup
 
 * Second, add the UUID of the new disk to `fstab`:
 ```sh
-echo UUID=`sudo blkid -s UUID -o value /dev/sdb` /data-mount ext4 discard,defaults,noatime,nofail 0 2 | sudo tee -a /etc/fstab
+echo UUID=`sudo blkid -s UUID -o value /dev/sdb` \
+    /data-mount ext4 discard,defaults,noatime,nofail 0 2 \
+    | sudo tee -a /etc/fstab
 ```
 
 * Third, check the UUID of the new disk:
@@ -235,13 +246,14 @@ sudo cat /etc/fstab
 ```
 
 
-## Extra steps for Python
+### Extra steps for Python
 Since the compute instance is provided with a bare Linux Debian OS, you have to
 install a few additional packages so that the main Python ML libraries can run. For this, keep 
 in the remote install terminal and execute:
 ```sh
 sudo apt-get update
-sudo apt-get install -y python3-pip git zlib1g-dev libffi-dev libblas-dev liblapack-dev libjpeg-dev gfortran
+sudo apt-get install -y python3-pip git zlib1g-dev \ 
+    libffi-dev libblas-dev liblapack-dev libjpeg-dev gfortran
 echo -e 'export PATH=$PATH:~/.local/bin' >> ~/.bash_profile
 source ~/.bash_profile
 ```
@@ -251,7 +263,7 @@ Then install all the Python libraries you will need, for example:
 pip3 install jupyter sklearn matplotlib
 ```
 
-## Tunneling Jupyter notebook to your local computer
+### Tunneling Jupyter notebook to your local computer
 On your remote instance terminal:
 ```sh
 jupyter-notebook --no-browser --port 8080
@@ -276,7 +288,7 @@ list` in your terminal).
 Now you can open locally the URL provided above when you executed `jupyter-notebook` on
 the remote instance
 
-## Starting / Stopping your instance
+### Starting / Stopping your instance
 When you are finished, stop your instance, otherwise you keep on paying for it
 (you pay for the time it's running):
 ```sh
