@@ -34,7 +34,7 @@ Several variables are initialized:
 In the condition of the `while` loop, we pipe a mathematical expression into `bc | l`. That is (IMHO) a good way to evaluate arithmetical expression in *bash*.
 
 ## Estimating the progress speed
-Physically: $$speed = distance / time$$. In the same vein here, the $$distance$$ is the difference between the number of images created so far - the number of images that were created at the end of the previous loop. $$time$$ is the `runtime` of the previous loop. Thus we get:
+Physically: *speed = distance / time*. In the same vein here, the $$distance$$ is the difference between the number of images created so far - the number of images that were created at the end of the previous loop. $$time$$ is the `runtime` of the previous loop. Thus we get:
 ```bash
 runtime=$( echo "${end_time} - ${start_time}" | bc -l )
 speed=$(printf '%.1f\n' \

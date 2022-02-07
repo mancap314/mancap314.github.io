@@ -7,3 +7,6 @@ page](https://pages.github.com/) with [Jekyll](https://jekyllrb.com/).
 1. Clone the repo
 2. [Install Jekyll](https://jekyllrb.com/docs/installation/ubuntu/)
 3. [Build the site](https://docs.github.com/en/pages/setting-up-a-github-pages-site-with-jekyll/testing-your-github-pages-site-locally-with-jekyll#building-your-site-locally)
+
+## Notes
+For better smartphone display, code line should keep < 60 characters
