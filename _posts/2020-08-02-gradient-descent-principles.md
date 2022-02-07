@@ -47,16 +47,20 @@ import matplotlib.pyplot as plt
 
 plt.rcParams['figure.figsize'] = [20, 5]
 
-N = 150
+N = 150  # `N` random numbers between 0 and 100
 a = 3.2
-w_start = 10X = 100 * np.random.random(N)  # `N` random numbers between 0 and 100
+w_start = 10X = 100 * np.random.random(N)
 
-# Generate y = a * x + eps where eps is 0-centered Gaussian distributed
+# Generate y = a * x + eps
+# eps: 0-centered Gaussian distributed
 Y = np.multiply(X, a)
 eps = np.random.normal(scale=10, size=N)
 Y = np.add(Y, eps)plt.scatter(X, Y)
 plt.plot(X, a * X, c='r', label='true line')
-plt.plot(X, w_start * X, c='orangered', linestyle='dotted', label='start line')
+plt.plot(X, w_start * X, 
+            c='orangered', 
+            linestyle='dotted', 
+            label='start line')
 plt.legend()
 plt.show()
 ```
@@ -83,32 +87,41 @@ def gradient_descent_linreg(X, Y, lr, w):
     for x, y in zip(X, Y):
         loss = (w * x - y) ** 2
         grad = 2 / N * (w * x - y ) * x  # gradient
-        w -= lr * grad  # adjust the parameter by gradient descent
+        # adjust the parameter by gradient descent:
+        w -= lr * grad
         ws.append(w)
         losses.append(loss)
     return {'w': ws, 'loss': losses}
 
-descents = {lr: gradient_descent_linreg(X, Y, lr, w=10) for lr in [.0001, .001, .01]}
+descents = {lr: gradient_descent_linreg(X, Y, lr, w=10) \
+                    for lr in [.0001, .001, .01]}
 
 
 def plot_descents_lr(descents, a, batch_size=None):
     cmap = plt.cm.get_cmap('Blues', len(descents) + 1)
     plt.subplot(1, 2, 1)
     for i, (lr, res) in enumerate(descents.items()):
-        plt.plot(range(len(res.get('w'))), res.get('w'), c=cmap(i+1), label=f'lr={lr}')
-    xmax = max([len(v.get('w')) for v in descents.values()])
+        plt.plot(range(len(res.get('w'))), res.get('w'), 
+                    c=cmap(i+1), 
+                    label=f'lr={lr}')
+    xmax = max([len(v.get('w')) \
+                    for v in descents.values()])
     plt.hlines(a, 0, xmax, colors='r', label='True Value')
     plt.legend()
     plt.xlabel('iteration')
     plt.ylabel('w')
-    title = 'Estimation of w by Iteration for Various Learning Rates'
+    title = 'Estimation of w by Iteration'\
+            'for Various Learning Rates'
     if batch_size:
         title = f'{title}\nBatch Size = {batch_size}'
     plt.title(title)
 
     plt.subplot(1, 2, 2)
     for i, (lr, res) in enumerate(descents.items()):
-        plt.plot(range(len(res.get('loss'))), res.get('loss'), c=cmap(i+1), label=f'lr={lr}')
+        plt.plot(range(len(res.get('loss'))), 
+                    res.get('loss'), 
+                    c=cmap(i+1), 
+                    label=f'lr={lr}')
     plt.legend()
     plt.xlabel('iteration')
     plt.ylabel('loss')
@@ -133,7 +146,9 @@ The idea behind mini-batches is to take a batch of datapoints at each step inste
 2. The gradient descent is smoother, since the oscillation (loss and gradient value) of the datapoints in the mini-batches are averaged. On the other hand, taking too big mini-batches would “drown” too much the strongest signals and hinder the gradient descent. Let’s implement it:
 
 ```python
-def gradient_descent_linreg_batch(X, Y, lr, w, batch_size=5, n_iterations=100):
+def gradient_descent_linreg_batch(X, Y, lr, w, 
+                batch_size=5, 
+                n_iterations=100):
     ws, losses = [], []
     for _ in range(n_iterations):
         inds = np.random.choice(100, size=batch_size)
@@ -146,7 +161,8 @@ def gradient_descent_linreg_batch(X, Y, lr, w, batch_size=5, n_iterations=100):
     return {'w': ws, 'loss': losses}
 
 
-descents = {lr: gradient_descent_linreg_batch(X, Y, lr, w=10) \
+descents = {lr: gradient_descent_linreg_batch(X, Y, lr, \ 
+                                                w=10) \
                 for lr in [.0001, .001, .01]}
 plot_descents_lr(descents, a, batch_size=5)
 ```
@@ -187,13 +203,16 @@ The sum at the end represents the *momentum* of the *learning rate* trajectory u
 To illustrate this, let’s implement a function taking into account *batch size* and *momentum*:
 
 ```python
-def gradient_descent_linreg_batch_momentum(X, Y, lr, w, batch_size=5, n_iterations=100, alpha=0):
+def gradient_descent_linreg_batch_momentum(X, Y, lr, w, 
+                batch_size=5, n_iterations=100, alpha=0):
     ws, losses, previous_grad = [], [], 0
     for _ in range(n_iterations):
         inds = np.random.choice(100, size=batch_size)
         x, y = X[inds], Y[inds]
         loss = np.mean(((w * x) - y) ** 2)
-        grad = np.mean(2 / N * (w * x - y ) * x) + alpha * previous_grad  # momentum implemented here
+        # momentum implemented here:
+        grad = np.mean(2 / N * (w * x - y ) * x) \
+                    + alpha * previous_grad
         w -= lr * grad
         ws.append(w)
         losses.append(loss)
@@ -204,7 +223,9 @@ def gradient_descent_linreg_batch_momentum(X, Y, lr, w, batch_size=5, n_iteratio
 Now we take the second example of before with `lr=0.0001` and `batch_size=5` and add to it it different values for the momentum coefficient $$α$$:
 
 ```python
-descents = {alpha_: gradient_descent_linreg_batch_momentum(X, Y, lr=0.0001, w=10, alpha=alpha_) \ 
+descents = {alpha_: 
+            gradient_descent_linreg_batch_momentum(X, Y, 
+                lr=0.0001, w=10, alpha=alpha_) \ 
     for alpha_ in [.0001, .001, .01]}
 
 
@@ -212,27 +233,32 @@ def plot_descents_momentum(descents, a, lr, batch_size=None):
     cmap = plt.cm.get_cmap('Blues', len(descents) + 1)
     plt.subplot(1, 2, 1)
     for i, (alpha, res) in enumerate(descents.items()):
-        plt.plot(range(len(res.get('w'))), res.get('w'), c=cmap(i+1), label=f'alpha={alpha}')
+        plt.plot(range(len(res.get('w'))), res.get('w'), 
+                    c=cmap(i+1), label=f'alpha={alpha}')
     xmax = max([len(v.get('w')) for v in descents.values()])
     plt.hlines(a, 0, xmax, colors='r', label='True Value')
     plt.legend()
     plt.xlabel('iteration')
     plt.ylabel('w')
-    title = f'Estimation of w by Iteration for Various Momentums\nlearning rate={lr}'
+    title = f'Estimation of w by Iteration for Various'\
+             'Momentums\nlearning rate={lr}'
     if batch_size:
         title = f'{title}, batch size = {batch_size}'
     plt.title(title)
 
     plt.subplot(1, 2, 2)
     for i, (alpha, res) in enumerate(descents.items()):
-        plt.plot(range(len(res.get('loss'))), res.get('loss'), c=cmap(i+1), label=f'alpha={alpha}')
+        plt.plot(range(len(res.get('loss'))), 
+                    res.get('loss'), 
+                    c=cmap(i+1), 
+                    label=f'alpha={alpha}')
     plt.legend()
     plt.xlabel('iteration')
     plt.ylabel('w')
     plt.title(title.replace('Estimation', 'Loss'))
     plt.show()
 
-plot_descents_momentum(descents, a, lr=0.001, batch_size=5)
+plot_descents_momentum(descents, a, lr=.001, batch_size=5)
 ```
 
 ![gradient-descent-by-momentum](assets/gradient-descent-by-momentum.png "Effect of various momentums on gradient descent with low learning rate")
