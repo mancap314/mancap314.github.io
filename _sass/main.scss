@@ -284,9 +284,15 @@ hr {
     display: block;
   }
 
- .main-content{
+ .main-content {
     max-width: 100%;
     padding-left:0;
+    font-size: 2em;
+  }
+
+  .main {
+    max-width: 100%;
+    padding-left: 1em;
     font-size: 2em;
   }
 
