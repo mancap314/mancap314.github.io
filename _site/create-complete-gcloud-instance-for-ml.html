@@ -121,7 +121,9 @@ what’s required around it:</p>
 <p>This will make your work easier by always accessing your instance through the
 same IP address.</p>
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre>gcloud compute addresses create my-ipaddress-name <span class="nt">--region</span> europe-west1
+2
+</pre></td><td class="rouge-code"><pre>gcloud compute addresses create my-ipaddress-name <span class="se">\ </span>
+    <span class="nt">--region</span> europe-west1
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>Notes:</p>
 <ul>
@@ -151,13 +153,13 @@ ID), enter:</p>
 
 <h4 id="add-role-to-service-account">Add role to service account</h4>
 <p>Attach a role to our new <em>service account</em> allowing it full permissions to Cloud 
-Storage (replace <code class="language-plaintext highlighter-rouge">012345678910</code> below by your project ID you can see through 
+Storage (replace <code class="language-plaintext highlighter-rouge">0123456789</code> below by your project ID you can see through 
 <code class="language-plaintext highlighter-rouge">gcloud projects list</code>):</p>
 <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
 2
 3
-</pre></td><td class="rouge-code"><pre>gcloud projects add-iam-policy-binding 12345678910 <span class="se">\</span>
-    <span class="nt">--member</span><span class="o">=</span><span class="s2">"serviceAccount:my-service-account@12345678910.iam.gserviceaccount.com"</span> <span class="se">\</span>
+</pre></td><td class="rouge-code"><pre>gcloud projects add-iam-policy-binding 123456789 <span class="se">\</span>
+    <span class="nt">--member</span><span class="o">=</span><span class="s2">"serviceAccount:my-service-account@123456789.iam.gserviceaccount.com"</span> <span class="se">\</span>
     <span class="nt">--role</span><span class="o">=</span><span class="s2">"roles/storage.objectAdmin"</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>Now you should see <code class="language-plaintext highlighter-rouge">my-service-account</code> when entering:</p>

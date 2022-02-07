@@ -57,7 +57,8 @@ what's required around it:
 This will make your work easier by always accessing your instance through the
 same IP address.
 ```sh
-gcloud compute addresses create my-ipaddress-name --region europe-west1
+gcloud compute addresses create my-ipaddress-name \ 
+    --region europe-west1
 ```
 Notes:
 - Replace `my-ipaddress-name` by any name you want
@@ -84,11 +85,11 @@ gcloud iam service-accounts create my-service-account \
 
 #### Add role to service account
 Attach a role to our new *service account* allowing it full permissions to Cloud 
-Storage (replace `012345678910` below by your project ID you can see through 
+Storage (replace `0123456789` below by your project ID you can see through 
 `gcloud projects list`):
 ```sh
-gcloud projects add-iam-policy-binding 12345678910 \
-    --member="serviceAccount:my-service-account@12345678910.iam.gserviceaccount.com" \
+gcloud projects add-iam-policy-binding 123456789 \
+    --member="serviceAccount:my-service-account@123456789.iam.gserviceaccount.com" \
     --role="roles/storage.objectAdmin"
 ```
 Now you should see `my-service-account` when entering:
