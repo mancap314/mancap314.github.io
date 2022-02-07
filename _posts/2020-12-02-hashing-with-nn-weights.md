@@ -68,15 +68,25 @@ from tensorflow.keras.losses import MeanSquaredError
 initializer_0 = Zeros()
 
 model = Sequential()
-model.add(Dense(LENGTH, input_dim=LENGTH, activation='tanh', use_bias=False,
-                kernel_initializer=initializer_0, name='hashing'))
-learning_rate = 1  # very high to bring "very far away" any wrong input
-optimizer = Adam(learning_rate=learning_rate)  # big `learning_rate` to start
-model.compile(loss=MeanSquaredError(), optimizer=optimizer, metrics=['mse'])
+model.add(Dense(LENGTH, 
+                input_dim=LENGTH, 
+                activation='tanh', use_bias=False,
+                kernel_initializer=initializer_0, 
+                name='hashing'))
+# very high learning rate to bring "far away" any wrong input
+learning_rate = 1 
+optimizer = Adam(learning_rate=learning_rate) 
+model.compile(loss=MeanSquaredError(), 
+              optimizer=optimizer, 
+              metrics=['mse'])
 
-# `block` obtained from prior pre-processing, `model` "learns" to map it to 1 - block
-model.fit(block, 1 - block, batch_size=blocked.shape[0], epochs=100, verbose=1)
-# `hash` resulting from the weight of layer `hashing` after training
+# `block` obtained from prior pre-processing
+# `model` "learns" to map it to 1 - block
+model.fit(block, 1 - block, 
+          batch_size=blocked.shape[0], 
+          epochs=100, 
+          verbose=1)
+# `hash` resulting from `hashing` layer after training
 hash = model.get_layer('hashing').get_weights()[0].flatten()
 ```
 

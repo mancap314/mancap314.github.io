@@ -143,6 +143,16 @@
 17
 18
 19
+20
+21
+22
+23
+24
+25
+26
+27
+28
+29
 </pre></td><td class="rouge-code"><pre><span class="kn">from</span> <span class="nn">tensorflow.keras.layers</span> <span class="kn">import</span> <span class="n">Dense</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.models</span> <span class="kn">import</span> <span class="n">Sequential</span>
 <span class="kn">from</span> <span class="nn">tensorflow.keras.optimizers</span> <span class="kn">import</span> <span class="n">Adam</span>
@@ -152,15 +162,25 @@
 <span class="n">initializer_0</span> <span class="o">=</span> <span class="n">Zeros</span><span class="p">()</span>
 
 <span class="n">model</span> <span class="o">=</span> <span class="n">Sequential</span><span class="p">()</span>
-<span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">LENGTH</span><span class="p">,</span> <span class="n">input_dim</span><span class="o">=</span><span class="n">LENGTH</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'tanh'</span><span class="p">,</span> <span class="n">use_bias</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
-                <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer_0</span><span class="p">,</span> <span class="n">name</span><span class="o">=</span><span class="s">'hashing'</span><span class="p">))</span>
-<span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">1</span>  <span class="c1"># very high to bring "very far away" any wrong input
-</span><span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span>  <span class="c1"># big `learning_rate` to start
-</span><span class="n">model</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">MeanSquaredError</span><span class="p">(),</span> <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'mse'</span><span class="p">])</span>
+<span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">Dense</span><span class="p">(</span><span class="n">LENGTH</span><span class="p">,</span> 
+                <span class="n">input_dim</span><span class="o">=</span><span class="n">LENGTH</span><span class="p">,</span> 
+                <span class="n">activation</span><span class="o">=</span><span class="s">'tanh'</span><span class="p">,</span> <span class="n">use_bias</span><span class="o">=</span><span class="bp">False</span><span class="p">,</span>
+                <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">initializer_0</span><span class="p">,</span> 
+                <span class="n">name</span><span class="o">=</span><span class="s">'hashing'</span><span class="p">))</span>
+<span class="c1"># very high learning rate to bring "far away" any wrong input
+</span><span class="n">learning_rate</span> <span class="o">=</span> <span class="mi">1</span> 
+<span class="n">optimizer</span> <span class="o">=</span> <span class="n">Adam</span><span class="p">(</span><span class="n">learning_rate</span><span class="o">=</span><span class="n">learning_rate</span><span class="p">)</span> 
+<span class="n">model</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">MeanSquaredError</span><span class="p">(),</span> 
+              <span class="n">optimizer</span><span class="o">=</span><span class="n">optimizer</span><span class="p">,</span> 
+              <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'mse'</span><span class="p">])</span>
 
-<span class="c1"># `block` obtained from prior pre-processing, `model` "learns" to map it to 1 - block
-</span><span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">block</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">blocked</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-<span class="c1"># `hash` resulting from the weight of layer `hashing` after training
+<span class="c1"># `block` obtained from prior pre-processing
+# `model` "learns" to map it to 1 - block
+</span><span class="n">model</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">block</span><span class="p">,</span> <span class="mi">1</span> <span class="o">-</span> <span class="n">block</span><span class="p">,</span> 
+          <span class="n">batch_size</span><span class="o">=</span><span class="n">blocked</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+          <span class="n">epochs</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span> 
+          <span class="n">verbose</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="c1"># `hash` resulting from `hashing` layer after training
 </span><span class="nb">hash</span> <span class="o">=</span> <span class="n">model</span><span class="p">.</span><span class="n">get_layer</span><span class="p">(</span><span class="s">'hashing'</span><span class="p">).</span><span class="n">get_weights</span><span class="p">()[</span><span class="mi">0</span><span class="p">].</span><span class="n">flatten</span><span class="p">()</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 
