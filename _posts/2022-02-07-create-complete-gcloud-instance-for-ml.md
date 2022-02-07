@@ -3,7 +3,7 @@ layout: post
 comments: true
 author: Manuel Capel
 title: Transforming Keras Model into Tensorflow Estimator
-date: 2019-04-01
+date: 2022-02-07
 categories: [machine learning,cloud]
 ---
 # Create a new complete instance for ML on Google Cloud
