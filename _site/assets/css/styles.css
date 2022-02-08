@@ -114,10 +114,10 @@ hr { width: 75%; margin-left: 0em; border: 0; height: 1px; background-image: lin
   .category-menu .categories a { font-size: 1.2em; display: block; }
   .main-content { max-width: 100%; padding-left: 0; font-size: 1em; }
   code { font-size: 2em; }
-  .main { max-width: 100%; padding-left: 1em; font-size: 1em; }
+  .main { max-width: 100%; padding-left: 1em; font-size: 0.8em; }
   .navigation { max-width: 100%; }
-  .navigation a { font-size: 1em; }
-  .navigation em { font-size: 1em; }
+  .navigation a { font-size: 3em; }
+  .navigation em { font-size: 2em; }
   .spacer-top { height: 14em; }
   .spacer-side { width: 0; }
   .highlight { width: 100%; } }

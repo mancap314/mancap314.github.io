@@ -42,15 +42,22 @@ class LrRangeFinder(tf.keras.callbacks.Callback):
   def on_train_begin(self, logs={}):
     self.lrs = []
     self.losses = []
-    tf.keras.backend.set_value(self.model.optimizer.lr, self.start_lr)
+    tf.keras.backend.set_value(
+        self.model.optimizer.lr, 
+        self.start_lr
+    )
 
-    n_steps = self.params['steps'] if self.params['steps'] is not None else round(self.params['samples'] / self.params['batch_size'])
+    n_steps = self.params['steps'] \
+        if self.params['steps'] is not None \
+        else round(self.params['samples'] \
+                        / self.params['batch_size'])
     n_steps *= self.params['epochs']
     self.by = (self.end_lr - self.start_lr) / n_steps
 
 
   def on_batch_end(self, batch, logs={}):
-    lr = float(tf.keras.backend.get_value(self.model.optimizer.lr))
+    lr = float(tf.keras.backend.get_value(
+                    self.model.optimizer.lr))
     self.lrs.append(lr)
     self.losses.append(logs.get('loss'))
     lr += self.by
@@ -64,24 +71,38 @@ As a model, we take a simple CNN described in the [Keras documentation](https://
 ```python
 # Initializers set for better reproducibility
 seed = 0
-glorot_initializer = tf.keras.initializers.glorot_normal(seed=seed)
-he_initializer = tf.keras.initializers.he_uniform(seed=seed)
+glorot_initializer = tf.keras.initializers.glorot_normal(
+                        seed=seed
+                    )
+he_initializer = tf.keras.initializers.he_uniform(
+                        seed=seed
+                    )
 
 
 def get_model_cnn_0():
   model = tf.keras.models.Sequential()
-  model.add(tf.keras.layers.Conv2D(32, kernel_size=(3, 3),
-               activation='relu',
-               input_shape=input_shape,
-               kernel_initializer=he_initializer,
-               bias_initializer='zeros'))
-  model.add(tf.keras.layers.Conv2D(64, (3, 3), activation='relu', kernel_initializer=he_initializer, bias_initializer='zeros'))
+  model.add(tf.keras.layers.Conv2D(32, 
+                    kernel_size=(3, 3),
+                    activation='relu',
+                    input_shape=input_shape,
+                    kernel_initializer=he_initializer,
+                    bias_initializer='zeros'))
+  model.add(tf.keras.layers.Conv2D(64, (3, 3), 
+                    activation='relu', 
+                    kernel_initializer=he_initializer, 
+                    bias_initializer='zeros'))
   model.add(tf.keras.layers.MaxPooling2D(pool_size=(2, 2)))
   model.add(tf.keras.layers.Dropout(0.25))
   model.add(tf.keras.layers.Flatten())
-  model.add(tf.keras.layers.Dense(128, activation='relu', kernel_initializer=he_initializer, bias_initializer='zeros'))
+  model.add(tf.keras.layers.Dense(128, 
+                    activation='relu', 
+                    kernel_initializer=he_initializer, 
+                    bias_initializer='zeros'))
   model.add(tf.keras.layers.Dropout(0.5))
-  model.add(tf.keras.layers.Dense(num_classes, activation='softmax', kernel_initializer=glorot_initializer, bias_initializer='zeros'))
+  model.add(tf.keras.layers.Dense(num_classes, 
+                    activation='softmax', 
+                    kernel_initializer=glorot_initializer, 
+                    bias_initializer='zeros'))
   return model
 ``` 
 
@@ -91,11 +112,16 @@ And we run it over one epoch with increasing learning rate between 0.1 and 2 (re
 epochs = 1
 lrRangeFinder = LrRangeFinder(start_lr=0.1, end_lr=2)
 model_cnn_0 = get_model_cnn_0()
-model_cnn_0.compile(loss=tf.keras.losses.categorical_crossentropy,
-                    optimizer=tf.keras.optimizers.Adadelta(),
-                    metrics=['accuracy'])
+model_cnn_0.compile(
+    loss=tf.keras.losses.categorical_crossentropy,
+    optimizer=tf.keras.optimizers.Adadelta(),
+    metrics=['accuracy']
+)
 
-model_cnn_0.fit(X_train, y_train, epochs=epochs, batch_size=batch_size, callbacks=[lrRangeFinder])
+model_cnn_0.fit(X_train, y_train, 
+        epochs=epochs, 
+        batch_size=batch_size, 
+        callbacks=[lrRangeFinder])
 ```
 
 And we get this:
@@ -105,31 +131,39 @@ And we get this:
 Then we apply following algorithm to find the extrema of the learning rate range:
 ```python
 def smooth(y, box_pts):
-  """smoothes an array by taking the average of the `box_pts` point around each point"""
+  """smoothes an array by taking the average of the 
+  `box_pts` point around each point"""
   box = np.ones(box_pts)/box_pts
   y_smooth = np.convolve(y, box, mode='same')
   return y_smooth
 
 smoothed_losses = smooth(lrRangeFinder.losses, 20)
 
-# Sub-sample the (smoothed) losses between the point where it reaches its max and the point where it reaches its min
+# Sub-sample the (smoothed) losses between the point where 
+# it reaches its max and the point where it reaches its min
 min_ = np.argmin(smoothed_losses)
 max_ = np.argmax(smoothed_losses)
 smoothed_losses_ = smoothed_losses[min_: max_]
 
 smoothed_diffs = smooth(np.diff(smoothed_losses), 20)
-min_ = np.argmax(smoothed_diffs <= 0)  # where the (smoothed) loss starts to decrease
-max_ = np.argmax(smoothed_diffs >= 0)  # where the (smoothed) loss restarts to increase
-max_ = max_ if max_ > 0 else smoothed_diffs.shape[0]  # because max_ == 0 if it never restarts to increase
+# index where the (smoothed) loss starts to decrease:
+min_ = np.argmax(smoothed_diffs <= 0)
+# index where the (smoothed) loss restarts to increase:
+max_ = np.argmax(smoothed_diffs >= 0)
+# handle max_ == 0 when it never restarts to increase:
+max_ = max_ if max_ > 0 else smoothed_diffs.shape[0]
 
-smoothed_losses_ = smoothed_losses[min_: max_]  # restrain the window to the min_, max_ interval
+# Restrain the window to the min_, max_ interval
+smoothed_losses_ = smoothed_losses[min_: max_]
 # Take min and max loss in this restrained window
 min_smoothed_loss_ = min(smoothed_losses_[:-1])
 max_smoothed_loss_ = max(smoothed_losses_[:-1])
 delta = max_smoothed_loss_ - min_smoothed_loss_
 
-lr_arg_max = np.argmax(smoothed_losses_ <= min_smoothed_loss_ + .05 * delta)
-lr_arg_min = np.argmax(smoothed_losses_ <= min_smoothed_loss_ + .5 * delta)
+lr_arg_max = np.argmax(smoothed_losses_ <= \
+                        min_smoothed_loss_ + .05 * delta)
+lr_arg_min = np.argmax(smoothed_losses_ <= \
+                        min_smoothed_loss_ + .5 * delta)
 
 lr_arg_min += min_
 lr_arg_max += min_
@@ -147,9 +181,9 @@ Interessingly, the optimal learning rate range found here is pretty way below 1.
 ## Training with cyclical learning rate
 In order to decrease cosine-wise the learning rate and restart it after each cycle as described above, we define another Keras Callback (source from [Jeremy Jordan](https://gist.github.com/jeremyjordan/5a222e04bb78c242f5763ad40626c452), just slightly modified to compute automatically the number of steps per epoch):
 
-```
+```python
 class SGDRScheduler(tf.keras.callbacks.Callback):
-    '''Cosine annealing learning rate scheduler with periodic restarts.
+    """Cosine annealing learning rate scheduler with periodic restarts.
 
     # Usage
         ```python
@@ -158,20 +192,26 @@ class SGDRScheduler(tf.keras.callbacks.Callback):
                                      lr_decay=0.9,
                                      cycle_length=5,
                                      mult_factor=1.5)
-            model.fit(X_train, Y_train, epochs=100, callbacks=[schedule])
+            model.fit(X_train, Y_train, 
+                        epochs=100, 
+                        callbacks=[schedule])
         ```
 
     # Arguments
-        min_lr: The lower bound of the learning rate range for the experiment.
-        max_lr: The upper bound of the learning rate range for the experiment. 
-        lr_decay: Reduce the max_lr after the completion of each cycle.
-                  Ex. To reduce the max_lr by 20% after each cycle, set this value to 0.8.
+        min_lr: The lower bound of the learning rate range.
+        max_lr: The upper bound of the learning rate range.
+        lr_decay: Reduce the max_lr after 
+                        completion of each cycle.
+                  Ex. To reduce the max_lr by 20% 
+                        after each cycle, set 
+                        this value to 0.8.
         cycle_length: Initial number of epochs in a cycle.
-        mult_factor: Scale epochs_to_restart after each full cycle completion.
+        mult_factor: Scale epochs_to_restart after each 
+                        full cycle completion.
 
     # References
         Original paper: http://arxiv.org/abs/1608.03983
-    '''
+    """
     def __init__(self,
                  min_lr,
                  max_lr,
@@ -193,57 +233,95 @@ class SGDRScheduler(tf.keras.callbacks.Callback):
 
     def clr(self):
         '''Calculate the learning rate.'''
-        fraction_to_restart = self.batch_since_restart / (self.steps_per_epoch * self.cycle_length)
-        lr = self.min_lr + 0.5 * (self.max_lr - self.min_lr) * (1 + np.cos(fraction_to_restart * np.pi))
+        fraction_to_restart = self.batch_since_restart \
+                / (self.steps_per_epoch * self.cycle_length)
+        lr = self.min_lr + 0.5 \
+            * (self.max_lr - self.min_lr) \
+            * (1 + np.cos(fraction_to_restart * np.pi))
         return lr
 
     def on_train_begin(self, logs={}):
-        '''Initialize the learning rate to the minimum value at the start of training.'''
-        self.steps_per_epoch = self.params['steps'] if self.params['steps'] is not None else round(self.params['samples'] / self.params['batch_size'])
+        '''Initialize the learning rate to the 
+        minimum value at the start of training.'''
+        self.steps_per_epoch = self.params['steps'] \
+            if self.params['steps'] is not None \
+            else round(self.params['samples'] \
+                        / self.params['batch_size'])
         logs = logs or {}
-        tf.keras.backend.set_value(self.model.optimizer.lr, self.max_lr)
+        tf.keras.backend.set_value(self.model.optimizer.lr, 
+                                    self.max_lr)
 
     def on_batch_end(self, batch, logs={}):
-        '''Record previous batch statistics and update the learning rate.'''
+        '''Record previous batch statistics 
+        and update the learning rate.'''
         logs = logs or {}
-        self.history.setdefault('lr', []).append(tf.keras.backend.get_value(self.model.optimizer.lr))
+        self.history.setdefault('lr', []).append(
+            tf.keras.backend.get_value(
+                self.model.optimizer.lr
+            )
+        )
         for k, v in logs.items():
             self.history.setdefault(k, []).append(v)
 
         self.batch_since_restart += 1
-        tf.keras.backend.set_value(self.model.optimizer.lr, self.clr())
+        tf.keras.backend.set_value(
+            self.model.optimizer.lr, 
+            self.clr()
+        )
 
     def on_epoch_end(self, epoch, logs={}):
-        '''Check for end of current cycle, apply restarts when necessary.'''
+        '''Check for end of current cycle, 
+        apply restarts when necessary.'''
         if epoch + 1 == self.next_restart:
             self.batch_since_restart = 0
-            self.cycle_length = np.ceil(self.cycle_length * self.mult_factor)
+            self.cycle_length = np.ceil(
+                self.cycle_length * self.mult_factor)
             self.next_restart += self.cycle_length
             self.max_lr *= self.lr_decay
             self.best_weights = self.model.get_weights()
 
     def on_train_end(self, logs={}):
-        '''Set weights to the values from the end of the most recent cycle for best performance.'''
+        '''Set weights to the values from the end of 
+        the most recent cycle for best performance.'''
         self.model.set_weights(self.best_weights)
 ```
 
 And then we train the model with this Callback. We sort out 10% of the training data as validation data. Each time that the loss reaches a new minimum, we save the model (`ModelCheckPoint` callback). If no new minimum has been reach for 10 epochs, the training is stopped (`EarlyStopping` callback). The training is stopped after at most 100 epochs.
 
 ```python
-scheduler = SGDRScheduler(min_lr=lr_min, max_lr=lr_max, lr_decay=.9, cycle_length=3, mult_factor=1.5)
+scheduler = SGDRScheduler(min_lr=lr_min, 
+                            max_lr=lr_max, 
+                            lr_decay=.9, 
+                            cycle_length=3, 
+                            mult_factor=1.5)
 
-callbacks = [tf.keras.callbacks.EarlyStopping(monitor='val_loss', patience=10),
-             tf.keras.callbacks.ModelCheckpoint(filepath='best_model_with_cycling.h5', monitor='val_loss', save_best_only=True),
+callbacks = [tf.keras.callbacks.EarlyStopping(
+                    monitor='val_loss', 
+                    patience=10
+                ),
+             tf.keras.callbacks.ModelCheckpoint(
+                    filepath='best_model_with_cycling.h5', 
+                    monitor='val_loss', 
+                    save_best_only=True
+                ),
             scheduler]
 
 epochs = 100
 
 model_cnn_0 = get_model_cnn_0()
-model_cnn_0.compile(loss=tf.keras.losses.categorical_crossentropy,
-                    optimizer=tf.keras.optimizers.Adadelta(),
-                    metrics=['accuracy'])
+model_cnn_0.compile(
+    loss=tf.keras.losses.categorical_crossentropy,
+    optimizer=tf.keras.optimizers.Adadelta(),
+    metrics=['accuracy']
+)
 
-history_with_optimization = model_cnn_0.fit(X_train, y_train, validation_split=0.1, epochs=epochs, batch_size=batch_size, callbacks=callbacks)
+history_with_optimization = model_cnn_0.fit(
+    X_train, y_train, 
+    validation_split=0.1, 
+    epochs=epochs, 
+    batch_size=batch_size, 
+    callbacks=callbacks
+)
 ``` 
 The performance of the model during the training looks is following:
 
