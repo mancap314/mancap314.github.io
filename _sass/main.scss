@@ -261,6 +261,10 @@ hr {
 }
 
 @media screen and (max-device-width: 640px) {
+  body {
+    font-size: 1em;
+  }
+
   .hamburger {
     display: inline-block;
     cursor: pointer;
@@ -271,10 +275,10 @@ hr {
   }
 
   .bar1, .bar2, .bar3 { 
-    width: 4.5em;
-    height: 1em;
+    width: 5.5em;
+    height: 1.5em;
     background-color: white;
-    margin: 0.5em 0;
+    margin: 0.7em 0;
     transition: 0.4s; 
   }
 

@@ -132,7 +132,7 @@ def plot_descents_lr(descents, a, batch_size=None):
 plot_descents_lr(descents, a)
 ```
 
-![gradient-descent-by-lr](assets/gradient-descent-by-lr "parameter value w and loss by step for various learning rates")
+![gradient-descent-by-lr](assets/gradient-descent-by-lr.png "parameter value w and loss by step for various learning rates")
 
 Here we see some interesting things:
 * the smallest *learning rate* 0.0001 is too small and thus takes too long to make the parameter `w` reach the true value
