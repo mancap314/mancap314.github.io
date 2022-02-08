@@ -232,6 +232,7 @@ code {
 hr { 
   width:75%;
   margin-left:0em;
+  margin-bottom: 1em;
   border: 0; height: 1px;
   background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0));
 }
@@ -291,16 +292,6 @@ hr {
  .main-content {
     max-width: 100%;
     padding-left: 0;
-    font-size: 0.8em;
-  }
-
-  code {
-    font-size: 1em;
-  }
-
-  .main {
-    max-width: 100%;
-    padding-left: 1em;
     font-size: 0.8em;
   }
 
