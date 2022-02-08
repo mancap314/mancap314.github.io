@@ -80,11 +80,13 @@
 7
 8
 9
+10
 </pre></td><td class="rouge-code"><pre><span class="nv">categories</span><span class="o">=()</span>
 <span class="nv">category_files</span><span class="o">=()</span>
 <span class="k">for </span>filename <span class="k">in</span> ../_category/<span class="k">*</span><span class="p">;</span> <span class="k">do
   if</span> <span class="o">[</span> <span class="nt">-f</span> <span class="s2">"</span><span class="k">${</span><span class="nv">filename</span><span class="k">}</span><span class="s2">"</span> <span class="o">]</span><span class="p">;</span> <span class="k">then
-    </span><span class="nv">category_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">grep</span> <span class="nt">-m</span> 1  <span class="s1">'^category: '</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s2">"s/^category: //g"</span> | <span class="nb">sed</span> <span class="s2">"s/ /-/g"</span> <span class="si">)</span>
+    </span><span class="nv">category_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">grep</span> <span class="nt">-m</span> 1  <span class="s1">'^category: '</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="se">\</span>
+        | <span class="nb">sed</span> <span class="s2">"s/^category: //g"</span> | <span class="nb">sed</span> <span class="s2">"s/ /-/g"</span> <span class="si">)</span>
     categories+<span class="o">=(</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> <span class="o">)</span>
     category_files+<span class="o">=(</span> <span class="k">${</span><span class="nv">filename</span><span class="k">}</span> <span class="o">)</span>
   <span class="k">fi
@@ -127,15 +129,21 @@ The following lines just append the extracted data to the lists and close the lo
 9
 10
 11
+12
+13
+14
 </pre></td><td class="rouge-code"><pre><span class="nv">article_categories</span><span class="o">=()</span>
 <span class="k">while </span><span class="nb">true</span><span class="p">;</span> <span class="k">do
   </span><span class="nb">read </span>entry
-  <span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$entry</span><span class="s2">"</span> <span class="o">=</span>~ ^[0-9]+<span class="nv">$ </span><span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">"</span><span class="k">$((</span> entry <span class="k">))</span><span class="s2">"</span> <span class="nt">-ge</span> 0 <span class="o">]]</span> <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">"</span><span class="k">$((</span> entry <span class="k">))</span><span class="s2">"</span> <span class="nt">-lt</span> <span class="k">${#</span><span class="nv">categories</span><span class="p">[@]</span><span class="k">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
+  <span class="k">if</span> <span class="o">[[</span> <span class="s2">"</span><span class="nv">$entry</span><span class="s2">"</span> <span class="o">=</span>~ ^[0-9]+<span class="nv">$ </span><span class="o">]]</span> <span class="se">\</span>
+        <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">"</span><span class="k">$((</span> entry <span class="k">))</span><span class="s2">"</span> <span class="nt">-ge</span> 0 <span class="o">]]</span> <span class="se">\</span>
+        <span class="o">&amp;&amp;</span> <span class="o">[[</span> <span class="s2">"</span><span class="k">$((</span> entry <span class="k">))</span><span class="s2">"</span> <span class="nt">-lt</span> <span class="k">${#</span><span class="nv">categories</span><span class="p">[@]</span><span class="k">}</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
     </span><span class="nv">category_to_remove</span><span class="o">=</span><span class="k">${</span><span class="nv">categories</span><span class="p">[</span><span class="k">$((</span> entry <span class="k">))</span><span class="p">]</span><span class="k">}</span>
     <span class="nv">file_to_remove</span><span class="o">=</span><span class="k">${</span><span class="nv">category_files</span><span class="p">[</span><span class="k">$((</span> entry <span class="k">))</span><span class="p">]</span><span class="k">}</span>
     <span class="nb">break</span><span class="p">;</span>
   <span class="k">else
-    </span><span class="nb">echo </span>invalid entry: must be an integer between 0 and <span class="k">$((</span> <span class="k">${#</span><span class="nv">categories</span><span class="p">[@]</span><span class="k">}</span> <span class="o">-</span> <span class="m">1</span> <span class="k">))</span>
+    </span><span class="nb">echo</span> <span class="s2">"invalid entry: must be an integer </span><span class="se">\</span><span class="s2">
+            between 0 and </span><span class="k">$((</span> <span class="k">${#</span><span class="nv">categories</span><span class="p">[@]</span><span class="k">}</span> <span class="o">-</span> <span class="m">1</span> <span class="k">))</span><span class="s2">"</span>
   <span class="k">fi
 done</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
@@ -150,12 +158,28 @@ done</span>
 4
 5
 6
+7
+8
+9
+10
+11
+12
+13
+14
 </pre></td><td class="rouge-code"><pre><span class="nb">read </span>name
-<span class="nv">category_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">name</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s1">'s/[^a-zA-Z0-9 ]\+/-/g'</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/ /g'</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+-//g'</span> <span class="si">)</span>
-<span class="nv">title_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/-/g'</span> | <span class="nb">tr</span> <span class="o">[</span>:upper:] <span class="o">[</span>:lower:]  <span class="si">)</span>
-<span class="nv">file_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> ascii//TRANSLIT//IGNORE <span class="si">)</span>
+<span class="nv">category_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">name</span><span class="k">}</span> <span class="se">\</span>
+    | <span class="nb">sed</span> <span class="s1">'s/[^a-zA-Z0-9 ]\+/-/g'</span> <span class="se">\</span>
+    | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/ /g'</span> <span class="se">\</span>
+    | <span class="nb">sed</span> <span class="s1">'s/[ ]\+-//g'</span> <span class="si">)</span>
+<span class="nv">title_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">category_name</span><span class="k">}</span> <span class="se">\</span>
+    | <span class="nb">sed</span> <span class="s1">'s/[ ]\+/-/g'</span> <span class="se">\</span>
+    | <span class="nb">tr</span> <span class="o">[</span>:upper:] <span class="o">[</span>:lower:]  <span class="si">)</span>
+<span class="nv">file_name</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> <span class="se">\</span>
+    | iconv <span class="nt">-f</span> utf8 <span class="nt">-t</span> ascii//TRANSLIT//IGNORE <span class="si">)</span>
 <span class="k">if</span> <span class="o">[[</span> <span class="nt">-z</span> <span class="si">$(</span> <span class="nb">echo</span> <span class="k">${</span><span class="nv">title_name</span><span class="k">}</span> | <span class="nb">tr</span> <span class="nt">-d</span> <span class="s1">'-'</span> <span class="si">)</span> <span class="o">]]</span><span class="p">;</span> <span class="k">then
-  </span><span class="nb">echo </span>category name must contain at least one alphanumerical character, please enter another name:
+  </span><span class="nb">echo</span> <span class="s2">"category name must contain at least </span><span class="se">\</span><span class="s2">
+        one alphanumerical character, </span><span class="se">\</span><span class="s2">
+        please enter another name:"</span>
 </pre></td></tr></tbody></table></code></pre></div></div>
 <p>On l.2 we have <code class="language-plaintext highlighter-rouge">sed 's/[^a-zA-Z0-9 ]\+/-/g'</code> replacing all non-alphanumerical characters by <code class="language-plaintext highlighter-rouge">-</code>, followed by <code class="language-plaintext highlighter-rouge">sed 's/[ ]\+/ /g'</code> replacing all multiple spaces by single spaces, itself followed by <code class="language-plaintext highlighter-rouge">sed 's/[ ]\+-//g'</code> removing <code class="language-plaintext highlighter-rouge">-</code> (and the spaces before) as it can occur at the end of the string. For example, <code class="language-plaintext highlighter-rouge">Ca&amp;tegory   name</code> would be transformed in <code class="language-plaintext highlighter-rouge">Category name</code>.</p>
 

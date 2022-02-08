@@ -16,7 +16,8 @@ categories=()
 category_files=()
 for filename in ../_category/*; do
   if [ -f "${filename}" ]; then
-    category_name=$( grep -m 1  '^category: ' ${filename} | sed "s/^category: //g" | sed "s/ /-/g" )
+    category_name=$( grep -m 1  '^category: ' ${filename} \
+        | sed "s/^category: //g" | sed "s/ /-/g" )
     categories+=( ${category_name} )
     category_files+=( ${filename} )
   fi
@@ -46,12 +47,15 @@ This is handled in l.4 of the following snippet:
 article_categories=()
 while true; do
   read entry
-  if [[ "$entry" =~ ^[0-9]+$ ]] && [[ "$(( entry ))" -ge 0 ]] && [[ "$(( entry ))" -lt ${#categories[@]} ]]; then
+  if [[ "$entry" =~ ^[0-9]+$ ]] \
+        && [[ "$(( entry ))" -ge 0 ]] \
+        && [[ "$(( entry ))" -lt ${#categories[@]} ]]; then
     category_to_remove=${categories[$(( entry ))]}
     file_to_remove=${category_files[$(( entry ))]}
     break;
   else
-    echo invalid entry: must be an integer between 0 and $(( ${#categories[@]} - 1 ))
+    echo "invalid entry: must be an integer \
+            between 0 and $(( ${#categories[@]} - 1 ))"
   fi
 done
 ```
@@ -62,11 +66,19 @@ When a user enters a name for a category, this name is processed to generate `ca
 
 ```bash
 read name
-category_name=$( echo ${name} | sed 's/[^a-zA-Z0-9 ]\+/-/g' | sed 's/[ ]\+/ /g' | sed 's/[ ]\+-//g' )
-title_name=$( echo ${category_name} | sed 's/[ ]\+/-/g' | tr [:upper:] [:lower:]  )
-file_name=$( echo ${title_name} | iconv -f utf8 -t ascii//TRANSLIT//IGNORE )
+category_name=$( echo ${name} \
+    | sed 's/[^a-zA-Z0-9 ]\+/-/g' \
+    | sed 's/[ ]\+/ /g' \
+    | sed 's/[ ]\+-//g' )
+title_name=$( echo ${category_name} \
+    | sed 's/[ ]\+/-/g' \
+    | tr [:upper:] [:lower:]  )
+file_name=$( echo ${title_name} \
+    | iconv -f utf8 -t ascii//TRANSLIT//IGNORE )
 if [[ -z $( echo ${title_name} | tr -d '-' ) ]]; then
-  echo category name must contain at least one alphanumerical character, please enter another name:
+  echo "category name must contain at least \
+        one alphanumerical character, \
+        please enter another name:"
 ```
 On l.2 we have `sed 's/[^a-zA-Z0-9 ]\+/-/g'` replacing all non-alphanumerical characters by `-`, followed by `sed 's/[ ]\+/ /g'` replacing all multiple spaces by single spaces, itself followed by `sed 's/[ ]\+-//g'` removing `-` (and the spaces before) as it can occur at the end of the string. For example, `Ca&tegory   name` would be transformed in `Category name`.
 
