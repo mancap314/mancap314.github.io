@@ -66,7 +66,9 @@ and\space \big(C(t, j), \dots, C(t, j + \mid v\mid -1)\big) = v\space (1.3)] \\
 [\exists v'\in V, t', j' \in \mathbb{N} \space with\space t'>t \space such\space that: \\
 j' + \mid v'\mid \leq j\space or\space j + \mid v\mid \leq j'\space (2.1) \\
 and\space \big(C(t', j'),\dots,C(t', j'+\mid v'\mid-1)\big)=v'\space (2.2) \\
-and\space \exists t'' \space such\space that:\space t<t''<t'\space and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)]
+and\space \exists t'' \space such\space that:\space \\
+\hspace{3em} t<t''<t'\space \\
+\hspace{3em} and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)]
 $$
 
 **Explanation**

@@ -42,22 +42,27 @@ eval_data = eval_data.reshape(eval_data.shape[0],
 We define a simple model with 2 convolutional layers followed by a pooling layer, a dense layer and a final softmax layer providing the class probabilities (with some dropout for regularization):
 ```python
 model_cnn_0 = tf.keras.models.Sequential()
-model_cnn_0.add(tf.keras.layers.Conv2D(32, kernel_size=(3, 3),
-                 activation='relu',
-                 input_shape=input_shape,
-                 name='x'
+model_cnn_0.add(tf.keras.layers.Conv2D(32, 
+                    kernel_size=(3, 3),
+                    activation='relu',
+                    input_shape=input_shape,
+                    name='x'
                 ))
-model_cnn_0.add(tf.keras.layers.Conv2D(64, (3, 3), 
-                                        activation='relu'))
-model_cnn_0.add(tf.keras.layers.MaxPooling2D(
-                                        pool_size=(2, 2)))
+model_cnn_0.add(
+    tf.keras.layers.Conv2D(64, (3, 3), activation='relu'))
+model_cnn_0.add(
+    tf.keras.layers.MaxPooling2D, pool_size=(2, 2)))
 model_cnn_0.add(tf.keras.layers.Dropout(0.25))
 model_cnn_0.add(tf.keras.layers.Flatten())
 model_cnn_0.add(tf.keras.layers.Dense(128, 
                                     activation='relu'))
 model_cnn_0.add(tf.keras.layers.Dropout(0.5))
-model_cnn_0.add(tf.keras.layers.Dense(num_classes, 
-                                    activation='softmax'))
+model_cnn_0.add(
+    tf.keras.layers.Dense(
+        num_classes, 
+        activation='softmax'
+    )
+)
 ```
 The we simply compile the model:
 ```python
