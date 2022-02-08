@@ -20,10 +20,6 @@ body {
   font-size: 1em;
 }
 
-code {
-  font-size: 1.2em;
-}
-
 .post-title a {
   color: black;
   text-decoration: none;
@@ -248,6 +244,7 @@ hr {
 
 .highlight {
   width: 100%;
+  font-size: 1.1em;
 }
 
 .lineno { 
@@ -322,10 +319,10 @@ hr {
 
   .highlight {
     width: 100%;
-    font-size: 1.2em;
+    font-size: 1.1em;
   }
 
   .horizontal-list {
-    font-size: small;      
+    font-size: 0.8em;      
   }
 }

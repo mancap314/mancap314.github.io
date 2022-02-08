@@ -7,8 +7,6 @@ body { font-family: "Lato", sans-serif; }
 
 .main-content { max-width: 60%; margin-left: auto; margin-right: auto; padding-left: 4em; font-size: 1em; }
 
-code { font-size: 1.2em; }
-
 .post-title a { color: black; text-decoration: none; }
 
 /* Categories bar */
@@ -103,7 +101,7 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
 
 .article-summary { padding-left: 2em; }
 
-.highlight { width: 100%; }
+.highlight { width: 100%; font-size: 1.1em; }
 
 .lineno { color: #696969; display: inline-block; padding: 0 5px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
@@ -118,5 +116,5 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   .navigation em { font-size: 2em; }
   .spacer-top { height: 14em; }
   .spacer-side { width: 0; }
-  .highlight { width: 100%; font-size: 1.2em; }
-  .horizontal-list { font-size: small; } }
+  .highlight { width: 100%; font-size: 1.1em; }
+  .horizontal-list { font-size: 0.8em; } }
