@@ -119,4 +119,5 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   .spacer-top { height: 14em; }
   .spacer-side { width: 0; }
   .highlight { width: 100%; font-size: 1.5em; }
-  .horizontal-list { font-size: 0.8em; } }
+  .horizontal-list { font-size: 0.8em; }
+  .MathJax_Display, .MJXc-display, .MathJax_SVG_Display { transform: scale(2); overflow-x: scroll; overflow-y: hidden; } }
