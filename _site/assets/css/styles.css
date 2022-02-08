@@ -89,6 +89,8 @@ code { font-size: 1.2em; }
 
 .fa-envelope:hover { background-color: #444444; }
 
+.horizontal-list { font-size: small; }
+
 .horizontal-list ul li { display: inline; white-space: pre; }
 
 .horizontal-list ul li:after { content: " \2022 "; }
@@ -97,7 +99,7 @@ code { font-size: 1.2em; }
 
 .post-desc a { border-bottom: 1px dotted; text-decoration: none; margin: 0em 0.1em 0em 0.1em; }
 
-hr { width: 75%; margin-left: 0em; margin-bottom: 1em; border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); }
+hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); }
 
 .article-summary { padding-left: 2em; }
 
@@ -116,4 +118,4 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1em; border: 0; height: 1px; b
   .navigation em { font-size: 2em; }
   .spacer-top { height: 14em; }
   .spacer-side { width: 0; }
-  .highlight { width: 100%; font-size: 3em; } }
+  .highlight { width: 100%; font-size: 1em; } }
