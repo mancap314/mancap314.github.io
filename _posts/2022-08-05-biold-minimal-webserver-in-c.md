@@ -54,7 +54,7 @@ web-server and -client implementation")
 7. When the communication is finished, the server `close()` the client socket
    on its side.
 
-## Client side
+### Client side
 The process is a bit simpler on the client side:
 
 1. Create the client socket, the same way than for the server.
