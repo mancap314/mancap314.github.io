@@ -1,0 +1,201 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Build a Minimal Webserver in C</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Build a Minimal Webserver in C | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Build a Minimal Webserver in C" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Machines are already strong by themselves, but their potential gets truly unleashed when they can communicate with each other. Web servers enable this communication by taking requests from and sending back responses to other machines. Here we will see how to implement a very simple web server in C for Linux. You can find the complete code for it on this repo." />
+<meta property="og:description" content="Machines are already strong by themselves, but their potential gets truly unleashed when they can communicate with each other. Web servers enable this communication by taking requests from and sending back responses to other machines. Here we will see how to implement a very simple web server in C for Linux. You can find the complete code for it on this repo." />
+<link rel="canonical" href="http://localhost:4000/biold-minimal-webserver-in-c.html" />
+<meta property="og:url" content="http://localhost:4000/biold-minimal-webserver-in-c.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2022-08-05T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Build a Minimal Webserver in C" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","headline":"Build a Minimal Webserver in C","dateModified":"2022-08-05T00:00:00+02:00","datePublished":"2022-08-05T00:00:00+02:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/biold-minimal-webserver-in-c.html"},"url":"http://localhost:4000/biold-minimal-webserver-in-c.html","author":{"@type":"Person","name":"Manuel Capel"},"description":"Machines are already strong by themselves, but their potential gets truly unleashed when they can communicate with each other. Web servers enable this communication by taking requests from and sending back responses to other machines. Here we will see how to implement a very simple web server in C for Linux. You can find the complete code for it on this repo.","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <h1>Build a Minimal Webserver in C</h1>
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>05 Aug 2022</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/c/">C</a>&nbsp;<a href="/web/">web</a></li>
+  </ul>
+</div>
+
+      <p>Machines are already strong by themselves, but their potential gets truly
+unleashed when they can communicate with each other. Web servers enable this
+communication by taking requests from and sending back responses to other
+machines. Here we will see how to implement a very simple web server in C for
+Linux. You can find the complete code for it on <a href="https://github.com/mancap314/cwebserver/">this repo</a>.</p>
+
+<h2 id="main-ingredients-sockets-and-addresses">Main ingredients: sockets and addresses</h2>
+<p>A web-server (and its counterparts the web-clients) in Linux deal mainly with
+two kinds of objects: <em>socket</em>s and <em>address</em>es. You can imagine sockets as
+mail-boxes. Those mail-boxes have some characteristics like the size of the
+messages they can get, how they can get them, how many at the same time etc.</p>
+
+<p>Adresses are like… yes, addresses, but more specific than post addresses.
+Imagine there are different ways to come to a given place: through the highway,
+through the little alley, and then different doors… in an <em>address</em> here you
+would have to specify all that.</p>
+
+<h2 id="main-steps">Main steps</h2>
+
+<p><img src="assets/cwebserver.png" alt="web-server-client-main-steps.jpg" title="Main steps for
+web-server and -client implementation" /></p>
+
+<h3 id="server-side">Server side</h3>
+<ol>
+  <li>
+    <p>Create the server socket. This is done through the function <a href="https://man7.org/linux/man-pages/man7/socket.7.html">socket()</a> returning a <a href="https://en.wikipedia.org/wiki/File_descriptor">file descriptor</a>. It takes as arguments a <code class="language-plaintext highlighter-rouge">domain</code> (here <code class="language-plaintext highlighter-rouge">AF_INET</code> for the IPv4 protocol), a <code class="language-plaintext highlighter-rouge">type</code> (here <code class="language-plaintext highlighter-rouge">SOCK_STREAM</code>  for “sequenced, reliable, two-way, connection-based byte streams”) and a protocol (here <code class="language-plaintext highlighter-rouge">0</code> for the default protocol).</p>
+  </li>
+  <li>
+    <p>Create the server address: it’s a <code class="language-plaintext highlighter-rouge">struct sockaddr_in</code> where you have to
+specify the domain, the address proper and the port (note that you have to
+convert the port number (integer) with <code class="language-plaintext highlighter-rouge">htons()</code>).</p>
+  </li>
+  <li>
+    <p>Bind the socket to the address: here basically you put the mailbox at the
+address defined above. You do it with the function <code class="language-plaintext highlighter-rouge">bind()</code> taking as
+arguments the file descriptor for the socket, a pointer to the address and
+its length.</p>
+  </li>
+  <li>
+    <p>Listen: the socket listens for incoming connections with the function
+<code class="language-plaintext highlighter-rouge">listen()</code>. It takes as argument the file descriptor of the (now binded) socket, and the size of the backlog (how many connections can be registered simultanously).</p>
+  </li>
+  <li>
+    <p>Now there is a infinite loop calling each time <code class="language-plaintext highlighter-rouge">accept()</code>: this halts the
+routine until there is an incoming connection, that gets accepted. This
+acceptation attaches the client socket to the (server socket + address).</p>
+  </li>
+  <li>
+    <p>Once the server socket, the address and the client socket are attached
+together, the server can <code class="language-plaintext highlighter-rouge">read()</code> messages from and <code class="language-plaintext highlighter-rouge">send()</code> messages to
+the client.</p>
+  </li>
+  <li>
+    <p>When the communication is finished, the server <code class="language-plaintext highlighter-rouge">close()</code> the client socket
+on its side.</p>
+  </li>
+</ol>
+
+<h2 id="client-side">Client side</h2>
+<p>The process is a bit simpler on the client side:</p>
+
+<ol>
+  <li>
+    <p>Create the client socket, the same way than for the server.</p>
+  </li>
+  <li>
+    <p>Create the address (object) corresponding to the server address. Note that
+you may have to convert the IP address with <code class="language-plaintext highlighter-rouge">inet_pton()</code> to store it in the
+right format in the field <code class="language-plaintext highlighter-rouge">sin_addr</code> of the server address (see
+implementation).</p>
+  </li>
+  <li>
+    <p>Connect the client socket with the server address just defined. Note that
+the server socket is <code class="language-plaintext highlighter-rouge">bind</code>ed to the server address, and the client socket
+is <code class="language-plaintext highlighter-rouge">connect</code>ed to it. However, <code class="language-plaintext highlighter-rouge">connect()</code> and <code class="language-plaintext highlighter-rouge">bind()</code> take the same
+argument.</p>
+  </li>
+  <li>
+    <p>Now the client can <code class="language-plaintext highlighter-rouge">read()</code> and <code class="language-plaintext highlighter-rouge">send()</code> messages with the server.</p>
+  </li>
+</ol>
+
+<p>And hurray, both machines can communicate!!</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>This is a very simple implementation of a webserver (and a webclient) in C,
+that can be easily extended, for example to use concurrency (multi-threading)
+to handle multiple incoming connections on server-side, and/or to make it a
+HTTP server, or to communicate through radio
+(<a href="https://en.wikipedia.org/wiki/AX.25">AX.25</a>). The possibilities are countless
+from there!</p>
+
+<p>Many details could not be covered here, it would need an entire book to cover
+the whole topic. But don’t hesitate to read the doc regarding the various functions used here. Just typ for example <code class="language-plaintext highlighter-rouge">man socket</code> in the terminal to get it.</p>
+
+      <hr>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div id="share-bar">
+  <h4>Share this:</h4>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/biold-minimal-webserver-in-c.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Build a Minimal Webserver in C&url=http://localhost:4000/biold-minimal-webserver-in-c.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=http://localhost:4000/biold-minimal-webserver-in-c.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/biold-minimal-webserver-in-c.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/biold-minimal-webserver-in-c.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=http://localhost:4000/biold-minimal-webserver-in-c.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/biold-minimal-webserver-in-c.html&title=Build a Minimal Webserver in C&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Build a Minimal Webserver in C&amp;body=Check out this site http://localhost:4000/biold-minimal-webserver-in-c.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+  </div>
+</div>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://localhost:4000/biold-minimal-webserver-in-c.html';
+      this.page.identifier = 'http://localhost:4000/biold-minimal-webserver-in-c.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+</html>
