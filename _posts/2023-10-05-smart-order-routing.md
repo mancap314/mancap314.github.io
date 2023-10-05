@@ -3,7 +3,7 @@ layout: post
 comments: true
 author: Manuel Capel
 title: Overview of Smart Order Routing for Efficient and Compliant Trading
-date: 2023-02-07
+date: 2023-10-05
 categories: [finance]
 ---
 Smart Order Routing (SOR) consists in processing orders 
