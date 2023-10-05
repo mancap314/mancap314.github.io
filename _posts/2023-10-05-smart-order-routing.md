@@ -48,7 +48,7 @@ the customers of execution venues. The main are:
   factors like execution time etc., thus criticized, and could be revised in
   the near future
 
-- **MIFI ii** (EU): published by the ESMA, aims at guaranteeing best effort
+- **MIFI II** (EU): published by the ESMA, aims at guaranteeing best effort
   when executing orders.
 
 With regulations come reporting duties, like mandatory BestEx (best execution)
