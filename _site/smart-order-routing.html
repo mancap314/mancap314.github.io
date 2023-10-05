@@ -1,0 +1,245 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Overview of Smart Order Routing for Efficient and Compliant Trading</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Overview of Smart Order Routing for Efficient and Compliant Trading | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Overview of Smart Order Routing for Efficient and Compliant Trading" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Smart Order Routing (SOR) consists in processing orders on trading venues the most optimal way. On the surface, it’s pretty simple: as a broker-dealer you get from a customer a request to buy a certain amount of a company’s stock, you take a quick look at the different exchanges, maybe you will split this order if its volume is high, and that’s it. Well, not quite…" />
+<meta property="og:description" content="Smart Order Routing (SOR) consists in processing orders on trading venues the most optimal way. On the surface, it’s pretty simple: as a broker-dealer you get from a customer a request to buy a certain amount of a company’s stock, you take a quick look at the different exchanges, maybe you will split this order if its volume is high, and that’s it. Well, not quite…" />
+<link rel="canonical" href="http://localhost:4000/smart-order-routing.html" />
+<meta property="og:url" content="http://localhost:4000/smart-order-routing.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-02-07T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Overview of Smart Order Routing for Efficient and Compliant Trading" />
+<script type="application/ld+json">
+{"@type":"BlogPosting","description":"Smart Order Routing (SOR) consists in processing orders on trading venues the most optimal way. On the surface, it’s pretty simple: as a broker-dealer you get from a customer a request to buy a certain amount of a company’s stock, you take a quick look at the different exchanges, maybe you will split this order if its volume is high, and that’s it. Well, not quite…","headline":"Overview of Smart Order Routing for Efficient and Compliant Trading","dateModified":"2023-02-07T00:00:00+01:00","datePublished":"2023-02-07T00:00:00+01:00","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/smart-order-routing.html"},"author":{"@type":"Person","name":"Manuel Capel"},"url":"http://localhost:4000/smart-order-routing.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <h1>Overview of Smart Order Routing for Efficient and Compliant Trading</h1>
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>07 Feb 2023</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/finance/">finance</a></li>
+  </ul>
+</div>
+
+      <p>Smart Order Routing (SOR) consists in processing orders 
+on trading venues the most optimal way. On the surface, it’s pretty simple: as a
+broker-dealer you get from a customer a request to buy a certain amount of a
+company’s stock, you take a quick look at the different exchanges, maybe you
+will split this order if its volume is high, and that’s it. Well, not quite…</p>
+
+<h2 id="state-of-affairs">State of affairs</h2>
+<p>The two main factors complexifying SOR are</p>
+
+<ol>
+  <li>
+    <p><strong>Fragmentation of trading venues</strong>: this fragmentation is more or less
+pronounced depending on the asset class (equities, derivatives, forex), with
+some mainly traded on exchanges and some almost exclusively OTC. Even for a
+pretty vanilla asset class like equities, there are several types of venues
+for executing an order:  exchanges (like the NYSE), dark pools (pools of
+orders keeping them quite obfuscated for preventing large orders from
+skewing the market, often managed by major banks) etc. For each of them,
+there are a number of parameters to consider, like: price, liquidity (how
+abundant the order book for this asset on this venue in order to absorb
+absorb smoothly the order at hand), execution time, order rejection rate
+etc. Getting live data about the state of the available venues, navigating
+this information in order to design the best executions can be a daunting
+tasks</p>
+  </li>
+  <li>
+    <p><strong>High Frequency trading</strong>: since its inception in the mid-2000 by pioneers
+like Dan Matthison, HFT captured a large part of the trading volume.
+According to the Reasearch Service of the US Congress, the algorithms
+behind, often highly sophisticated and efficient, capture now over 40% of
+stock trades in Europe. Lack of SOR awareness will make your orders get
+“eaten alive” by those bots, leading to compounding substantial losses.</p>
+  </li>
+</ol>
+
+<h2 id="market-drivers">Market drivers</h2>
+<p>The two main market drivers for the adoption of SOR solutions are regulation
+and ROI</p>
+<h3 id="regulation">Regulation</h3>
+<p>The regulations regarding SOR are mainly focused on ensuring best execution for
+the customers of execution venues. The main are:</p>
+
+<ul>
+  <li>
+    <p><strong>Reg NMS</strong> (US): published in 2005 by the SEC for the US market, is focusing
+on guaranteeing best prices for the orders, detrimental to other important
+factors like execution time etc., thus criticized, and could be revised in
+the near future</p>
+  </li>
+  <li>
+    <p><strong>MIFI ii</strong> (EU): published by the ESMA, aims at guaranteeing best effort
+when executing orders.</p>
+  </li>
+</ul>
+
+<p>With regulations come reporting duties, like mandatory BestEx (best execution)
+reports, Top 5 Venues Execution report etc.</p>
+
+<h2 id="roi">ROI</h2>
+<p>SOR can generate a significant return on investment for trading venues and
+their customers, in particular through:</p>
+<ul>
+  <li>lower execution costs</li>
+  <li>lower operational expenses (in IT infrastructures, operations,
+maintenance…)</li>
+  <li>competitive advantage for brokers, getting visible market differenciation</li>
+</ul>
+
+<h2 id="technical-challenges">Technical challenges</h2>
+<ul>
+  <li><strong>IT infrastructure</strong>: Seriously doing SOR implies to ingest and react to a
+constant tsunami of live data, requiring advanced, performant and reliable IT
+infrastructure deploying SmartNIC, implementing kernel by-passes, with
+parallelized GPU computation etc. Reducing the latency is key.</li>
+  <li><strong>Monitoring the execution quality</strong> through TCA (Total Cost analysis) is of
+paramount importance too, for business as well as for regulatory reasons. A
+TCA monitoring should comprise factors like:</li>
+  <li>execution price, related to slippage prevention
+    <ul>
+      <li>execution latency (time for an order to get registered on the trading
+venue)</li>
+      <li>execution speed (by the trading venue)</li>
+      <li>fill ratio</li>
+      <li>spread (to the mid-point between bid and ask at execution)</li>
+    </ul>
+  </li>
+</ul>
+
+<p>Some of these metrics are not in the control of the brokers, who should those
+monitor them in order to dynamically adapt their order execution strategy when
+needed.</p>
+
+<ul>
+  <li>Execution algorithm that should be:
+    <ul>
+      <li>explainable, so that its decisions can get reviewed by the broker and
+ audited by the regulator</li>
+      <li>fast, for reducing latency and vulnerability of the orders. Will
+probably require a low-level implementation in C/C++/Rust, or CUDA
+if aimed for GPUs.</li>
+      <li>adaptable, self-learning, for adapting to changing conditions
+(price, liquidity, latency…) on the trading venues at hand</li>
+    </ul>
+  </li>
+</ul>
+
+<h2 id="how-to-choose-a-sor-solution">How to choose a SOR solution</h2>
+<p>Considering the asset classes you are trading, the most important points to
+consider when reviewing a SOR solution are:</p>
+<ul>
+  <li>number and diversity of trading venues provided</li>
+  <li>the quality of performance analysis for those venues</li>
+  <li>user-friendliness of its UI</li>
+  <li>metrics used to evaluation the transactions</li>
+  <li>performance of the core technology / algorithms</li>
+  <li>number and quality of the execution strategies provided</li>
+  <li>if cloud-based: quality of the infrastructure, measured through latency,
+throughput, uptime guaranteed through a solid SLA</li>
+</ul>
+
+<h2 id="steps-to-implement">Steps to Implement</h2>
+<p>It could be a good idea to divide and conquer the SOR challenge through
+smaller, manageable and measurable steps, like:</p>
+<ol>
+  <li>TCA evaluation: which metrics are mandatory? Which ones would make sense
+from an operational viewpoint? From a strategic viewpoint?</li>
+  <li>Remaining regulatory tasks, typically report generation</li>
+  <li>Implementing / improving collection, ingestion and processing of live
+   data related to the venues for the asset classes traded</li>
+  <li>Implementing / improving execution algorithm</li>
+  <li>Enhance IT-Infrastructure</li>
+</ol>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>For banks, funds, broker-dealers and every trading venue in general, SOR is of
+operational and strategic relevance, deeply impacting business and compliance.
+State of the art is evolving fast following always more fragmenting markets and
+efficient actors.</p>
+
+      <hr>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div id="share-bar">
+  <h4>Share this:</h4>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/smart-order-routing.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Overview of Smart Order Routing for Efficient and Compliant Trading&url=http://localhost:4000/smart-order-routing.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=http://localhost:4000/smart-order-routing.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/smart-order-routing.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/smart-order-routing.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=http://localhost:4000/smart-order-routing.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/smart-order-routing.html&title=Overview of Smart Order Routing for Efficient and Compliant Trading&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Overview of Smart Order Routing for Efficient and Compliant Trading&amp;body=Check out this site http://localhost:4000/smart-order-routing.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+  </div>
+</div>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://localhost:4000/smart-order-routing.html';
+      this.page.identifier = 'http://localhost:4000/smart-order-routing.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+</html>
