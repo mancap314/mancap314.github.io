@@ -1,5 +1,5 @@
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
-/usr/bin/ruby2.7 -I /usr/lib/ruby/2.7.0 -r ./siteconf20220207-126516-tnwfbq.rb extconf.rb
+/home/manuel/.rbenv/versions/2.7.1/bin/ruby -I /home/manuel/.rbenv/versions/2.7.1/lib/ruby/2.7.0 -r ./siteconf20231005-289860-1yq2jfz.rb extconf.rb
 creating Makefile
 
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
@@ -8,9 +8,17 @@ make "DESTDIR=" clean
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
 make "DESTDIR="
 compiling ruby_http_parser.c
+ruby_http_parser.c: In function ‘Parser_execute’:
+ruby_http_parser.c:365:17: warning: comparison of integer expressions of different signedness: ‘size_t’ {aka ‘long unsigned int’} and ‘long int’ [-Wsign-compare]
+  365 |     if (nparsed < len)
+      |                 ^
+ruby_http_parser.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
 compiling ryah_http_parser.c
 linking shared-object ruby_http_parser.so
 
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 ruby_http_parser.so ./.gem.20220207-126516-1am4gml
+/usr/bin/install -c -m 0755 ruby_http_parser.so ./.gem.20231005-289860-1du1305

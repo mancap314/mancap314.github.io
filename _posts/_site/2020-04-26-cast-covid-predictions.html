@@ -1,0 +1,172 @@
+<p>Unless you spent these last few months in a cave in the end of the world (but then you’re probably not reading this article), you couldn’t escape the information about the Covid-19 pandemic. The difficulty to model its evolution is striking. In the US for example, a <a href="https://www.centerforhealthsecurity.org/our-work/pubs_archive/pubs-pdfs/2020/200324-outbreak-science.pdf">recent report of the CHS</a> warned about this in a review of existing methods. They call therefore for the creation of a national outbreak science centre. Here is an article about CAST, an agent-based micro-simulation model I developed over the last few weeks as an attempt to male prediction about Corona spread.</p>
+
+<p>Forecasting models do exist, like the famous predictions from the Imperial College. But it’s clear that even at the government level, it’s very difficult to get precise forecasts. Like the CHS, many note there is much room for improvement in this field. That’s why we decided at <a href="https://parcoor.com/">Parcoor</a> to bring our contribution, <a href="https://github.com/parcoor/py-propagsim/">fully available on Github</a>.</p>
+
+<h2 id="cast-model-in-a-few-words">CAST model in a few words</h2>
+
+<p>In a nutshell, CAST simulates <em>agents</em> moving from <em>cell</em> to <em>cell</em> on a <em>map</em>. The cells represent public or private places. An agent can get infected when together in the same cell at the same time as another infected agent. Once infected, an agent transitions from state to state, influencing its behavior. Each of these steps is made randomly according to probabilities reflecting the circumstances, for example, lower probability of moving to simulate a lockdown, etc.</p>
+
+<p>The first goal is to have a model realistic enough while still relatively easy to compute. The second goal is to predict the impact of sanitary measures like lockdown, generalized mask wearing within the population (by reducing the contagiousity parameter of the agents on the map) by simply modifying the corresponding parameters in the model.</p>
+
+<p>Here we use this model for simulating the propagation of a contagious disease within a population. But it’s not the only possible use case. We could also imagine to simulate the propagation of a computer virus (where the agents would be files, the cells would be servers). And many more.</p>
+
+<p>The goal is not to fit curves, but the underlying behaviors and to find the curves from them.</p>
+
+<h2 id="a-few-results-on-france">A few results on France</h2>
+
+<p>We simulated a map of France at a 1/100 scale after calibrating the model parameters concerning moves, transmission etc. to fit the evolution of the covid-19 epidemics in this country.</p>
+
+<p>For the lockdown time, CAST simulations finds results very close to reported numbers concerning hospitalization and ICU rates due to Covid-19:</p>
+
+<p><img src="assets/cast-prediction-vs-reality.png" alt="cast-prediction-vs-reality" title="CAST Prediction Assessment" /></p>
+
+<p>By simulating behaviors at a very individual level, the model calibration could find other interesting insights, like:</p>
+<ul>
+  <li>the incubation time very close to 5.3 days found by other means in other publications</li>
+  <li>It looks like French people (before lockdown) move around 65% less when symptomatic (coughing etc.). Unfortunately we couldn’t find any statistics to confirm or refute this, but it looks at least plausible</li>
+  <li>The default setting of public places reduces just by 20% the contagion probability (cell unsafety around 0.8, see below). There is thus much room for improvement by imposing social distancing and other rules to prevent contamination in public places.</li>
+</ul>
+
+<h2 id="toy-simulation">Toy simulation</h2>
+
+<p>We ran a simulation on a map containing 1000 <em>agents</em> and 600 <em>cells</em>, all randomly placed on a map. This is the evolution of the number of diseased agent with time in the different regions of the map:</p>
+
+<p><img src="assets/cast-toy-grid.gif" alt="cast-toy-grid" title="Number of diseased agents through space and time" /></p>
+
+<p>Each square could represent the regions of a country.</p>
+
+<p>Regarding the evolution of the number of agents in the different states through time, this is what we obtain:</p>
+
+<p><img src="assets/cast-toy-evolution.png" alt="cast-toy-evolution" title="number of agents in the different states with time" /></p>
+
+<p>Here we can observe that CAST comes up naturally to the herd immunity after a given proportion of the population has been infected. “Naturally”, because it results from the evolution of the simulation, without having been parametrized.</p>
+
+<p>The implementation of the CAST model allows also to keep trace of which agent infected which other agent. So we can visualize this contamination chain:</p>
+
+<p><img src="assets/cast-toy-contamination-chain.png" alt="cast-toy-contamination-chain" title="final contamination chain" /></p>
+
+<p>This tracing of the contamination chain also enables to model the effect of contact tracing for containing the epidemic.</p>
+
+<p>Now let’s dive in more in the details of this CAST model…</p>
+
+<h2 id="model-description">Model description</h2>
+<h3 id="basic-objects">Basic objects</h3>
+
+<p>Basically, this model considers three types of object:</p>
+
+<ol>
+  <li>
+    <p><strong>Cell</strong>. A <em>cell</em> can contain 0, 1 or many <em>agents</em> at any time. It has also a position (Euclidean coordinates on a plan)</p>
+  </li>
+  <li>
+    <p><strong>Agent</strong>. An <em>agent</em> has one (and only one) <em>state</em> at a given moment, and is also in one (and only one) cell. The <em>cell</em> where an <em>agent</em> is initially is considered to be its <em>home_cell</em>.</p>
+  </li>
+  <li>
+    <p><strong>State</strong>. A <em>state</em> has a predefined <em>severity</em>, <em>contagiousity</em> and <em>sensitivity</em>, all in \((0, 1)\).</p>
+  </li>
+</ol>
+
+<h3 id="contagion">Contagion</h3>
+
+<p>A contagion happens within a cell, when it contains several agents at the same time and one of them is contagious.</p>
+
+<p>When an agent has a state with <em>contagiousity</em> &gt; 0, then the other agents in the same cell can get infected.</p>
+
+<p>The probability of \(Agent_A\) to contaminate \(Agent_B\) in cell is given by:</p>
+
+\[p = contagiousity(state(Agent_A)) \times sensitivity(state(Agent_B)) \times
+unsafety(cell)\]
+
+<p><strong>Note</strong>:</p>
+<ul>
+  <li>The highest <em>contagiousity</em> in the cell is taken to compute \(p\).</li>
+  <li>The <em>unsafety</em> of a <em>cell</em> measures how a cell is unsafe for contagion (social distancing respected or not inside etc.)</li>
+</ul>
+
+<p>If \(Agent_B\) gets infected, it gets to its own state having the least strictly positive $severity$ (it can’t jump directly to a more severe state).</p>
+
+<h3 id="state-transition">State transition</h3>
+
+<p>A <em>state transition matrix</em> and state durations are attached to each <em>agent</em>. The state transition matrix is a Markovian matrix describing the transition probabilities between the states an agent can take. The state durations are the duration of each state. If an agent is in a given state, it will switch to another one sampled according to its state transition matrix.</p>
+
+<p><strong>Note</strong>: Different agents can share the same states and the same state transition matrix but have different state durations, or have the same state, the same state durations but a different <em>state transition matrix</em>, or etc.</p>
+
+<h3 id="moves">Moves</h3>
+
+<p>A <em>move</em> consists of moving <em>agent</em>s to other <em>cell</em>s. When a move is done, all agents are concerned. It happens it two steps:</p>
+<ol>
+  <li>Selecting agents that will move</li>
+  <li>moving the selected agents to their new cells</li>
+</ol>
+
+<h3 id="agent-selection">Agent selection</h3>
+
+<p>The probability of an <em>agent</em> to be selected for a move is:</p>
+
+\[p = proba\_move(agent) \times (1 - severity(state(agent)))\]
+
+<p>The first factor represents the mobility of the <em>agent</em> so to say. The second factor represents the fact that the more severe the state of an <em>agent</em>, the less the probability that it will move.</p>
+
+<h3 id="cell-selection">Cell selection</h3>
+
+<p>The map is divided into <em>squares</em> containing <em>cells</em>. Let’s take an <em>agent</em> having its <em>home cell</em> on <em>square</em> \(S_0\). First, a <em>square</em> is randomly selected according to its distance to \(S_0\) and to the <em>attractivity</em> of the <em>cell</em>s it contains. Let say, the <em>square</em> \(S_1\) is selected. Then, within \(S_1\), a cell is randomly selected according to its attractivity. Why make it like that in two steps? For 2 reasons:</p>
+
+<ol>
+  <li>
+    <p>Reducing the memory load of the model: imagine computing and storing all the mutual distances between millions of cells, it would be very heavy. With this approach, we only have to compute and store the distances between squares. If you divide a map into 100x100 squares, those are around 50 millions of distances ( (100x100)²/2), which is manageable.</p>
+  </li>
+  <li>
+    <p>In reality, <em>square</em>s represent blocks of around 1x1 or 2x2km. within such a block, we consider the distance doesn’t play a role in the decision to move in one or the other place (<em>cell</em>). It’s probably also the case in reality.</p>
+  </li>
+</ol>
+
+<p><img src="assets/cast-cell-selection.png" alt="cast-cell-selection" title="CAST celle selection" /></p>
+
+<p><strong>Note</strong>:</p>
+<ul>
+  <li>A limitation of this model is that the attractivity of each <em>cell</em> is the same for all <em>agent</em>. An extension/refinement of this model would be to have <em>cell</em> attractivities personalized by <em>agent</em>.</li>
+  <li>The distance is always computed from the <em>home_cell</em> of an agent, not from its <em>current_cell</em>. An agent is considered wandering around its <em>home_cell</em>.</li>
+  <li>The <em>agent</em>s not selected for a move will be moved to their <em>home_cell</em> afterwards</li>
+</ul>
+
+<h3 id="temporality">Temporality</h3>
+
+<p>Each time <em>period</em> contains move <em>round</em>s (they don’t have to have all the same number of move <em>round</em>s). During each move <em>round</em>, <em>agent</em>s are selected and moved as described above. If they are infected, they can infect other <em>agent</em>s in the same <em>cell</em> than themselves. A time period finishes when all <em>agent</em>s are simultaneously forwarded. Each <em>agent</em> is actually in a given <em>state</em>, that has a given <em>duration</em>. By a forward, the time in this state is incremented by 1. If this time then exceeds the duration of the current <em>state</em> of the <em>agent</em>, the <em>agent</em> transitions to the next <em>state</em> according to its transition described above.
+<img src="assets/cast-temporality.png" alt="cast-temporality" title="CAST temporality" /></p>
+
+<h2 id="simulating-scenarios">Simulating scenarios</h2>
+
+<p>There are many options for public policies, such as:</p>
+<ul>
+  <li>Mask wearing, who, where?</li>
+  <li>Contact tracing</li>
+  <li>Re-opening of given public places</li>
+  <li>Etc.</li>
+</ul>
+
+<p>How to simulate them with CAST? It’s relatively easy. People wearing mask are simulated by agents having <em>contagiousity</em> parameter equals to 0. For contact tracing, as the contamination chain is kept in memory, once an agent transitions to a symptomatic state, you can reduce drastically the parameter $p_move$ (corresponding to the probability of moving) of the agents it contaminated before. Opening or closing public places corresponds to setting the attractivity of the concerned cells to their initial value or to 0. This framework, though relatively easy, allows a great variety of simulations and policy simulations.</p>
+
+<p>Here we simulated 3 different scenarios for France following the end of the lockdown on May 11:</p>
+
+<p><img src="assets/cast-scnarii-simulations.png" alt="cast-scnarii-simulations" title="Scenarii simulations witrh CAST" /></p>
+
+<p>here:</p>
+<ul>
+  <li><em>Conservative Policy</em> means 90% of people wearing masks, 70% of contact tracing and public places 50% safer (from a contagion point-of-view)</li>
+  <li><em>Soft Policy</em> means 30% wearing masks, no contact-tracing, public places 50% safer</li>
+  <li><em>No Policy</em> means going back to the situation prevailing before the lockdown, back to full normality.</li>
+</ul>
+
+<p>With this <em>soft policy</em>, there would be a second wave around the end of June as hard as the first wave. With no policy at all, the second wave would be 6.5x harder than the first one, a completely unmanageable tsunami. But… with the hard policy, the epidemics is contained and goes further down.</p>
+
+<p><strong>Note</strong>: we haven’t mentioned here the initialization of the simulation. How do we estimate how many symptomatic and symptomatic cases there is at the start of the simulation? That could be the subject of another article. To make it simple: the population is splitted into different demographics (man younger than 20 years old, women younger than 20 years old etc.). For each of those demographics, we have estimates of their probability and time to get hospitalized if symptomatic from <a href="https://science.sciencemag.org/content/369/6500/208">this paper</a>. Then, from the number of new hospitalizations per day by demographic from <a href="https://www.data.gouv.fr/en/datasets/donnees-hospitalieres-relatives-a-lepidemie-de-covid-19/">public datasets</a> we can infer the number of symptomatic cases few days before. And then by a similar method from symptomatic to asymptomatic cases.</p>
+
+<h2 id="perspectives">Perspectives</h2>
+
+<p>CAST simulates behaviors at a very granular level. It could be interesting to simulate different kinds of scenario in various countries or regions to get some insights on possible epidemics evolutions.</p>
+
+<p>The model is computationally already pretty efficient, due to a fully vectorized <a href="https://numpy.org/">numpy</a> implementation and also a GPU implementation with <a href="https://cupy.dev/">cupy</a>. However, there are certainly ways to make it more efficient with e.g. C++ or <a href="https://www.tensorflow.org/">Tensorflow</a> implementations.</p>
+
+<p>Other ways for improving this model would be for example to enable cells to have different attractivity according to population categories, e.g cells that would be more attractive for young people that for elderlies or the other way around.</p>
+
+<p>To conclude, this model is probably not the ultimate solution, but we think it makes it possible to provide useful forecasts and therefore contribute to the emerging outbreak science.</p>

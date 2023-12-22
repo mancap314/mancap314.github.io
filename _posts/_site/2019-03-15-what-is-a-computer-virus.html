@@ -38,51 +38,52 @@
 
 <p>The formalization we adopt here for a Turing Machine is the following:</p>
 <ul>
-  <li><script type="math/tex">S(t)</script>: state of the head at time (indice) <script type="math/tex">t</script></li>
-  <li><script type="math/tex">C(t, i)</script>: content of the cell <script type="math/tex">i</script> (on the band) at time <script type="math/tex">t</script></li>
-  <li><script type="math/tex">P(t)</script>: position of the head (indice of the cell where it’s positioned) at time <script type="math/tex">t</script></li>
+  <li>\(S(t)\): state of the head at time (indice) \(t\)</li>
+  <li>\(C(t, i)\): content of the cell \(i\) (on the band) at time \(t\)</li>
+  <li>\(P(t)\): position of the head (indice of the cell where it’s positioned) at time \(t\)</li>
 </ul>
 
 <h3 id="formalization-of-a-virus">Formalization of a virus</h3>
-<p>Now the question is, what is a virus on a Turing machine? It’s simply a sequence on the band of a Turing Machine <script type="math/tex">M</script> that gets reproduced to itself or a variant (evolution) of itself. Note that the same sequence on the band of another Turing Machine <script type="math/tex">M'</script> may not reproduce: a virus is a virus only relatively to a given machine (environment).</p>
+<p>Now the question is, what is a virus on a Turing machine? It’s simply a sequence on the band of a Turing Machine \(M\) that gets reproduced to itself or a variant (evolution) of itself. Note that the same sequence on the band of another Turing Machine \(M'\) may not reproduce: a virus is a virus only relatively to a given machine (environment).</p>
 
 <p>Here a schematic illustration:
 <img src="assets/virus-turing-machine.png" alt="virus on a turing machine" /></p>
 
-<p>NB: The <em>virus reproduction</em> can be an exact copy of the virus itself, or a variant of it. On the machine <script type="math/tex">M</script>, a virus <script type="math/tex">v</script> can produce first a variant <script type="math/tex">v_1</script> of itself, <script type="math/tex">v_1</script> producing then a variant <script type="math/tex">v_2</script> of itself etc. The set <script type="math/tex">\{v, v_1, v_2, \dots\}</script> is called the <em>viral set</em> of <script type="math/tex">v</script>. A <em>viral set</em> can be be of size 1 (the virus produces each time an exact copy of itself), of size 2, 3 etc. until infinity, means there are in this case infinitely many variations of the virus. The viral set of a virus <script type="math/tex">v</script> is noted <script type="math/tex">V</script>.</p>
+<p>NB: The <em>virus reproduction</em> can be an exact copy of the virus itself, or a variant of it. On the machine \(M\), a virus \(v\) can produce first a variant \(v_1\) of itself, \(v_1\) producing then a variant \(v_2\) of itself etc. The set \(\{v, v_1, v_2, \dots\}\) is called the <em>viral set</em> of \(v\). A <em>viral set</em> can be be of size 1 (the virus produces each time an exact copy of itself), of size 2, 3 etc. until infinity, means there are in this case infinitely many variations of the virus. The viral set of a virus \(v\) is noted \(V\).</p>
 
 <p>Now the formal definition of a virus… Brace yourself and don’t worry, the explanation follows:</p>
 
-<p><script type="math/tex">V</script> is a viral set (for a Turing Machine <script type="math/tex">M</script>) if:
-<script type="math/tex">% <![CDATA[
-\forall v \in V: \\ 
+<p>\(V\) is a viral set (for a Turing Machine \(M\)) if:
+\(\forall v \in V: \\ 
 [\exists t, j \in \mathbb{N}\space such\space that: \\
 P(t) = j\space (1.1) \\
 and\space S(t) = S(0)\space (1.2) \\
 and\space \big(C(t, j), \dots, C(t, j + \mid v\mid -1)\big) = v\space (1.3)] \\
 \Rightarrow \\
-[\exists v'\in V, t', j' \in \mathbb{N} \space with\space t'>t \space such\space that: \\
+[\exists v'\in V, t', j' \in \mathbb{N} \space with\space t'&gt;t \space such\space that: \\
 j' + \mid v'\mid \leq j\space or\space j + \mid v\mid \leq j'\space (2.1) \\
 and\space \big(C(t', j'),\dots,C(t', j'+\mid v'\mid-1)\big)=v'\space (2.2) \\
-and\space \exists t'' \space such\space that:\space t<t''<t'\space and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)] %]]></script></p>
+and\space \exists t'' \space such\space that:\space \\
+\hspace{3em} t&lt;t''&lt;t'\space \\
+\hspace{3em} and\space P(t'')\in \{j',\dots,j'+\mid v'\mid-1\}\space (2.3)]\)</p>
 
 <p><strong>Explanation</strong></p>
 
 <p>If:</p>
 <ul>
-  <li>1.1: at time <script type="math/tex">t</script>, the head of <script type="math/tex">M</script> is at the cell <script type="math/tex">j</script></li>
+  <li>1.1: at time \(t\), the head of \(M\) is at the cell \(j\)</li>
   <li>1.2: and the head is at its initial state</li>
-  <li>1.3: and the cell <script type="math/tex">j</script> and the following cells contain <script type="math/tex">v</script> [ <script type="math/tex">\mid v\mid</script> is the length (number of fields) occupied by <script type="math/tex">v</script> on the band]</li>
+  <li>1.3: and the cell \(j\) and the following cells contain \(v\) [ \(\mid v\mid\) is the length (number of fields) occupied by \(v\) on the band]</li>
 </ul>
 
-<p>Then later at time <script type="math/tex">t'</script> the head is at the cell <script type="math/tex">j'</script> such that:</p>
+<p>Then later at time \(t'\) the head is at the cell \(j'\) such that:</p>
 <ul>
-  <li>2.2: <script type="math/tex">j'</script> and the following cells contain <script type="math/tex">v'</script></li>
-  <li>2.1: the cells containing <script type="math/tex">v</script> and <script type="math/tex">v'</script> are separated, they don’t overlap</li>
-  <li>2.3: the head was positioned at a cell belonging to <script type="math/tex">v'</script> at a time <script type="math/tex">t''</script> after <script type="math/tex">t</script> but before <script type="math/tex">t'</script> (<script type="math/tex">t'</script> is the time where the head finishes to write <script type="math/tex">v'</script> on the band, so it just means that the head was previously writing <script type="math/tex">v'</script>)</li>
+  <li>2.2: \(j'\) and the following cells contain \(v'\)</li>
+  <li>2.1: the cells containing \(v\) and \(v'\) are separated, they don’t overlap</li>
+  <li>2.3: the head was positioned at a cell belonging to \(v'\) at a time \(t''\) after \(t\) but before \(t'\) (\(t'\) is the time where the head finishes to write \(v'\) on the band, so it just means that the head was previously writing \(v'\))</li>
 </ul>
 
-<p>And because <script type="math/tex">v</script> and <script type="math/tex">v'</script> belong the the same viral set <script type="math/tex">V</script>, <script type="math/tex">v'</script> is an reproduction/evolution of <script type="math/tex">v</script>.</p>
+<p>And because \(v\) and \(v'\) belong the the same viral set \(V\), \(v'\) is an reproduction/evolution of \(v\).</p>
 
 <h2 id="remarks">Remarks</h2>
 <ul>

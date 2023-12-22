@@ -1,5 +1,5 @@
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/commonmarker-0.17.13/ext/commonmarker
-/usr/bin/ruby2.7 -I /usr/lib/ruby/2.7.0 -r ./siteconf20220207-126516-fzioup.rb extconf.rb
+/home/manuel/.rbenv/versions/2.7.1/bin/ruby -I /home/manuel/.rbenv/versions/2.7.1/lib/ruby/2.7.0 -r ./siteconf20231005-289860-17108uo.rb extconf.rb
 creating Makefile
 
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/commonmarker-0.17.13/ext/commonmarker
@@ -14,19 +14,38 @@ compiling buffer.c
 compiling cmark.c
 compiling cmark_ctype.c
 compiling commonmark.c
+commonmark.c: In function ‘S_render_node’:
+commonmark.c:409:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  409 |       emph_delim = "_";
+      |                  ^
+commonmark.c:411:18: warning: assignment discards ‘const’ qualifier from pointer target type [-Wdiscarded-qualifiers]
+  411 |       emph_delim = "*";
+      |                  ^
+commonmark.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
 compiling commonmarker.c
 In file included from houdini.h:9,
                  from commonmarker.c:3:
 config.h:8: warning: "HAVE_STDBOOL_H" redefined
     8 | #define HAVE_STDBOOL_H
       | 
-In file included from /usr/include/ruby-2.7.0/ruby/ruby.h:24,
-                 from /usr/include/ruby-2.7.0/ruby.h:33,
+In file included from /home/manuel/.rbenv/versions/2.7.1/include/ruby-2.7.0/ruby/ruby.h:24,
+                 from /home/manuel/.rbenv/versions/2.7.1/include/ruby-2.7.0/ruby.h:33,
                  from commonmarker.h:9,
                  from commonmarker.c:1:
-/usr/include/x86_64-linux-gnu/ruby-2.7.0/ruby/config.h:26: note: this is the location of the previous definition
+/home/manuel/.rbenv/versions/2.7.1/include/ruby-2.7.0/x86_64-linux/ruby/config.h:26: note: this is the location of the previous definition
    26 | #define HAVE_STDBOOL_H 1
       | 
+commonmarker.c: In function ‘rb_parse_document’:
+commonmarker.c:270:12: warning: variable ‘options’ set but not used [-Wunused-but-set-variable]
+  270 |   int len, options;
+      |            ^~~~~~~
+commonmarker.c: At top level:
+cc1: note: unrecognized command-line option ‘-Wno-self-assign’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-parentheses-equality’ may have been intended to silence earlier diagnostics
+cc1: note: unrecognized command-line option ‘-Wno-constant-logical-operand’ may have been intended to silence earlier diagnostics
 compiling core-extensions.c
 compiling ext_scanners.c
 compiling footnotes.c
@@ -57,4 +76,4 @@ linking shared-object commonmarker/commonmarker.so
 
 current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/commonmarker-0.17.13/ext/commonmarker
 make "DESTDIR=" install
-/usr/bin/install -c -m 0755 commonmarker.so ./.gem.20220207-126516-xddpsf/commonmarker
+/usr/bin/install -c -m 0755 commonmarker.so ./.gem.20231005-289860-15fxx98/commonmarker

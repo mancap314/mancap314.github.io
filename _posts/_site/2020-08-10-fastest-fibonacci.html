@@ -1,0 +1,245 @@
+<p>What is the <a href="https://en.wikipedia.org/wiki/Fibonacci_number">Fibonacci sequence</a>? It’s easy to define: the first element is 1, the second is 2, and the following elements are the sum of the two previous ones: the 3rd element is 3 (2 +1), the 4th is 5 (3+2), the 5th is 8 (5+3) etc.</p>
+
+<p>Tonight on the Python <a href="https://discord.com/">Discord</a> channel, a user came up with a challenge: find a faster Python implementation to compute the elements of the Fibonacci sequence than this one:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fib</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="nb">TypeError</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">return</span> <span class="mi">1</span>
+    <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span>
+    <span class="k">for</span> <span class="n">_</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">2</span><span class="p">):</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">b</span><span class="p">,</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span>
+    <span class="k">return</span> <span class="n">b</span>
+</code></pre></div></div>
+
+<p>Challenge accepted. I already knew there is a closed form (direct formula) to compute the Fibonacci values, so I thought it would be enough to apply it directly to beat this implementation… but it was not that easy</p>
+
+<h2 id="binet-formula">Binet Formula</h2>
+
+<p>There is a closed form called <a href="http://mathonline.wikidot.com/a-closed-form-of-the-fibonacci-sequence">Binet formula</a> for computing the n-th Fibonacci value. Translated in Python (with numpy), it gives:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+<span class="k">def</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="p">.</span><span class="n">floor</span><span class="p">(</span><span class="mi">1</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span> \
+        <span class="o">*</span> <span class="p">(((</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="n">n</span> \
+        <span class="o">-</span> <span class="p">((</span><span class="mi">1</span> <span class="o">-</span> <span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">))</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)</span> <span class="o">**</span> <span class="n">n</span><span class="p">))</span>
+</code></pre></div></div>
+
+<p>Perfect. Note also the <a href="https://en.wikipedia.org/wiki/Golden_ratio">golden ratio</a> in the formula. What is the problem with this? Let’s try it out:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>fibonacci<span class="o">(</span>1500<span class="o">)</span>
+ipykernel_launcher.py:2: 
+    RuntimeWarning: 
+        overflow encountered <span class="k">in </span>double_scalars
+inf
+</code></pre></div></div>
+
+<p>So when trying to compute the 1500th Fibonacci value, we get an overflow and an infinite result… This Binet formula doesn’t seem to work in practice. But… we can modify it on order to make it computable.</p>
+
+<h2 id="trick-1-splitting-the-powers">Trick 1: Splitting the Powers</h2>
+
+<p>We can expand and simplify this term: <code class="language-plaintext highlighter-rouge">(1 + np.sqrt(5)) / 2) ** n - ((1 - np.sqrt(5)) / 2) ** n)</code> by using the binomial theorem:</p>
+
+\[\begin{align}
+\frac{1 + \sqrt{5}^n}{2} - \frac{1 - \sqrt{5}^n}{2} 
+&amp;= \frac{1}{2^n}\sum_{k=0}^n\binom{n}{k}\sqrt{5}^k - \frac{1}{2^n}\sum_{k=0}^n\binom{n}{k}(-1)^k\sqrt{5}^k \\
+&amp;= \frac{1}{2^n}\sum_{k=0}^n\binom{n}{k}(1 - (-1)^k)\sqrt{5}^k \\
+&amp;= \frac{1}{2^n}\sum_{k=0, odd}^n\binom{n}{k}2\sqrt{5}^k \\
+&amp;= \frac{1}{2^{n-1}}\sum_{k=0, odd}^n\binom{n}{k}\sqrt{5}^k \\
+\end{align}\]
+
+<p>The terms in the sum are smaller, but still not small enough. For \(n &gt; 1000\) we still get infinity result, so we need another trick:</p>
+
+<h2 id="trick-2-log-down">Trick 2: Log Down</h2>
+
+<p>The terms in the sum just consist in multiplication and power operation, so it calls for using logarithm. Bear in mind the basic logarithm property: \(log(a.b) = log(a) + log(b)\) and that the bigger \(n\), the smallest \(log(n)\) compared to n. So we get:</p>
+
+\[ln\big(\binom{n}{k}\sqrt{5}^k\big) = ln\binom{n}{k} + k.ln\sqrt{5}\]
+
+<p>where <code class="language-plaintext highlighter-rouge">ln</code> here stands for the <a href="https://en.wikipedia.org/wiki/Natural_logarithm">natural logarithm</a>. That’s already a big improvement, but we still have a problem: The binomial factor gets too high before we take its log. The solution is thus to inject the log directly into it:</p>
+
+\[\begin{align}
+ln\binom{n}{k} &amp;= ln\big(\frac{n!}{k!(n-k)!}\big) \\
+&amp;= ln\big(\prod_{i=1}^{n}i\big) - ln\big(\prod_{j=1}^{k}j\big) - ln\big(\prod_{l=1}^{n-k}l\big) \\
+&amp;= \sum_{i=1}^{n}ln(i) - \sum_{j=1}^{k}ln(j) - \sum_{l=1}^{n-k}ln(l)
+\end{align}\]
+
+<p>Note that the last two sums are the same made in reversed order.</p>
+
+<p>So we just have to implement this:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="n">np</span>
+
+
+<span class="k">def</span> <span class="nf">log_binom</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="n">ks</span><span class="p">):</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">n</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">r</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">cumsum</span><span class="p">(</span><span class="n">r</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">zeros</span><span class="p">(</span><span class="n">r</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">z</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">=</span> <span class="n">r</span>
+    <span class="n">z1</span> <span class="o">=</span> <span class="n">z</span><span class="p">[::</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">z</span><span class="p">,</span> <span class="n">z1</span><span class="p">)</span>
+    <span class="n">z</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">s</span><span class="p">,</span> <span class="n">z</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">z</span><span class="p">[</span><span class="n">ks</span><span class="p">]</span><span class="k">def</span> <span class="nf">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">n</span> <span class="o">+=</span> <span class="mi">1</span>
+    <span class="n">ks</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">arange</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">n</span> <span class="o">/</span> <span class="mi">2</span><span class="p">)).</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">uint32</span><span class="p">)</span>
+    <span class="n">coeffs</span> <span class="o">=</span> <span class="n">log_binom</span><span class="p">(</span><span class="n">n</span><span class="p">,</span>  <span class="mi">2</span> <span class="o">*</span> <span class="n">ks</span> <span class="o">+</span> <span class="mi">1</span><span class="p">).</span><span class="n">astype</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">float64</span><span class="p">)</span>
+    <span class="n">terms</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">multiply</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)),</span> <span class="mi">2</span><span class="o">*</span><span class="n">ks</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">coeffs</span><span class="p">,</span> <span class="n">terms</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">np</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="mi">2</span><span class="p">)</span><span class="o">*</span><span class="p">(</span><span class="n">n</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span> \
+            <span class="o">+</span> <span class="n">np</span><span class="p">.</span><span class="n">log</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">sqrt</span><span class="p">(</span><span class="mi">5</span><span class="p">)))</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nb">max</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">subtract</span><span class="p">(</span><span class="n">res</span><span class="p">,</span> <span class="n">m</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">exp</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="n">res</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="nb">sum</span><span class="p">(</span><span class="n">res</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">res</span><span class="p">,</span> <span class="n">m</span>
+</code></pre></div></div>
+
+<p>If you are attentive you can see three additional tricks used here:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">res = np.subtract(res, np.log(2)*(n-1) + np.log(np.sqrt(5)))</code>: is the logarithmic equivalent of dividing by <code class="language-plaintext highlighter-rouge">sqrt(5)</code> and by <code class="language-plaintext highlighter-rouge">2^(n-1)</code> in the Binet Formula</li>
+  <li>The elements in the array are divided by <code class="language-plaintext highlighter-rouge">m</code>, the max element of the array, in order to avoid hitting infinity in the following sum</li>
+  <li><code class="language-plaintext highlighter-rouge">fibonacci()</code> returns <code class="language-plaintext highlighter-rouge">res</code> and <code class="language-plaintext highlighter-rouge">m</code>. The result is in fact <code class="language-plaintext highlighter-rouge">res.exp(m)</code> but encoding it like that with two numbers avoids hitting the format width limit for integers.</li>
+</ul>
+
+<h2 id="results">Results</h2>
+
+<p>The challenge was to beat the performance of the <code class="language-plaintext highlighter-rouge">fib()</code> function above. Let’s see what we get for large <code class="language-plaintext highlighter-rouge">n</code> (you have to scroll a bit down the result, sorry):</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">timeit</span><span class="p">,</span> <span class="n">functools</span>
+
+<span class="n">n</span> <span class="o">=</span> <span class="mi">10000</span>
+
+<span class="n">t_fib</span> <span class="o">=</span> <span class="n">timeit</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">functools</span><span class="p">.</span><span class="n">partial</span><span class="p">(</span><span class="n">fib</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> 
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'performance fib(): </span><span class="si">{</span><span class="n">t_fib</span><span class="p">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'fib(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s">)=</span><span class="si">{</span><span class="n">fib</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+<span class="k">print</span><span class="p">()</span>
+
+<span class="n">t_fibonacci</span> <span class="o">=</span> <span class="n">timeit</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span><span class="n">functools</span><span class="p">.</span><span class="n">partial</span><span class="p">(</span><span class="n">fibonacci</span><span class="p">,</span> <span class="n">n</span><span class="p">))</span> 
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'performance fibonacci(): </span><span class="si">{</span><span class="n">t_fibonacci</span><span class="p">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+<span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'fibonacci(</span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s">)=</span><span class="si">{</span><span class="n">fibonacci</span><span class="p">(</span><span class="n">n</span><span class="p">)</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>which gives:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>performance fib<span class="o">()</span>: 0.019920013000955805
+fib<span class="o">(</span>10000<span class="o">)=</span>54438373113565281338734260993750380135389184554
+6959670262477158412085828656223490170830515479389605411738
+2267597802631738435958475111624143917470264295916992558633
+4117906063048089793531476108466259072759367899150677960088
+3065979666419658249377218003814411588410424809979846964873
+7533718002816376331778192794110136926275097950980071359671
+8023814710669912644214775254478587674568963808002962265133
+1113599297627266794414001015758000435107774659358053625024
+6170791805922641467900569075232189586814236784959388075642
+3483754386342639635970733756260098962462668746112041739819
+4048750624437098686543156268471861956201461266422327118150
+4036701882520531484587581719353352982783780035190252923951
+7836689467661917953884712441028463935449484614450778762529
+5209618875972728892207685373964758695431591724345371936112
+6374392633731300589616724805173798630636811500308839674958
+7102619524631352447499505204198305187168321623283859794627
+2459197714546282183996957892237989121994317754697052161310
+8109655995063829726125384824200789710905475402843814961193
+0465061866170122983288964352733750792786069444761853525144
+4210779280459799045612981294238091560550330323389196091622
+3669875992278292319189668801771857555552099465332012844650
+2371153715141749290913104897203455577507196645425232862022
+0195060914835852238827110167084330511699421157751512555102
+5165593188816404834412955703882547752111157739578011586839
+7072602565614824956460538700280331311861485399805397031555
+7275296933995860798503815814462764338588285295358034248508
+4542644647168153100153318047956743639681565332615250957112
+7480411928196022148849148284389124178520174507305538928717
+8579235094177433833315068982393544219888054293324403711948
+6721554357654856549913451927109891980266518456492782782721
+2957649240235507595558205647569365394873317659000206373126
+5706435097094826497100387335174777134033190281055756679317
+8947002411880309460403436295347199746139227479154973035641
+2633074230824051999996101549784667340458326852960388301120
+7656292459981362516523470939630497340464451063653041636308
+2366924225776146828846179184322479343440607991788336067684
+6711185597501
+
+performance fibonacci<span class="o">()</span>: 0.005696072999853641
+fibonacci<span class="o">(</span>10000<span class="o">)=(</span>57.919468677010926, 4807.735689890051<span class="o">)</span>
+</code></pre></div></div>
+
+<p>For <code class="language-plaintext highlighter-rouge">n=10000</code> our implementation is about 3.5x faster than the original implementation, challenge completed! (and this gap increases with <code class="language-plaintext highlighter-rouge">n</code>). Also, notice that the 10000th term of the Fibonacci sequence is pretty huge.</p>
+
+<p>To the best of our knowledge, this way of using the Binet formula (with the tricks) has never been used so far. <a href="https://arxiv.org/pdf/1803.07199.pdf">This paper</a> for example mentions the Binet closed form, but in its direct expression which, as we saw, throws an overflow or returns infinity value for large n.</p>
+
+<p>Note also that our algorithm is completely parallelizable.</p>
+
+<p>It would be also interesting to compare the performance of this algorithm with the <a href="https://www.nayuki.io/page/fast-fibonacci-algorithms">fast doubling</a>, considered as the fastest algorithm for computing Fibonacci values, in its provided <a href="https://www.nayuki.io/res/fast-fibonacci-algorithms/fastfibonacci.py">Python implementation</a>:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">fibonacci_fd</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="nb">ValueError</span><span class="p">(</span>
+            <span class="s">"Negative arguments not implemented"</span>
+        <span class="p">)</span>
+    <span class="k">return</span> <span class="n">_fib_fd</span><span class="p">(</span><span class="n">n</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+
+<span class="c1"># (Private) Returns the tuple (F(n), F(n+1)).
+</span><span class="k">def</span> <span class="nf">_fib_fd</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">n</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="o">=</span> <span class="n">_fib_fd</span><span class="p">(</span><span class="n">n</span> <span class="o">//</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">c</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="p">(</span><span class="n">b</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">-</span> <span class="n">a</span><span class="p">)</span>
+        <span class="n">d</span> <span class="o">=</span> <span class="n">a</span> <span class="o">*</span> <span class="n">a</span> <span class="o">+</span> <span class="n">b</span> <span class="o">*</span> <span class="n">b</span>
+        <span class="k">if</span> <span class="n">n</span> <span class="o">%</span> <span class="mi">2</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">c</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">return</span> <span class="p">(</span><span class="n">d</span><span class="p">,</span> <span class="n">c</span> <span class="o">+</span> <span class="n">d</span><span class="p">)</span><span class="k">def</span> <span class="nf">compare</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="n">t_fibonacci</span> <span class="o">=</span> <span class="n">timeit</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span>
+                    <span class="n">functools</span><span class="p">.</span><span class="n">partial</span><span class="p">(</span><span class="n">fibonacci</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                <span class="p">)</span>
+    <span class="n">perf_fibonacci</span> <span class="o">=</span> <span class="n">t_fibonacci</span><span class="p">.</span><span class="n">timeit</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span>
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'performance fibonacci(): </span><span class="si">{</span><span class="n">perf_fibonacci</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+    <span class="k">print</span><span class="p">()</span>
+
+    <span class="n">perf_fibonacci_fd</span> <span class="o">=</span> <span class="n">timeit</span><span class="p">.</span><span class="n">Timer</span><span class="p">(</span>
+                        <span class="n">functools</span><span class="p">.</span><span class="n">partial</span><span class="p">(</span><span class="n">fibonacci_fd</span><span class="p">,</span> <span class="n">n</span><span class="p">)</span>
+                    <span class="p">)</span>
+
+    <span class="k">print</span><span class="p">(</span><span class="sa">f</span><span class="s">'performance fibonacci_fd() (fast doubling): </span><span class="se">\
+</span><span class="s">        </span><span class="si">{</span><span class="n">perf_fibonacci</span><span class="si">}</span><span class="s">'</span><span class="p">)</span>
+
+</code></pre></div></div>
+
+<p>First try with small <code class="language-plaintext highlighter-rouge">n=1000</code>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>compare<span class="o">(</span>1000<span class="o">)</span>
+performance fibonacci<span class="o">()</span>: 0.004257305001374334
+performance fibonacci_fd<span class="o">()</span> <span class="o">(</span>fast doubling<span class="o">)</span>: 0.0001327530044
+3638116
+</code></pre></div></div>
+
+<p>In this case, the <em>fast doubling</em> algorithm is about 30x faster than our algorithm.</p>
+
+<p>Let’s take now a bigger <code class="language-plaintext highlighter-rouge">n = 100000</code>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>compare<span class="o">(</span>100000<span class="o">)</span>
+performance fibonacci<span class="o">()</span>: 0.06739291800477076
+performance fibonacci_fd<span class="o">()</span> <span class="o">(</span>fast doubling<span class="o">)</span>: 0.0190047310024
+96555
+</code></pre></div></div>
+
+<p>Now <em>fast doubling</em> is only 3.5x faster.</p>
+
+<p>And with an even bigger <code class="language-plaintext highlighter-rouge">n=2000000</code>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>compare<span class="o">(</span>2000000<span class="o">)</span>
+performance fibonacci<span class="o">()</span>: 1.1456952699954854
+performance fibonacci_fd<span class="o">()</span> <span class="o">(</span>fast doubling<span class="o">)</span>: 1.68371414799185
+</code></pre></div></div>
+
+<p>This time, our algorithm is about 30% faster than <em>fast doubling</em> which was considered so far the fastest Fibonacci algorithm.</p>

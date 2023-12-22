@@ -1,0 +1,77 @@
+<p>We will show here how to create a bash script implementing a progression bar. Imagine you have a script creating automatically a bulk of images, this script takes time and while it is running you would like to know how far it is, how fast, and how long it still needs (easily adaptable for other cases like downloading script etc.). In brief, how to get something like that:</p>
+
+<p><img src="assets/progression-bar.png" alt="Progression Bar" /></p>
+
+<p>Let’s go step by step:</p>
+
+<h2 id="arguments">Arguments</h2>
+<p>In this particular case, the script takes several arguments:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">--interval</code>: the progression will be checked every <code class="language-plaintext highlighter-rouge">interval</code> seconds</li>
+  <li><code class="language-plaintext highlighter-rouge">--n-images</code>: the total number of images to be created. In case of a download, it would be the total number of bytes to be downloaded, just adapt it to your case</li>
+  <li><code class="language-plaintext highlighter-rouge">--output-dir</code> and <code class="language-plaintext highlighter-rouge">--prefix</code>: in which directory the images are created and how is their name prefixed, to be able to look up how many have been created so far at every moment</li>
+</ul>
+
+<h2 id="initializing-the-progression-loop">Initializing the progression loop</h2>
+<p>We initialize a <code class="language-plaintext highlighter-rouge">while</code> loop checking the progress at regular intervals until the the process monitored (here the images creation) is completed.</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">progress</span><span class="o">=</span>0
+<span class="nv">n_images_previous</span><span class="o">=</span>0
+<span class="nv">start_time</span><span class="o">=</span><span class="si">$(</span> <span class="nb">date</span> +%s.%N <span class="si">)</span>
+<span class="k">while</span> <span class="o">((</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">progress</span><span class="k">}</span><span class="s2"> &lt; 100"</span> | bc <span class="nt">-l</span><span class="si">)</span> <span class="o">))</span><span class="p">;</span> <span class="k">do</span>
+</code></pre></div></div>
+<p>Several variables are initialized:</p>
+<ul>
+  <li><code class="language-plaintext highlighter-rouge">progress</code>: which percentage of the process has been achieved (at the beginning: 0)</li>
+  <li><code class="language-plaintext highlighter-rouge">n_images_previous</code>: How many images vave been created at the end of the previous iteration of the <code class="language-plaintext highlighter-rouge">while</code> loop</li>
+  <li><code class="language-plaintext highlighter-rouge">start_time</code> (and later <code class="language-plaintext highlighter-rouge">end_time</code>): related to the current iteration of the <code class="language-plaintext highlighter-rouge">while</code> loop. In fact, at the end of each loop the script is interrupted for <code class="language-plaintext highlighter-rouge">interval</code>seconds + a loop takes a certain time to run. With those start and end timestamps we can take both into account and get a precise estimate of the progression speed</li>
+</ul>
+
+<p>In the condition of the <code class="language-plaintext highlighter-rouge">while</code> loop, we pipe a mathematical expression into <code class="language-plaintext highlighter-rouge">bc | l</code>. That is (IMHO) a good way to evaluate arithmetical expression in <em>bash</em>.</p>
+
+<h2 id="estimating-the-progress-speed">Estimating the progress speed</h2>
+<p>Physically: <em>speed = distance / time</em>. In the same vein here, the \(distance\) is the difference between the number of images created so far - the number of images that were created at the end of the previous loop. \(time\) is the <code class="language-plaintext highlighter-rouge">runtime</code> of the previous loop. Thus we get:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">runtime</span><span class="o">=</span><span class="si">$(</span> <span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">end_time</span><span class="k">}</span><span class="s2"> - </span><span class="k">${</span><span class="nv">start_time</span><span class="k">}</span><span class="s2">"</span> | bc <span class="nt">-l</span> <span class="si">)</span>
+<span class="nv">speed</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.1f\n'</span> <span class="se">\</span>
+    <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"(</span><span class="k">${</span><span class="nv">n_images_created</span><span class="k">}</span><span class="s2"> - </span><span class="k">${</span><span class="nv">n_images_previous</span><span class="k">}</span><span class="s2">) </span><span class="se">\</span><span class="s2">
+    / </span><span class="k">${</span><span class="nv">runtime</span><span class="k">}</span><span class="s2">"</span> | bc <span class="nt">-l</span><span class="si">))</span>
+<span class="c"># Re-initialize `n_images_previous` for the next loop:</span>
+<span class="nv">n_images_previous</span><span class="o">=</span><span class="k">${</span><span class="nv">n_images_created</span><span class="k">}</span>
+</code></pre></div></div>
+<p>using <code class="language-plaintext highlighter-rouge">bc -l</code> as previously. [<code class="language-plaintext highlighter-rouge">printf '%.1f\n'</code> on l.2 allows us to control the precision of the result, here 1 decimal]</p>
+
+<h2 id="estimating-and-displaying-the-estimated-time-left-etl">Estimating and displaying the Estimated Time Left (ETL)</h2>
+<p>How long have we roughly to wait until the monitored process is finished? We compute it as the distance left (here: number of images to be still created) divided by the current speed:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">etl</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="se">\</span>
+    <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">n_images_tocreate</span><span class="k">}</span><span class="s2"> / </span><span class="k">${</span><span class="nv">speed</span><span class="k">}</span><span class="s2">"</span> <span class="se">\</span>
+    | bc <span class="nt">-l</span><span class="si">))</span>
+</code></pre></div></div>
+<p>That’s the ETL in seconds. But we would like to have it in a more human-readable format, like 1h 23min 4s instead of 4984s. So we start with the hours:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">n_hours</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">etl</span><span class="k">}</span><span class="s2"> / 3600"</span> | bc <span class="nt">-l</span><span class="si">))</span>
+<span class="k">if</span> <span class="o">((</span> <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"</span><span class="k">${</span><span class="nv">n_hours</span><span class="k">}</span><span class="s2"> &gt;= 1"</span> | bc <span class="nt">-l</span><span class="si">)</span> <span class="o">))</span><span class="p">;</span> <span class="k">then
+  </span><span class="nv">etl_toprint</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">n_hours</span><span class="k">}</span><span class="s2">h "</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+<p>On l.1 we compute the ETL in hours rounded to the previous integer. If the result is greater or equal 1, we append it with the suffix <code class="language-plaintext highlighter-rouge">h</code> to the string to print. Thus we avoid displaying <code class="language-plaintext highlighter-rouge">0h ...</code>.</p>
+
+<p>Similarly for the minutes:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nv">n_min</span><span class="o">=</span><span class="si">$(</span><span class="nb">printf</span> <span class="s1">'%.0f\n'</span> <span class="se">\</span>
+    <span class="si">$(</span><span class="nb">echo</span> <span class="s2">"scale=0; (</span><span class="k">${</span><span class="nv">etl</span><span class="k">}</span><span class="s2"> % 3600) / 60"</span> | bc <span class="nt">-l</span><span class="si">))</span>
+<span class="k">if</span> <span class="o">[[</span> <span class="k">${</span><span class="nv">n_min</span><span class="k">}</span> <span class="nt">-ge</span> 1 <span class="o">||</span> <span class="k">${</span><span class="nv">n_hours</span><span class="k">}</span> <span class="nt">-ge</span> 1 <span class="o">]]</span><span class="p">;</span> <span class="k">then
+  </span><span class="nv">etl_toprint</span><span class="o">=</span><span class="s2">"</span><span class="k">${</span><span class="nv">etl_toprint</span><span class="k">}${</span><span class="nv">n_min</span><span class="k">}</span><span class="s2">min "</span>
+<span class="k">fi</span>
+</code></pre></div></div>
+<p>Remarks:</p>
+<ul>
+  <li>On l.1, <code class="language-plaintext highlighter-rouge">scale=0</code> is necessary for <code class="language-plaintext highlighter-rouge">bc -l</code> to perform the modulo operation correctly.</li>
+  <li>On l.2, the condition means that <code class="language-plaintext highlighter-rouge">1h 0min 4s</code> for example would be displayed, but not <code class="language-plaintext highlighter-rouge">0min 15s</code></li>
+</ul>
+
+<h2 id="final-note">Final note</h2>
+<p>Run the process bar in the background by appending <code class="language-plaintext highlighter-rouge">&amp;</code> at the end of the command just before running the process to monitor:</p>
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>./progress-bar.sh <span class="nt">-n</span> 3000 &amp;
+./myscript-to-monitor.sh
+</code></pre></div></div>
+<p>The complete code is available in <a href="https://gist.github.com/mancap314/c1768a71b240009c33533faac64c1550">this snippet</a>.</p>
+
+<p>Thank you for reading!</p>
