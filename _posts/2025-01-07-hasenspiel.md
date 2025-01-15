@@ -2,7 +2,7 @@
 layout: post
 comments: true
 author: Manuel Capel
-title: Hasenspiel - The Game with the Rabbit
+title: Hasenspiel - Escape the White Rabbit
 date: 2025-01-07
 categories: [reinforcement learning]
 ---
