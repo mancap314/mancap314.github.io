@@ -1,0 +1,20 @@
+current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/racc-1.6.2/ext/racc/cparse
+/home/manuel/.rbenv/versions/2.7.1/bin/ruby extconf.rb
+checking for rb_block_call()... yes
+checking for rb_ary_subseq()... yes
+creating Makefile
+
+current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/racc-1.6.2/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250115-74707-nlsiwg sitelibdir\=./.gem.20250115-74707-nlsiwg clean
+
+current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/racc-1.6.2/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250115-74707-nlsiwg sitelibdir\=./.gem.20250115-74707-nlsiwg
+compiling cparse.c
+linking shared-object racc/cparse.so
+
+current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/racc-1.6.2/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250115-74707-nlsiwg sitelibdir\=./.gem.20250115-74707-nlsiwg install
+/usr/bin/install -c -m 0755 cparse.so ./.gem.20250115-74707-nlsiwg/racc
+
+current directory: /home/manuel/mancap314.github.io/vendor/bundle/ruby/2.7.0/gems/racc-1.6.2/ext/racc/cparse
+make DESTDIR\= sitearchdir\=./.gem.20250115-74707-nlsiwg sitelibdir\=./.gem.20250115-74707-nlsiwg clean

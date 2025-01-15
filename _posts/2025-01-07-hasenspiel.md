@@ -95,8 +95,8 @@ turn at this state. The nodes are updates recursively following the depth-first
 search, starting from the final nodes, where a player wins, backward to its
 parent node.
 
-A final node has a number $N=1$ of possible games, with a proportion $p=1$ of
-winning games for the player that won at this node, and $F=true$ for this
+A final node has a number $$N=1$$ of possible games, with a proportion $$p=1$$ of
+winning games for the player that won at this node, and $$F=true$$ for this
 winning player, means the player who wins there can force the victory there
 (obviously).
 
@@ -128,7 +128,7 @@ the start position, through all the intermediate nodes.
 
 ## Answers
 - Black can force victory from the start of the game, whatever white plays
-- There are 1101.23 quintilions (quintillion: $$10^27$$, or billions of billions of billions)
+- There are 1101.23 quintilions (quintillion: $$10^{27}$$, or billions of billions of billions)
   possible games
 - of which 54.59% where black wins
 - There are 776,283 possibles states
