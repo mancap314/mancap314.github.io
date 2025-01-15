@@ -1,0 +1,105 @@
+<p>Creating a Python package isn’t typically something a developer does routinely, so when it happens, you may end up losing time and nerves in small details you forgot. This article will show you how to make your project pip install-able.</p>
+
+<p>Here is a (hopefully) simple gentle guide easy to follow for proceeding. Just take it as a small recipe when you need to cook your Python package once in a while.</p>
+
+<p>Let’s go step by step:</p>
+
+<h2 id="prerequisite">Prerequisite</h2>
+
+<p>You have first to install the packages <a href="https://pypi.org/project/setuptools/">setuptools</a>, <a href="https://pypi.org/project/wheel/">wheel</a>, and <a href="https://pypi.org/project/twine/">twine</a>:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>setuptools wheel twine
+</code></pre></div></div>
+
+<h2 id="project-structure">Project structure</h2>
+
+<p>The first-level folder structure of your project (from now on called <em>mypackage</em>) should look like this:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>|___ LICENCE
+|___ mypackage/
+|___ README.md
+|___ requirements.txt
+|___ setup.py
+|___ tests/
+</code></pre></div></div>
+
+<p>Let’s quickly review what’s in there:</p>
+
+<ul>
+  <li><strong>LICENCE</strong>: The license for your project. If it’s open-source, an <a href="https://en.wikipedia.org/wiki/MIT_License">MIT</a> license is probably good to go. See <a href="https://choosealicense.com/">more possible licenses</a>.</li>
+  <li><strong>mypackage/</strong>: Folder where your actual will leave. <strong>Note</strong>: this folder and every subfolder should contain an <code class="language-plaintext highlighter-rouge">__init__.py</code> file (even empty) to be accessible in mypackage.</li>
+  <li><strong>README.md</strong>: Long description of your project. It will also appear on the front page of your Github repo. Has to be written with <a href="https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet">Markdown syntax</a>.</li>
+  <li><strong>requirements.txt</strong>: Contains the description of the packages <em>mypackage</em> depends on. Each line of this file is of the form <em>packagename[==version]</em>. You can generate it directly through <code class="language-plaintext highlighter-rouge">pip freeze &gt; requirements.txt</code> in the terminal if you are using a virtual environment, which is highly recommended btw. See more <a href="https://blog.usejournal.com/why-and-how-to-make-a-requirements-txt-f329c685181e">there</a>.</li>
+  <li><strong>setup.py</strong>: This one is a bit more complex. It should look like this:</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="nn">setuptools</span>
+
+<span class="k">with</span> <span class="nb">open</span><span class="p">(</span><span class="s">'README.md'</span><span class="p">,</span> <span class="s">'r'</span><span class="p">,</span> <span class="n">encoding</span><span class="o">=</span><span class="s">'utf-8'</span><span class="p">)</span> <span class="k">as</span> <span class="n">fh</span><span class="p">:</span>
+    <span class="n">long_description</span> <span class="o">=</span> <span class="n">fh</span><span class="p">.</span><span class="n">read</span><span class="p">()</span>
+
+<span class="n">setuptools</span><span class="p">.</span><span class="n">setup</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="s">'mypackage'</span><span class="p">,</span>
+    <span class="n">version</span><span class="o">=</span><span class="s">'0.0.1'</span><span class="p">,</span>
+    <span class="n">author</span><span class="o">=</span><span class="s">'My Name'</span><span class="p">,</span>
+    <span class="n">author_email</span><span class="o">=</span><span class="s">'my.name@somemail.xyz'</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="s">'My super duper Python package'</span><span class="p">,</span>
+    <span class="n">long_description</span><span class="o">=</span><span class="n">long_description</span><span class="p">,</span>
+    <span class="n">long_description_content_type</span><span class="o">=</span><span class="s">'text/markdown'</span><span class="p">,</span>
+    <span class="n">url</span><span class="o">=</span><span class="s">'https://github.com/myusername/mypackage'</span><span class="p">,</span>
+    <span class="n">packages</span><span class="o">=</span><span class="n">setuptools</span><span class="p">.</span><span class="n">find_packages</span><span class="p">(),</span>
+    <span class="n">classifiers</span><span class="o">=</span><span class="p">[</span>
+        <span class="s">'Programming Language :: Python :: 3'</span><span class="p">,</span>
+        <span class="s">'License :: OSI Approved :: MIT License'</span><span class="p">,</span>
+        <span class="s">'Operating System :: OS Independent'</span><span class="p">,</span>
+    <span class="p">],</span>
+    <span class="n">python_requires</span><span class="o">=</span><span class="s">'&gt;=3.6'</span><span class="p">,</span>
+    <span class="n">install_requires</span><span class="o">=</span><span class="p">[</span>
+        <span class="s">'somepackage&gt;=1.1.0'</span><span class="p">,</span>
+    <span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<p>You can take this and replace the values with the ones corresponding to you resp. your project. <strong>Note</strong>: specifying your project dependencies in requirements.txt is not enough to make them get automatically installed along with your package, you have to repeat them in <code class="language-plaintext highlighter-rouge">install_requires</code>.</p>
+
+<ul>
+  <li><strong>tests/</strong>: contains the (unit) tests for your package. It can’t harm to have some tests, to say the least.</li>
+</ul>
+
+<h2 id="generate-package">Generate Package</h2>
+
+<p>This step is fairly easy. Go to the root folder of mypackage in the terminal and execute:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python setup.py sdist bdist_wheel
+</code></pre></div></div>
+
+<p>Now you should see one new file: <code class="language-plaintext highlighter-rouge">mypackage.egg-info</code> and two new folders: <code class="language-plaintext highlighter-rouge">build</code> and <code class="language-plaintext highlighter-rouge">dist</code> in your project’s root directory.
+Test locally</p>
+
+<p>For this, still, on your terminal at <em>mypackage</em>’s root directory, run:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>mypackage/
+</code></pre></div></div>
+
+<p>Now you can create a script importing your package and test if it works as expected.</p>
+
+<h2 id="publish-your-package">Publish your package</h2>
+
+<p>Ready to go, happy with the result? Then publish your new package and make it available to the world!</p>
+
+<p>First, you have to create an account on <a href="https://pypi.org/">PiPy</a>. Then, at the same place in your terminal, run:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>twine upload dist/<span class="k">*</span>
+</code></pre></div></div>
+
+<p>A prompt will appear asking you for your user name and password on PiPy. Then your package gets uploaded and… that’s it! Now anyone in the world can use your package!</p>
+
+<p>Well, that’s hopefully not the end of the story. Your package may live, evolve and you might want to:</p>
+
+<h2 id="update-your-package">Update your package</h2>
+
+<p>For this, first, bump <em>mypackage</em>’s version in <em>setup.py</em>. Then re-run <code class="language-plaintext highlighter-rouge">python setup.py sdist bdist_wheel</code> and <code class="language-plaintext highlighter-rouge">twine upload dist/*</code>. Your new version of mypackage is now also available to the world!</p>
+
+<p>That was it. As an example you can look at <a href="https://github.com/mancap314/matrad">matrad</a>, a library I recently created for interfacing the <a href="https://github.com/binance/binance-spot-api-docs/blob/master/rest-api.md">Binance API</a> in Python (could be the subject of another story…).</p>
+
+<p>Hope this helps and thanks for reading!</p>

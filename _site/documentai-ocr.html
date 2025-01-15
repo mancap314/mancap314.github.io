@@ -1,0 +1,180 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Trying OCR with GCloud Document AI</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.7.1 -->
+<title>Trying OCR with GCloud Document AI | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.9.0" />
+<meta property="og:title" content="Trying OCR with GCloud Document AI" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="OCR stands for “Optical Character Recognition”, and is a powerful technique for extracting texts (and possibly also their position, fonts etc.) out of images. This task is far from being trivial, given all the possible fonts, colors, image qualitiesi out there. The text may also not lay on a horizontal straight line… Well you guess it, everything is possible in the wild, and the first step to make sense out of it is to extract the characters." />
+<meta property="og:description" content="OCR stands for “Optical Character Recognition”, and is a powerful technique for extracting texts (and possibly also their position, fonts etc.) out of images. This task is far from being trivial, given all the possible fonts, colors, image qualitiesi out there. The text may also not lay on a horizontal straight line… Well you guess it, everything is possible in the wild, and the first step to make sense out of it is to extract the characters." />
+<link rel="canonical" href="https://mancap314.github.io/documentai-ocr.html" />
+<meta property="og:url" content="https://mancap314.github.io/documentai-ocr.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2023-12-22T00:00:00+01:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Trying OCR with GCloud Document AI" />
+<script type="application/ld+json">
+{"description":"OCR stands for “Optical Character Recognition”, and is a powerful technique for extracting texts (and possibly also their position, fonts etc.) out of images. This task is far from being trivial, given all the possible fonts, colors, image qualitiesi out there. The text may also not lay on a horizontal straight line… Well you guess it, everything is possible in the wild, and the first step to make sense out of it is to extract the characters.","author":{"@type":"Person","name":"Manuel Capel"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/documentai-ocr.html"},"@type":"BlogPosting","headline":"Trying OCR with GCloud Document AI","dateModified":"2023-12-22T00:00:00+01:00","datePublished":"2023-12-22T00:00:00+01:00","url":"https://mancap314.github.io/documentai-ocr.html","@context":"https://schema.org"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+      <a href="/contact.html" >Contact</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <h1>Trying OCR with GCloud Document AI</h1>
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>22 Dec 2023</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/deep-learning/">deep learning</a>&nbsp;<a href="/cloud/">cloud</a></li>
+  </ul>
+</div>
+
+      <p><a href="https://en.wikipedia.org/wiki/Optical_character_recognition">OCR</a> stands for “Optical Character Recognition”, and is a powerful technique for
+extracting texts (and possibly also their position, fonts etc.) out of images.
+This task is far from being trivial, given all the possible fonts, colors,
+image qualitiesi out there. The text may also not lay on a horizontal straight line…
+Well you guess it, everything is possible in the wild, and the first
+step to make sense out of it is to extract the characters.</p>
+
+<p>Google has been very strong in this area over the last years, especially
+through its open-source tool <a href="https://github.com/tesseract-ocr/tesseract">Tesseract
+OCR</a>. This tool comes also in
+wrappers for the Python or Go etc. programming language. It also scores high in
+detection accuracy and support 100+ languages.</p>
+
+<p>That’s why I got very curious to try out the OCR capabilities served on the
+<a href="https://cloud.google.com/document-ai">Document AI</a> service of Google Cloud.</p>
+
+<h2 id="setup">Setup</h2>
+<p>First you have to log in the <a href="https://console.cloud.google.com/">Google Cloud
+console</a>, select one of your projects
+(or create a new one for that purpose) and activate <em>Document AI</em> for that
+project. There you have to create a processor. Either you can create your own
+processor, or chose one from the <em>Processor gallery</em>. I would recommend the
+latter to start. At the moment you can create it in only in two regions, namely <em>us</em> and
+<em>eu</em>. Once created, you the ID of your processor will be displayed. You will
+need it.</p>
+
+<p>Personally I create a general-purpose OCR processor in the <em>eu</em> region.</p>
+
+<h2 id="for-a-local-pdf-file">For a local PDF file</h2>
+
+<p>If you want to try it out yourself, you can do it with this
+<a href="https://gist.github.com/mancap314/a96ae779eee07e6b9c940e8b72bb9c87">Python command-line tool</a>.
+Don’t forget to follow the instruction at the beginning regarding <code class="language-plaintext highlighter-rouge">pip install</code>
+and creation of a <code class="language-plaintext highlighter-rouge">.env</code> file.</p>
+
+<p>I try it with a 30 MB / 153 pages PDF file in English.</p>
+
+<p>Then I get an error related to quota limit, which makes sense. According to the
+<a href="https://cloud.google.com/document-ai/quotas">doc</a>, online processing (what we
+have just done through this script) accepts files of max 20 MB in size.</p>
+
+<p>But batch processing accepts documents up to 1 GB, so let’s try it out:</p>
+
+<h2 id="for-a-batch-of-documents-on-gcloud-storage">For a batch of documents on GCloud Storage</h2>
+<p>For batch processing, your documents (PDF files) have to be stored in a bucket
+on GCloud storage. So I uploaded 16 documents, between 3.5 and 30 MB. This
+should keep was below the quota limits for batch processing.
+(Code for a command-line tool in Python for Document AI OCR batch processing
+available <a href="https://gist.github.com/mancap314/a96ae779eee07e6b9c940e8b72bb9c87">here</a>)
+There I got an unclear error message back, related to some tokens in one of the
+documents</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>On the pro side:</p>
+<ul>
+  <li>Large gallery of ready-to-use OCR processors</li>
+  <li>Possibility to create / fine-tune your owm OCR processor, also with
+<a href="https://livebook.manning.com/book/human-in-the-loop-machine-learning/">Human-in-the-loop</a></li>
+  <li>You can also define the fields you want back (Box positions etc.), allowing
+fine-granular post-processing (see <em>fieldMask</em> in the <a href="https://cloud.google.com/document-ai/docs/reference/rest/v1/DocumentOutputConfig">output
+config</a>)</li>
+</ul>
+
+<p>Cons:</p>
+<ul>
+  <li>Processor has to be created on the console. So no automated “Terraformed”
+deployment</li>
+  <li>Quota limits not suited for industrial use</li>
+</ul>
+
+<p>In brief, it’s a top-notch engine, but imho. still lacking packaging and
+integration for serious stuffs in production. It may come in a near future.</p>
+
+
+      <hr>
+      <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet">
+
+<div id="share-bar">
+  <h4>Share this:</h4>
+  <div class="share-buttons">
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https://mancap314.github.io/documentai-ocr.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Trying OCR with GCloud Document AI&url=https://mancap314.github.io/documentai-ocr.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=https://mancap314.github.io/documentai-ocr.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=https://mancap314.github.io/documentai-ocr.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=https://mancap314.github.io/documentai-ocr.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=https://mancap314.github.io/documentai-ocr.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://mancap314.github.io/documentai-ocr.html&title=Trying OCR with GCloud Document AI&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Trying OCR with GCloud Document AI&amp;body=Check out this site https://mancap314.github.io/documentai-ocr.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+  </div>
+</div>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'https://mancap314.github.io/documentai-ocr.html';
+      this.page.identifier = 'https://mancap314.github.io/documentai-ocr.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+</html>

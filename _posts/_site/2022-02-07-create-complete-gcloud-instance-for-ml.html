@@ -1,0 +1,280 @@
+<p>If the data volume to process exceeds the capacities of your local computer, it
+may be time to switch to a Google Cloud instance with more capacities.</p>
+
+<p>Here you will see how to set up a complete compute instance on Google cloud,
+with disk and static IP address attached and finally execute locally a Jupyter
+notebook running on this instance.</p>
+
+<h2 id="create-a-new-complete-instance-for-ml-on-google-cloud">Create a new complete instance for ML on Google Cloud</h2>
+<p>For doing this, follow these steps:</p>
+
+<h3 id="prerequisites">Prerequisites</h3>
+<p>The following steps are prerequisites for working with Google Cloud. Execute
+them only if you haven’t done them already.</p>
+
+<ol>
+  <li>
+    <p>The <code class="language-plaintext highlighter-rouge">gcloud</code> CLI has to <a href="https://cloud.google.com/sdk/docs/install">be
+installed</a>.</p>
+  </li>
+  <li>
+    <p>You need a Google <a href="https://console.cloud.google.com/">Cloud account</a>.</p>
+  </li>
+  <li>You need to authenticate via your <code class="language-plaintext highlighter-rouge">gcloud</code> CLI:
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud auth login
+</code></pre></div>    </div>
+    <p>This will open a browser window for authentication.</p>
+  </li>
+  <li>This instance has to be created within an existing <code class="language-plaintext highlighter-rouge">gcloud</code> project. Create
+one:
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud projects create my-project <span class="nt">--name</span> <span class="s2">"My Project"</span>
+</code></pre></div>    </div>
+    <p>(see <a href="https://cloud.google.com/sdk/gcloud/reference/projects/create">doc</a>)
+Now you should see <em>my-project</em> when listing your projects through:</p>
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud projects list
+</code></pre></div>    </div>
+    <p>with its <em>PROJECT_ID</em> being <code class="language-plaintext highlighter-rouge">my-project</code>, its <em>NAME</em> <code class="language-plaintext highlighter-rouge">My Project</code> and its <em>PROJECT_NUMBER</em>, an integer id provided by Google Cloud.</p>
+  </li>
+  <li>Get into this project to work within it:
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud config <span class="nb">set </span>project my-project
+</code></pre></div>    </div>
+    <p>(Replace <code class="language-plaintext highlighter-rouge">my-project</code> by the <em>PROJECT_ID</em> of your project in this command)</p>
+  </li>
+</ol>
+
+<p>Congratulations, you are all set now :) Let’s now create the instance and all
+what’s required around it:</p>
+
+<h3 id="create-static-ip-address">Create static IP address</h3>
+<p>This will make your work easier by always accessing your instance through the
+same IP address.</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute addresses create my-ipaddress-name <span class="se">\ </span>
+    <span class="nt">--region</span> europe-west1
+</code></pre></div></div>
+<p>Notes:</p>
+<ul>
+  <li>Replace <code class="language-plaintext highlighter-rouge">my-ipaddress-name</code> by any name you want</li>
+  <li>The value for <em>–region</em> is here <code class="language-plaintext highlighter-rouge">europe-west1</code>, without the <code class="language-plaintext highlighter-rouge">-b</code> at the end.</li>
+</ul>
+
+<h3 id="give-access-to-google-cloud-storage">Give access to Google Cloud Storage</h3>
+<p>The raw data you want to work on is probably stored on Google Cloud Storage (if
+it’s not the case skip this step or give access to the resource where the raw
+data is stored e.g. BigQuery instead).</p>
+
+<p>To give your instance access to Cloud Storage, you have to give it a
+<em>service-account</em> containing the <em>role</em>s required for accessing the resources
+your instance will need.</p>
+
+<h4 id="create-service-account">Create <em>service account</em></h4>
+<p>For creating a <em>service account</em> called <code class="language-plaintext highlighter-rouge">my-service-account</code> (that will be its
+ID), enter:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud iam service-accounts create my-service-account <span class="se">\</span>
+    <span class="nt">--description</span><span class="o">=</span><span class="s2">"Service Account for My Instance"</span> <span class="se">\</span>
+    <span class="nt">--display-name</span><span class="o">=</span><span class="s2">"My Service Account"</span>
+</code></pre></div></div>
+
+<h4 id="add-role-to-service-account">Add role to service account</h4>
+<p>Attach a role to our new <em>service account</em> allowing it full permissions to Cloud 
+Storage (replace <code class="language-plaintext highlighter-rouge">my-service-account-email</code> below by the service account email
+you obtained when creating it just above, you can double-check it through
+<code class="language-plaintext highlighter-rouge">gcloud iam service-accounts list</code>):</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud projects add-iam-policy-binding 123456789 <span class="se">\</span>
+    <span class="nt">--member</span><span class="o">=</span><span class="s2">"serviceAccount:my-service-account-email"</span> <span class="se">\</span>
+    <span class="nt">--role</span><span class="o">=</span><span class="s2">"roles/storage.objectAdmin"</span>
+</code></pre></div></div>
+<p>Now you should see <code class="language-plaintext highlighter-rouge">my-service-account</code> when entering:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud iam service-accounts list
+</code></pre></div></div>
+<p>Note its email, you will need it when creating the instance in the next step.</p>
+
+<p>Note: if you want to give your instance access to to <em>Cloud Storage</em> but to
+another service, just replace <code class="language-plaintext highlighter-rouge">roles/storage.objectAdmin</code> in this command by
+the <em>role</em> corresponding to the access you want to provide to this service` in
+this command by the <em>role</em> corresponding to the access you want to provide to
+this service.</p>
+
+<h3 id="create-instance">Create instance</h3>
+<p>Create a new instance by executing following in the terminal:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute instances create my-instance <span class="se">\</span>
+    <span class="nt">--machine-type</span><span class="o">=</span>e2-standard-8 <span class="se">\</span>
+    <span class="nt">--zone</span><span class="o">=</span>europe-west1-b <span class="se">\</span>
+    <span class="nt">--address</span><span class="o">=</span>my-ipaddress <span class="se">\</span>
+    <span class="nt">--service-account</span> my-service-account-email
+</code></pre></div></div>
+<p>This will create an instance with <em>machine-type</em> <code class="language-plaintext highlighter-rouge">e2-standard-8</code> (means: 8
+vCPUs, 32GB memory). This should be enough even for demanding ML projects. See
+<a href="https://cloud.google.com/compute/docs/general-purpose-machines">here</a> for an
+overview on gcloud <em>machine-types</em>. If you want GPUs on your instance, you
+should chose an <a href="https://cloud.google.com/compute/docs/gpus#a100-gpus">machine-type including GPU</a>. 
+These are more expensive, see their <a href="https://cloud.google.com/compute/gpus-pricing">pricing</a>.</p>
+
+<p>As for the geographic <em>zone</em>, you have to chose one fitting you among
+<a href="https://cloud.google.com/compute/docs/regions-zones">them</a>. This has also an
+influence on the <em>machine-types</em> available and the pricing.</p>
+
+<p>Concerning the <em>–address</em>, it should be directly the IP address created during
+the previous step <em>and NOT its name</em>.</p>
+
+<p>For <em>–service-account</em>, provide the email of the <em>service account</em> created
+above.</p>
+
+<p>See
+<a href="https://cloud.google.com/sdk/gcloud/reference/compute/instances/create">doc</a>
+for more precisions.</p>
+
+<h3 id="add-firewall-rule">Add firewall rule</h3>
+<p>Jupyter notebooks for example open by default on port <code class="language-plaintext highlighter-rouge">8080</code>. In order to access
+to a Jupyter session on your remote instance from your local computer, you have
+to enable access to the port <code class="language-plaintext highlighter-rouge">8080</code> of your remote instance:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute firewall-rules create my-fw-rule-name <span class="se">\</span>
+    <span class="nt">--allow</span> tcp:8080 <span class="se">\</span>
+    <span class="nt">--source-tags</span><span class="o">=</span>my-instance <span class="se">\</span>
+    <span class="nt">--source-ranges</span><span class="o">=</span>0.0.0.0/0 <span class="se">\</span>
+    <span class="nt">--description</span><span class="o">=</span><span class="s2">"Firewall rule for My Instance"</span>
+</code></pre></div></div>
+<p>(see <a href="https://cloud.google.com/vpc/docs/using-firewalls">doc</a>)
+You should now see your new firewall rule <code class="language-plaintext highlighter-rouge">my-fw-rule-name</code> when entering:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute firewall-rules list
+</code></pre></div></div>
+
+<h3 id="install-disk">Install disk</h3>
+<p>If your project deals with a consequent volume of data, you will probably need
+more disk space than the 10GB gigabytes provided by default on the instance you
+just created. This is the most tedious part, please follow through:</p>
+
+<h4 id="create-and-attach-disk">Create and attach disk</h4>
+<p>So for creating e.g. a disk of 300GB named <code class="language-plaintext highlighter-rouge">my-disk</code> in the same 
+zone <code class="language-plaintext highlighter-rouge">europe-west1-b</code>, execute:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute disks create my-disk <span class="se">\</span>
+    <span class="nt">--size</span> 300GB <span class="se">\</span>
+    <span class="nt">--zone</span> europe-west1-b
+</code></pre></div></div>
+
+<p>For attaching this disk to <code class="language-plaintext highlighter-rouge">my-instance</code> created above:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute instances attach-disk my-instance <span class="se">\</span>
+    <span class="nt">--disk</span> my-disk <span class="se">\</span>
+    <span class="nt">--zone</span> europe-west1-b
+</code></pre></div></div>
+<p>(see
+<a href="https://cloud.google.com/sdk/gcloud/reference/compute/insoances/attach-disk">doc</a>)</p>
+
+<h4 id="format-and-mount-disk">Format and mount disk</h4>
+<p>Now the new disk is attached to your instance, but this disk still has to be
+formatted and mounted in order for your instance to be able to use it.</p>
+
+<p>For this, first connect to the terminal of your remote instance <code class="language-plaintext highlighter-rouge">my-instance</code>
+through ssh:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute ssh my-instance <span class="nt">--zone</span><span class="o">=</span>europe-west1-b
+</code></pre></div></div>
+
+<p>Once ou are there, enter:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>lsblk
+</code></pre></div></div>
+<p>you should see the 300GB vreated and attached above, probably called here
+<code class="language-plaintext highlighter-rouge">sdb</code>.</p>
+
+<p>Then format this disk to <code class="language-plaintext highlighter-rouge">ext4</code>:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>mkfs.ext4 <span class="nt">-m</span> 0 <span class="nt">-F</span> <span class="nt">-E</span> i <span class="se">\</span>
+    <span class="nv">lazy_itable_init</span><span class="o">=</span>0,lazy_journal_init<span class="o">=</span>0,discard <span class="se">\ </span>
+    /dev/sdb
+</code></pre></div></div>
+
+<p>Then create a directory called <code class="language-plaintext highlighter-rouge">data-mount</code> (or whatever you want) where to mount this
+disk:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo mkdir</span> <span class="nt">-p</span> /data-mount
+</code></pre></div></div>
+
+<p>Now mount the disk on this directory:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>mount <span class="nt">-o</span> discard,defaults /dev/sdb /data-mount
+</code></pre></div></div>
+
+<p>If that’s what you want, also give all users write permission on the newly
+mounted disk:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo chmod </span>a+w /data-mount
+</code></pre></div></div>
+
+<p>Now you should see the disk ready to use when entering:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">df</span> <span class="nt">-h</span>
+</code></pre></div></div>
+
+<h4 id="enable-disk-on-start">Enable disk on start</h4>
+<p>When restarting your instance, you probably want this disk to be available.
+For this:</p>
+<ul>
+  <li>First, back-up the fstab file:
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo cp</span> /etc/fstab /etc/fstab.backup
+</code></pre></div>    </div>
+  </li>
+  <li>Second, add the UUID of the new disk to <code class="language-plaintext highlighter-rouge">fstab</code>:
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo </span><span class="nv">UUID</span><span class="o">=</span><span class="sb">`</span><span class="nb">sudo </span>blkid <span class="nt">-s</span> UUID <span class="nt">-o</span> value /dev/sdb<span class="sb">`</span> <span class="se">\</span>
+  /data-mount ext4 discard,defaults,noatime,nofail 0 2 <span class="se">\</span>
+  | <span class="nb">sudo tee</span> <span class="nt">-a</span> /etc/fstab
+</code></pre></div>    </div>
+  </li>
+  <li>Third, check the UUID of the new disk:
+    <div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>blkid <span class="nt">-s</span> UUID <span class="nt">-o</span> value /dev/sdb
+</code></pre></div>    </div>
+  </li>
+  <li>Finally, display <code class="language-plaintext highlighter-rouge">fstab</code> to ckeck that the entry with the UUID of the new disk is there:
+    <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>sudo cat /etc/fstab
+</code></pre></div>    </div>
+  </li>
+</ul>
+
+<h3 id="extra-steps-for-python">Extra steps for Python</h3>
+<p>Since the compute instance is provided with a bare Linux Debian OS, you have to
+install a few additional packages so that the main Python ML libraries can run. For this, keep 
+in the remote install terminal and execute:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">sudo </span>apt-get update
+<span class="nb">sudo </span>apt-get <span class="nb">install</span> <span class="nt">-y</span> python3-pip git <span class="se">\</span>
+    zlib1g-dev libffi-dev libblas-dev <span class="se">\</span>
+    liblapack-dev libjpeg-dev gfortran
+<span class="nb">echo</span> <span class="nt">-e</span> <span class="s1">'export PATH=$PATH:~/.local/bin'</span> <span class="se">\ </span>
+    <span class="o">&gt;&gt;</span> ~/.bash_profile
+<span class="nb">source</span> ~/.bash_profile
+</code></pre></div></div>
+
+<p>Then install all the Python libraries you will need, for example:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip3 <span class="nb">install </span>jupyter sklearn matplotlib
+</code></pre></div></div>
+
+<h3 id="tunneling-jupyter-notebook-to-your-local-computer">Tunneling Jupyter notebook to your local computer</h3>
+<p>On your remote instance terminal:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>jupyter-notebook <span class="nt">--no-browser</span> <span class="nt">--port</span> 8080
+</code></pre></div></div>
+<p>[Remember: you can access it through <code class="language-plaintext highlighter-rouge">gcloud compute ssh my-instance
+--zone=europe-west1-b</code>]</p>
+
+<p>For <em>–port</em> we give <code class="language-plaintext highlighter-rouge">8080</code> as value, the port open through the firewall rule
+added above.</p>
+
+<p>It will provide you a URL to open. Don’t open it yet</p>
+
+<p>On your local machine terminal:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>ssh <span class="nt">-N</span> <span class="nt">-f</span> <span class="nt">-L</span> 8080:localhost:8080 <span class="se">\</span>
+    my-username@my-instance-ipaddress
+</code></pre></div></div>
+<p>where <code class="language-plaintext highlighter-rouge">my-username</code> is your username in the remote instance terminal and
+<code class="language-plaintext highlighter-rouge">my-instance-ipaddress</code> it the static IP address for your instance created
+above (you can double-check this IP address through <code class="language-plaintext highlighter-rouge">gcloud compute instances
+list</code> in your terminal).</p>
+
+<p>Now you can open locally the URL provided above when you executed <code class="language-plaintext highlighter-rouge">jupyter-notebook</code> on
+the remote instance</p>
+
+<h3 id="starting--stopping-your-instance">Starting / Stopping your instance</h3>
+<p>When you are finished, stop your instance, otherwise you keep on paying for it
+(you pay for the time it’s running):</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute instances stop my-instance
+</code></pre></div></div>
+
+<p>When you want to start it again:</p>
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code>gcloud compute instances start my-instance
+</code></pre></div></div>
+
+<p>If you want to work on Jupyter notebook, repeat the steps above in the section
+<em>Tunneling Jupyter notebook to your local computer</em></p>
+
+<p>Congratulations, you’re ready now to leverage the power of the cloud for your
+ML project :))</p>

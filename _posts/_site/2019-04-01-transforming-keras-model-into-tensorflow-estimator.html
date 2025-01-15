@@ -1,85 +1,103 @@
-<p>A <a href="https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator">Tensorflow <code class="highlighter-rouge">Estimator</code></a> is a convenient object to manage models, especially for production. And <a href="https://keras.io/">Keras</a> is a convenient library to build models. Thus combining both is a powerful way to leverage their strenghts. Especially since Keras will be the <a href="https://medium.com/tensorflow/standardizing-on-keras-guidance-on-high-level-apis-in-tensorflow-2-0-bad2b04c819a">standard</a> for building models in Tensorflow 2.0 Let see how it works:</p>
+<p>A <a href="https://www.tensorflow.org/api_docs/python/tf/estimator/Estimator">Tensorflow <code class="language-plaintext highlighter-rouge">Estimator</code></a> is a convenient object to manage models, especially for production. And <a href="https://keras.io/">Keras</a> is a convenient library to build models. Thus combining both is a powerful way to leverage their strenghts. Especially since Keras will be the <a href="https://medium.com/tensorflow/standardizing-on-keras-guidance-on-high-level-apis-in-tensorflow-2-0-bad2b04c819a">standard</a> for building models in Tensorflow 2.0 Let see how it works:</p>
 
 <h2 id="building-a-keras-model">Building a Keras model</h2>
 <p>Here we will build a simple Keras model for the famous <a href="https://en.wikipedia.org/wiki/MNIST_database">MNIST data</a>:</p>
 <h3 id="importing-and-preparing-the-data">Importing and preparing the data</h3>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Define some constants first</span>
-<span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span> <span class="o">=</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Define some constants first
+</span><span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span> <span class="o">=</span> <span class="mi">28</span><span class="p">,</span> <span class="mi">28</span>
 <span class="n">input_shape</span> <span class="o">=</span> <span class="p">(</span><span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 <span class="n">num_classes</span> <span class="o">=</span> <span class="mi">10</span>
 
-<span class="c"># Import data</span>
-<span class="p">((</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">eval_data</span><span class="p">,</span> <span class="n">eval_labels</span><span class="p">))</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">datasets</span><span class="o">.</span><span class="n">mnist</span><span class="o">.</span><span class="n">load_data</span><span class="p">()</span>
+<span class="c1"># Import data
+</span><span class="p">((</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">),</span> <span class="p">(</span><span class="n">eval_data</span><span class="p">,</span> <span class="n">eval_labels</span><span class="p">))</span> <span class="o">=</span> \
+        <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">datasets</span><span class="p">.</span><span class="n">mnist</span><span class="p">.</span><span class="n">load_data</span><span class="p">()</span>
 
-<span class="c"># Format data</span>
-<span class="c"># convert class vectors to binary class matrices</span>
-<span class="n">train_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">train_labels</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
-<span class="n">eval_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">eval_labels</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+<span class="c1"># Format data
+# convert class vectors to binary class matrices
+</span><span class="n">train_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">train_labels</span><span class="p">,</span> 
+                                            <span class="n">num_classes</span><span class="p">)</span>
+<span class="n">eval_labels</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">utils</span><span class="p">.</span><span class="n">to_categorical</span><span class="p">(</span><span class="n">eval_labels</span><span class="p">,</span> 
+                                            <span class="n">num_classes</span><span class="p">)</span>
 
-<span class="n">train_data</span> <span class="o">=</span> <span class="n">train_data</span> <span class="o">/</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
-<span class="n">eval_data</span> <span class="o">=</span> <span class="n">eval_data</span> <span class="o">/</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
+<span class="n">train_data</span> <span class="o">=</span> <span class="n">train_data</span> <span class="o">/</span> <span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
+<span class="n">eval_data</span> <span class="o">=</span> <span class="n">eval_data</span> <span class="o">/</span><span class="n">np</span><span class="p">.</span><span class="n">float32</span><span class="p">(</span><span class="mf">255.0</span><span class="p">)</span>
 
-<span class="n">train_data</span> <span class="o">=</span> <span class="n">train_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
-<span class="n">eval_data</span> <span class="o">=</span> <span class="n">eval_data</span><span class="o">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">eval_data</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">train_data</span> <span class="o">=</span> <span class="n">train_data</span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">train_data</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                <span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="n">eval_data</span> <span class="o">=</span> <span class="n">eval_data</span><span class="p">.</span><span class="n">reshape</span><span class="p">(</span><span class="n">eval_data</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> 
+                                <span class="n">img_rows</span><span class="p">,</span> <span class="n">img_cols</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
 
 </code></pre></div></div>
 
 <h3 id="defining-the-model">Defining the model</h3>
 <p>We define a simple model with 2 convolutional layers followed by a pooling layer, a dense layer and a final softmax layer providing the class probabilities (with some dropout for regularization):</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_cnn_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-                 <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span>
-                 <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
-                 <span class="n">name</span><span class="o">=</span><span class="s">'x'</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_cnn_0</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">models</span><span class="p">.</span><span class="n">Sequential</span><span class="p">()</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> 
+                    <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                    <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span>
+                    <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
+                    <span class="n">name</span><span class="o">=</span><span class="s">'x'</span>
                 <span class="p">))</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">))</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">())</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">))</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
-<span class="n">model_cnn_0</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'softmax'</span><span class="p">))</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">MaxPooling2D</span><span class="p">,</span> <span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Flatten</span><span class="p">())</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> 
+                                    <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">))</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">add</span><span class="p">(</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dense</span><span class="p">(</span>
+        <span class="n">num_classes</span><span class="p">,</span> 
+        <span class="n">activation</span><span class="o">=</span><span class="s">'softmax'</span>
+    <span class="p">)</span>
+<span class="p">)</span>
 </code></pre></div></div>
 <p>The we simply compile the model:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_cnn_0</span><span class="o">.</span><span class="nb">compile</span><span class="p">(</span><span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">categorical_crossentropy</span><span class="p">,</span>
-                    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">optimizers</span><span class="o">.</span><span class="n">Adadelta</span><span class="p">(),</span>
-                    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'accuracy'</span><span class="p">])</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_cnn_0</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">categorical_crossentropy</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">Adadelta</span><span class="p">(),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'accuracy'</span><span class="p">])</span>
 </code></pre></div></div>
 
-<h2 id="building-and-using-an-estimator">Building and using an <code class="highlighter-rouge">Estimator</code></h2>
-<p>There is a simple ingredient to transform a Keras model to a Tensorflow <code class="highlighter-rouge">Estimator</code>, this is the method <code class="highlighter-rouge">model_to_estimator</code> from <a href="https://www.tensorflow.org/api_docs/python/tf/keras/estimator/">tensorflow.keras.estimator</a> that takes the model we just built as argument:</p>
+<h2 id="building-and-using-an-estimator">Building and using an <code class="language-plaintext highlighter-rouge">Estimator</code></h2>
+<p>There is a simple ingredient to transform a Keras model to a Tensorflow <code class="language-plaintext highlighter-rouge">Estimator</code>, this is the method <code class="language-plaintext highlighter-rouge">model_to_estimator</code> from <a href="https://www.tensorflow.org/api_docs/python/tf/keras/estimator/">tensorflow.keras.estimator</a> that takes the model we just built as argument:</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">est_cnn_0</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">model_to_estimator</span><span class="p">(</span><span class="n">keras_model</span><span class="o">=</span><span class="n">model_cnn_0</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">est_cnn_0</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">estimator</span><span class="p">.</span><span class="n">model_to_estimator</span><span class="p">(</span>
+                <span class="n">keras_model</span><span class="o">=</span><span class="n">model_cnn_0</span>
+            <span class="p">)</span>
 </code></pre></div></div>
-<p>Remark: Per default, the estimator will be save in a sub-directory of <code class="highlighter-rouge">/tmp</code> created automatically. If you want to define another directory, use the argument <code class="highlighter-rouge">model_dir</code>.</p>
-<h3 id="training-a-model-through-an-estimator">Training a model through an <code class="highlighter-rouge">Estimator</code></h3>
-<p>For training a Keras model through the Tensorflow <code class="highlighter-rouge">Estimator</code> encapsulating it, we first have to define a training input function. This function feeds the model with data during its training:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_input_fn</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">numpy_input_fn</span><span class="p">(</span>
-    <span class="n">x</span><span class="o">=</span><span class="p">{</span><span class="s">'x_input'</span><span class="p">:</span> <span class="n">train_data</span><span class="p">},</span>  <span class="c"># 'x_input' because name of 1st layer is 'x', `model_cnn_0.input_names`</span>
+<p>Remark: Per default, the estimator will be save in a sub-directory of <code class="language-plaintext highlighter-rouge">/tmp</code> created automatically. If you want to define another directory, use the argument <code class="language-plaintext highlighter-rouge">model_dir</code>.</p>
+<h3 id="training-a-model-through-an-estimator">Training a model through an <code class="language-plaintext highlighter-rouge">Estimator</code></h3>
+<p>For training a Keras model through the Tensorflow <code class="language-plaintext highlighter-rouge">Estimator</code> encapsulating it, we first have to define a training input function. This function feeds the model with data during its training:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">train_input_fn</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">estimator</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">numpy_input_fn</span><span class="p">(</span>    
+    <span class="c1"># 'x_input' because name of 1st layer is 'x'
+</span>    <span class="n">x</span><span class="o">=</span><span class="p">{</span><span class="s">'x_input'</span><span class="p">:</span> <span class="n">train_data</span><span class="p">},</span>
     <span class="n">y</span><span class="o">=</span><span class="n">train_labels</span><span class="p">,</span>
     <span class="n">batch_size</span><span class="o">=</span><span class="mi">100</span><span class="p">,</span>
     <span class="n">num_epochs</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
     <span class="n">shuffle</span><span class="o">=</span><span class="bp">True</span><span class="p">)</span>
 </code></pre></div></div>
-<p>On line 2, <code class="highlighter-rouge">train_data</code> is built in the first step, as well as well as <code class="highlighter-rouge">train_labels</code> on line 3.</p>
+<p>On line 2, <code class="language-plaintext highlighter-rouge">train_data</code> is built in the first step, as well as well as <code class="language-plaintext highlighter-rouge">train_labels</code> on line 3.</p>
 
 <p>Remarks:</p>
 <ul>
-  <li>In the second step where we defined the model, we called the for layer <code class="highlighter-rouge">x</code>. Thus the <code class="highlighter-rouge">Estimator</code> expects the key <code class="highlighter-rouge">x_input</code> for the dictionary given to the parameter <code class="highlighter-rouge">x</code> of the input function (see line 2). You can see what input name(s) are expected with <code class="highlighter-rouge">model.input_names</code></li>
-  <li><code class="highlighter-rouge">num_epochs</code> is set to <code class="highlighter-rouge">None</code> because the number of epochs for the training will be set in the next train step.</li>
-  <li>There is no rule, resp. plenty of such, for setting <code class="highlighter-rouge">batch_size</code>. Put here what fits you best.</li>
+  <li>In the second step where we defined the model, we called the for layer <code class="language-plaintext highlighter-rouge">x</code>. Thus the <code class="language-plaintext highlighter-rouge">Estimator</code> expects the key <code class="language-plaintext highlighter-rouge">x_input</code> for the dictionary given to the parameter <code class="language-plaintext highlighter-rouge">x</code> of the input function (see line 2). You can see what input name(s) are expected with <code class="language-plaintext highlighter-rouge">model.input_names</code></li>
+  <li><code class="language-plaintext highlighter-rouge">num_epochs</code> is set to <code class="language-plaintext highlighter-rouge">None</code> because the number of epochs for the training will be set in the next train step.</li>
+  <li>There is no rule, resp. plenty of such, for setting <code class="language-plaintext highlighter-rouge">batch_size</code>. Put here what fits you best.</li>
 </ul>
 
 <p>And then we train the model:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">est_cnn_0</span><span class="o">.</span><span class="n">train</span><span class="p">(</span><span class="n">input_fn</span><span class="o">=</span><span class="n">train_input_fn</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">est_cnn_0</span><span class="p">.</span><span class="n">train</span><span class="p">(</span><span class="n">input_fn</span><span class="o">=</span><span class="n">train_input_fn</span><span class="p">,</span> <span class="n">steps</span><span class="o">=</span><span class="mi">2000</span><span class="p">)</span>
 </code></pre></div></div>
-<p>The number of epochs for the training is set here through the parameter <code class="highlighter-rouge">steps</code>.We give also as argument the data input function <code class="highlighter-rouge">train_input_fn</code> we defined on the previous step.</p>
+<p>The number of epochs for the training is set here through the parameter <code class="language-plaintext highlighter-rouge">steps</code>.We give also as argument the data input function <code class="language-plaintext highlighter-rouge">train_input_fn</code> we defined on the previous step.</p>
 
-<h3 id="computing-estimations-with-an-estimator">Computing estimations with an <code class="highlighter-rouge">Estimator</code></h3>
+<h3 id="computing-estimations-with-an-estimator">Computing estimations with an <code class="language-plaintext highlighter-rouge">Estimator</code></h3>
 <p>Once the estimator is trained, we can compute estimations for incoming MNIST images (that have not been seen during the training):</p>
 
 <p>As for training, we define an input function for the estimations:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval_input_fn</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">numpy_input_fn</span><span class="p">(</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval_input_fn</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">estimator</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">numpy_input_fn</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="p">{</span><span class="s">'x_input'</span><span class="p">:</span> <span class="n">eval_data</span><span class="p">},</span>
     <span class="n">y</span><span class="o">=</span><span class="n">eval_labels</span><span class="p">,</span>
     <span class="n">num_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
@@ -87,67 +105,83 @@
 </code></pre></div></div>
 <p>Remarks:</p>
 <ul>
-  <li>Setting the parameter <code class="highlighter-rouge">shuffle</code> to <code class="highlighter-rouge">True</code> helps for training the model, but is useless to compute estimations</li>
+  <li>Setting the parameter <code class="language-plaintext highlighter-rouge">shuffle</code> to <code class="language-plaintext highlighter-rouge">True</code> helps for training the model, but is useless to compute estimations</li>
   <li>Only one epoch is needed for evaluations</li>
 </ul>
 
-<p>The we can for example evaluate our <code class="highlighter-rouge">Estimator</code> on the evaluation data:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval_results</span> <span class="o">=</span> <span class="n">est_cnn_0</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">input_fn</span><span class="o">=</span><span class="n">eval_input_fn</span><span class="p">)</span>
+<p>The we can for example evaluate our <code class="language-plaintext highlighter-rouge">Estimator</code> on the evaluation data:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval_results</span> <span class="o">=</span> <span class="n">est_cnn_0</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">input_fn</span><span class="o">=</span><span class="n">eval_input_fn</span><span class="p">)</span>
 <span class="k">print</span><span class="p">(</span><span class="n">eval_results</span><span class="p">)</span>
 </code></pre></div></div>
 
 <p>And that’s it :)</p>
 
 <h2 id="shortcoming">Shortcoming</h2>
-<p>The main shortcoming I see with this approach is the impossibility to use <a href="https://keras.io/callbacks/">Keras callbacks</a> by training the <code class="highlighter-rouge">Estimator</code>. And it can be very convenient to have for example <a href="https://keras.io/callbacks/#earlystopping">early stopping</a> or a <a href="https://keras.io/callbacks/#learningratescheduler">learning rate scheduler</a> while training a Keras model.</p>
+<p>The main shortcoming I see with this approach is the impossibility to use <a href="https://keras.io/callbacks/">Keras callbacks</a> by training the <code class="language-plaintext highlighter-rouge">Estimator</code>. And it can be very convenient to have for example <a href="https://keras.io/callbacks/#earlystopping">early stopping</a> or a <a href="https://keras.io/callbacks/#learningratescheduler">learning rate scheduler</a> while training a Keras model.</p>
 
-<p>The only way I see to circumvent it is to train beforehand the Keras model, persist it and transform this model into an <code class="highlighter-rouge">Estimator</code> <em>after</em> it’s trained.</p>
+<p>The only way I see to circumvent it is to train beforehand the Keras model, persist it and transform this model into an <code class="language-plaintext highlighter-rouge">Estimator</code> <em>after</em> it’s trained.</p>
 
 <p>For this, we first define and compile the model as before. Then we define 2 callbacks:</p>
 <ol>
   <li>A callback that will stop the training after 3 epochs without improvement of the accuracy on the validation data:
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">early_stopping_callback</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">EarlyStopping</span><span class="p">(</span><span class="n">monitor</span><span class="o">=</span><span class="s">'val_acc'</span><span class="p">,</span> <span class="n">patience</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">early_stopping_callback</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+                         <span class="n">monitor</span><span class="o">=</span><span class="s">'val_acc'</span><span class="p">,</span> 
+                         <span class="n">patience</span><span class="o">=</span><span class="mi">3</span>
+                     <span class="p">)</span>
 </code></pre></div>    </div>
   </li>
-  <li>A callback that will persist (in <code class="highlighter-rouge">'best_model.h5'</code>) the best model according to the accuracy on the validation data:
-    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_checkpoint_callback</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span><span class="s">'best_model.h5'</span><span class="p">,</span> <span class="n">monitor</span><span class="o">=</span><span class="s">'val_acc'</span><span class="p">)</span>
+  <li>A callback that will persist (in <code class="language-plaintext highlighter-rouge">'best_model.h5'</code>) the best model according to the accuracy on the validation data:
+    <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_checkpoint_callback</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
+                             <span class="s">'best_model.h5'</span><span class="p">,</span> 
+                             <span class="n">monitor</span><span class="o">=</span><span class="s">'val_acc'</span>
+                         <span class="p">)</span>
 </code></pre></div>    </div>
   </li>
 </ol>
 
 <p>Then we train the model with those callbacks:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">model_cnn_0</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">eval_data</span><span class="p">,</span> <span class="n">eval_labels</span><span class="p">),</span> 
-          <span class="n">epochs</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> 
-          <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">early_stopping_callback</span><span class="p">,</span> <span class="n">model_checkpoint_callback</span><span class="p">])</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">early_stopping_callback</span><span class="p">,</span> 
+                <span class="n">model_checkpoint_callback</span><span class="p">]</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">train_data</span><span class="p">,</span> <span class="n">train_labels</span><span class="p">,</span> 
+            <span class="n">validation_data</span><span class="o">=</span><span class="p">(</span><span class="n">eval_data</span><span class="p">,</span> <span class="n">eval_labels</span><span class="p">),</span> 
+            <span class="n">epochs</span><span class="o">=</span><span class="mi">2000</span><span class="p">,</span> 
+            <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>And the trick is to transform it now, <em>after it’s trained</em>, into an <code class="highlighter-rouge">Estimator</code>:</p>
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">est_cnn_0_trained</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">model_to_estimator</span><span class="p">(</span><span class="n">keras_model_path</span><span class="o">=</span><span class="s">'best_model.h5'</span><span class="p">)</span>
+<p>And the trick is to transform it now, <em>after it’s trained</em>, into an <code class="language-plaintext highlighter-rouge">Estimator</code>:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">est_cnn_0_trained</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">estimator</span><span class="p">.</span><span class="n">model_to_estimator</span><span class="p">(</span>
+                        <span class="n">keras_model_path</span><span class="o">=</span><span class="s">'best_model.h5'</span>
+                    <span class="p">)</span>
 </code></pre></div></div>
-<p>The model is directly loaded from the path where it has been persisted. This allows the model and the <code class="highlighter-rouge">Estimator</code> to have separated live: you can re-train, update etc. the model, persist it and then re-transform it into an <code class="highlighter-rouge">Estimator</code>.</p>
+<p>The model is directly loaded from the path where it has been persisted. This allows the model and the <code class="language-plaintext highlighter-rouge">Estimator</code> to have separated live: you can re-train, update etc. the model, persist it and then re-transform it into an <code class="language-plaintext highlighter-rouge">Estimator</code>.</p>
 
-<p>After that, we can evaluate this <code class="highlighter-rouge">Estimator</code> again with the evaluation data:</p>
+<p>After that, we can evaluate this <code class="language-plaintext highlighter-rouge">Estimator</code> again with the evaluation data:</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval_results</span> <span class="o">=</span> <span class="n">est_cnn_0_trained</span><span class="o">.</span><span class="n">evaluate</span><span class="p">(</span><span class="n">input_fn</span><span class="o">=</span><span class="n">eval_input_fn</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">eval_results</span> <span class="o">=</span> <span class="n">est_cnn_0_trained</span><span class="p">.</span><span class="n">evaluate</span><span class="p">(</span>
+                    <span class="n">input_fn</span><span class="o">=</span><span class="n">eval_input_fn</span>
+                <span class="p">)</span>
 </code></pre></div></div>
 <p>(Btw, thanks to the callbacks, the accuracy is a bit better than previously)</p>
 
-<p>We can also use the <code class="highlighter-rouge">estimator</code>to make predictions (also on the evaluation data, for sake of simplicity):</p>
+<p>We can also use the <code class="language-plaintext highlighter-rouge">estimator</code>to make predictions (also on the evaluation data, for sake of simplicity):</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">predict_input_fn</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">estimator</span><span class="o">.</span><span class="n">inputs</span><span class="o">.</span><span class="n">numpy_input_fn</span><span class="p">(</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">predict_input_fn</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">estimator</span><span class="p">.</span><span class="n">inputs</span><span class="p">.</span><span class="n">numpy_input_fn</span><span class="p">(</span>
     <span class="n">x</span><span class="o">=</span><span class="p">{</span><span class="s">'x_input'</span><span class="p">:</span> <span class="n">eval_data</span><span class="p">},</span>
     <span class="n">y</span><span class="o">=</span><span class="bp">None</span><span class="p">,</span>
     <span class="n">num_epochs</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
     <span class="n">shuffle</span><span class="o">=</span><span class="bp">False</span><span class="p">)</span>
 
-<span class="n">predictions</span> <span class="o">=</span> <span class="n">est_cnn_0_trained</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">input_fn</span><span class="o">=</span><span class="n">predict_input_fn</span><span class="p">)</span>
-<span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">predictions</span><span class="p">)])</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">est_cnn_0_trained</span><span class="p">.</span><span class="n">predict</span><span class="p">(</span>
+                    <span class="n">input_fn</span><span class="o">=</span><span class="n">predict_input_fn</span>
+                <span class="p">)</span>
+<span class="n">predictions</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">array</span><span class="p">([</span><span class="nb">list</span><span class="p">(</span><span class="n">p</span><span class="p">.</span><span class="n">values</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> \
+                            <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="nb">list</span><span class="p">(</span><span class="n">predictions</span><span class="p">)])</span>
 </code></pre></div></div>
 
 <p>Remarks:</p>
 <ul>
-  <li>The input function used for predictions does not need any value for <code class="highlighter-rouge">y</code> (obviously, since its  what we want to predict), thus it is set to <code class="highlighter-rouge">None</code></li>
-  <li>The result coming from the <code class="highlighter-rouge">predict</code> method needs some transformations before being useable as a numpy array, shown at line 8 above.</li>
+  <li>The input function used for predictions does not need any value for <code class="language-plaintext highlighter-rouge">y</code> (obviously, since its  what we want to predict), thus it is set to <code class="language-plaintext highlighter-rouge">None</code></li>
+  <li>The result coming from the <code class="language-plaintext highlighter-rouge">predict</code> method needs some transformations before being useable as a numpy array, shown at line 8 above.</li>
 </ul>
 
 <h2 id="conclusion">Conclusion</h2>

@@ -1,67 +1,331 @@
-<p>The learning rate is considered as the most important hyperparameter in a neural network [ref]. Finding the right one is thus quite crucial. Even better is to find a good <em>learning rate scheduling</em>: modifying the learning rate during the training so that the model has a bigger chance to reach a better optimum. The goal of this article is to describe a learning rate scheduling that seems to work well, along its Tensorflow implementation and an example with a simple CNN on the MNIST dataset.</p>
+<p>The learning rate is considered as the most important hyperparameter in a neural network (<a href="https://arxiv.org/abs/1206.5533">Bengio 2012</a>). Finding the right one is thus quite crucial. Even better is to find a good <em>learning rate scheduling</em>: modifying the learning rate during the training so that the model has a bigger chance to reach a better optimum. The goal of this article is to describe a learning rate scheduling that seems to work well, along its Tensorflow implementation and an example with a simple CNN on the MNIST dataset.</p>
 
 <h2 id="short-summary-of-the-method">Short summary of the method</h2>
-<p>A too big learning rate makes the model parameters react too much to the errors during the training, so that the model will probably jump over an optimum. On the other hand, a too slow learning rate makes the model move too slowly toward an optimum. So we have to find first a good range of learning rates between those two extremes. [illustration]</p>
+<p>A too big learning rate makes the model parameters react too much to the errors during the training, so that the model will probably jump over an optimum. On the other hand, a too slow learning rate makes the model move too slowly toward an optimum. So we have to find first a good range of learning rates between those two extremes.</p>
 
-<p>Then we train the model by decreasing “cosine-like” the learning rate after each batch. The amplitude of this cosine function decreases after each cycle, and each cycle is longer as the previous one. [illustration]</p>
+<p><img src="assets/too-fast-gd.png" alt="Too big learning rate" />
+<img src="assets/too-slow-gd.png" alt="Too small learning rate" />
+<img src="assets/correct-gd.png" alt="Correct learning rate" /></p>
 
-<h2 id="finding-the-optinal-learning-rate-range">Finding the optinal learning rate range</h2>
-<p>For this, we use a method first described in [ref. paper]. It consists in incrementing the learning rate after each batch. The loss begins to drop, and at some point starts to stabilize or even increase. The learning rate range corresponding to the biggest slope before the loss reaches its minimum (or stabilize) is considered as optimal.</p>
+<p>Then we train the model by decreasing “cosine-like” the learning rate after each batch and re-starting at the end of the cycle, as described in <a href="https://arxiv.org/pdf/1608.03983.pdf">Loshchilov &amp; Hutter 2017</a>. Each cycle is longer as the previous one, but in addition to the original method, the amplitude of this cosine function decreases after each cycle:</p>
+
+<p><img src="assets/cycle-lr.png" alt="Cycling learning rate" /></p>
+
+<h2 id="finding-the-optimal-learning-rate-range">Finding the optimal learning rate range</h2>
+<h3 id="principle">Principle</h3>
+<p>For this, we use a method first described in <a href="https://arxiv.org/pdf/1506.01186v2.pdf">Smith 2015</a>, section <em>3.2.2</em>. It consists in incrementing the learning rate after each batch. The loss begins to drop, and at some point starts to stabilize or even increase. The learning rate range corresponding to the biggest slope before the loss reaches its minimum (or stabilizes) is considered as optimal.</p>
 
 <p><img src="assets/learning-rate-range-selection.png" alt="Learning Rate Range Selection" /></p>
 
-<p>For selecting the learning rate range automatically, we take the range corresponding to the loss between $min + 0.05.\Delta$ and $min + 0.5.\Delta$ before the minimum is reached.</p>
+<p>The novelty here is to select the learning rate range automatically. For this we take the range corresponding to the loss between \(min + 0.05.\Delta\) and \(min + 0.5.\Delta\) before the minimum is reached.</p>
 
+<h3 id="implementation">Implementation</h3>
 <p>We define then a keras <a href="https://keras.io/callbacks/">Callback</a> which job is to increase the learning rate batch after batch between a given minimum and maximum:</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LrRangeFinder</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">callbacks</span><span class="o">.</span><span class="n">Callback</span><span class="p">):</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">LrRangeFinder</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="n">Callback</span><span class="p">):</span>
   <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">start_lr</span><span class="p">,</span> <span class="n">end_lr</span><span class="p">):</span>
-    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">__init__</span><span class="p">()</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">start_lr</span> <span class="o">=</span> <span class="n">start_lr</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">end_lr</span> <span class="o">=</span> <span class="n">end_lr</span>
+    <span class="nb">super</span><span class="p">().</span><span class="n">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">start_lr</span> <span class="o">=</span> <span class="n">start_lr</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">end_lr</span> <span class="o">=</span> <span class="n">end_lr</span>
 
   <span class="k">def</span> <span class="nf">on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">lrs</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_lr</span><span class="p">)</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">lrs</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">losses</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">backend</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span> 
+        <span class="bp">self</span><span class="p">.</span><span class="n">start_lr</span>
+    <span class="p">)</span>
 
-    <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">'steps'</span><span class="p">]</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">'steps'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> <span class="k">else</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">'samples'</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">'batch_size'</span><span class="p">])</span>
-    <span class="n">n_steps</span> <span class="o">*=</span> <span class="bp">self</span><span class="o">.</span><span class="n">params</span><span class="p">[</span><span class="s">'epochs'</span><span class="p">]</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">by</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">end_lr</span> <span class="o">-</span> <span class="bp">self</span><span class="o">.</span><span class="n">start_lr</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_steps</span>
+    <span class="n">n_steps</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'steps'</span><span class="p">]</span> \
+        <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'steps'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> \
+        <span class="k">else</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'samples'</span><span class="p">]</span> \
+                        <span class="o">/</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'batch_size'</span><span class="p">])</span>
+    <span class="n">n_steps</span> <span class="o">*=</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'epochs'</span><span class="p">]</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">by</span> <span class="o">=</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">end_lr</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">start_lr</span><span class="p">)</span> <span class="o">/</span> <span class="n">n_steps</span>
 
 
   <span class="k">def</span> <span class="nf">on_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
-    <span class="n">lr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">get_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">))</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">lrs</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span>
-    <span class="bp">self</span><span class="o">.</span><span class="n">losses</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s">'loss'</span><span class="p">))</span>
-    <span class="n">lr</span> <span class="o">+=</span> <span class="bp">self</span><span class="o">.</span><span class="n">by</span>
-    <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">backend</span><span class="o">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="o">.</span><span class="n">optimizer</span><span class="o">.</span><span class="n">lr</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
+    <span class="n">lr</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">backend</span><span class="p">.</span><span class="n">get_value</span><span class="p">(</span>
+                    <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span><span class="p">))</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">lrs</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">lr</span><span class="p">)</span>
+    <span class="bp">self</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">logs</span><span class="p">.</span><span class="n">get</span><span class="p">(</span><span class="s">'loss'</span><span class="p">))</span>
+    <span class="n">lr</span> <span class="o">+=</span> <span class="bp">self</span><span class="p">.</span><span class="n">by</span>
+    <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">backend</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span> <span class="n">lr</span><span class="p">)</span>
 </code></pre></div></div>
 
-<p>Basically it computes <code class="highlighter-rouge">n_steps</code>, the number of steps (batches) that the model will go through during this training (l.12) and <code class="highlighter-rouge">by</code> (l.14), the value by which the learning rate will be incremented after each batch (l.21)</p>
+<p>Basically it computes <code class="language-plaintext highlighter-rouge">n_steps</code>, the number of steps (batches) that the model will go through during this training (l.12) and <code class="language-plaintext highlighter-rouge">by</code> (l.14), the value by which the learning rate will be incremented after each batch (l.21)</p>
 
-<p>Let’s take a simple CNN provided in the <a href="https://keras.io/examples/mnist_cnn/">Keras documentation</a>:</p>
+<p>As a model, we take a simple CNN described in the <a href="https://keras.io/examples/mnist_cnn/">Keras documentation</a>:</p>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c"># Initializers set for better reproducibility</span>
-<span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
-<span class="n">glorot_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">glorot_normal</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
-<span class="n">he_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">initializers</span><span class="o">.</span><span class="n">he_uniform</span><span class="p">(</span><span class="n">seed</span><span class="o">=</span><span class="n">seed</span><span class="p">)</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Initializers set for better reproducibility
+</span><span class="n">seed</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">glorot_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">initializers</span><span class="p">.</span><span class="n">glorot_normal</span><span class="p">(</span>
+                        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span>
+                    <span class="p">)</span>
+<span class="n">he_initializer</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">initializers</span><span class="p">.</span><span class="n">he_uniform</span><span class="p">(</span>
+                        <span class="n">seed</span><span class="o">=</span><span class="n">seed</span>
+                    <span class="p">)</span>
 
 
 <span class="k">def</span> <span class="nf">get_model_cnn_0</span><span class="p">():</span>
-  <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">models</span><span class="o">.</span><span class="n">Sequential</span><span class="p">()</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
-               <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span>
-               <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
-               <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">he_initializer</span><span class="p">,</span>
-               <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">he_initializer</span><span class="p">,</span> <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Flatten</span><span class="p">())</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">he_initializer</span><span class="p">,</span> <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
-  <span class="n">model</span><span class="o">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="o">.</span><span class="n">keras</span><span class="o">.</span><span class="n">layers</span><span class="o">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> <span class="n">activation</span><span class="o">=</span><span class="s">'softmax'</span><span class="p">,</span> <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">glorot_initializer</span><span class="p">,</span> <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
+  <span class="n">model</span> <span class="o">=</span> <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">models</span><span class="p">.</span><span class="n">Sequential</span><span class="p">()</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> 
+                    <span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+                    <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span>
+                    <span class="n">input_shape</span><span class="o">=</span><span class="n">input_shape</span><span class="p">,</span>
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">he_initializer</span><span class="p">,</span>
+                    <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Conv2D</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span> 
+                    <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> 
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">he_initializer</span><span class="p">,</span> 
+                    <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">MaxPooling2D</span><span class="p">(</span><span class="n">pool_size</span><span class="o">=</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)))</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.25</span><span class="p">))</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Flatten</span><span class="p">())</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dense</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> 
+                    <span class="n">activation</span><span class="o">=</span><span class="s">'relu'</span><span class="p">,</span> 
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">he_initializer</span><span class="p">,</span> 
+                    <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">))</span>
+  <span class="n">model</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">layers</span><span class="p">.</span><span class="n">Dense</span><span class="p">(</span><span class="n">num_classes</span><span class="p">,</span> 
+                    <span class="n">activation</span><span class="o">=</span><span class="s">'softmax'</span><span class="p">,</span> 
+                    <span class="n">kernel_initializer</span><span class="o">=</span><span class="n">glorot_initializer</span><span class="p">,</span> 
+                    <span class="n">bias_initializer</span><span class="o">=</span><span class="s">'zeros'</span><span class="p">))</span>
   <span class="k">return</span> <span class="n">model</span>
 </code></pre></div></div>
 
+<p>And we run it over one epoch with increasing learning rate between 0.1 and 2 (reasonable range since an <code class="language-plaintext highlighter-rouge">Adadelta</code> optimizer is used):</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">epochs</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="n">lrRangeFinder</span> <span class="o">=</span> <span class="n">LrRangeFinder</span><span class="p">(</span><span class="n">start_lr</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> <span class="n">end_lr</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+<span class="n">model_cnn_0</span> <span class="o">=</span> <span class="n">get_model_cnn_0</span><span class="p">()</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">categorical_crossentropy</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">Adadelta</span><span class="p">(),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'accuracy'</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> 
+        <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> 
+        <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> 
+        <span class="n">callbacks</span><span class="o">=</span><span class="p">[</span><span class="n">lrRangeFinder</span><span class="p">])</span>
+</code></pre></div></div>
+
+<p>And we get this:</p>
+
+<p><img src="assets/model-losses.png" alt="Model Losses" /></p>
+
+<p>Then we apply following algorithm to find the extrema of the learning rate range:</p>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">smooth</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">box_pts</span><span class="p">):</span>
+  <span class="s">"""smoothes an array by taking the average of the 
+  `box_pts` point around each point"""</span>
+  <span class="n">box</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ones</span><span class="p">(</span><span class="n">box_pts</span><span class="p">)</span><span class="o">/</span><span class="n">box_pts</span>
+  <span class="n">y_smooth</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">convolve</span><span class="p">(</span><span class="n">y</span><span class="p">,</span> <span class="n">box</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s">'same'</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">y_smooth</span>
+
+<span class="n">smoothed_losses</span> <span class="o">=</span> <span class="n">smooth</span><span class="p">(</span><span class="n">lrRangeFinder</span><span class="p">.</span><span class="n">losses</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+
+<span class="c1"># Sub-sample the (smoothed) losses between the point where 
+# it reaches its max and the point where it reaches its min
+</span><span class="n">min_</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">argmin</span><span class="p">(</span><span class="n">smoothed_losses</span><span class="p">)</span>
+<span class="n">max_</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">smoothed_losses</span><span class="p">)</span>
+<span class="n">smoothed_losses_</span> <span class="o">=</span> <span class="n">smoothed_losses</span><span class="p">[</span><span class="n">min_</span><span class="p">:</span> <span class="n">max_</span><span class="p">]</span>
+
+<span class="n">smoothed_diffs</span> <span class="o">=</span> <span class="n">smooth</span><span class="p">(</span><span class="n">np</span><span class="p">.</span><span class="n">diff</span><span class="p">(</span><span class="n">smoothed_losses</span><span class="p">),</span> <span class="mi">20</span><span class="p">)</span>
+<span class="c1"># index where the (smoothed) loss starts to decrease:
+</span><span class="n">min_</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">smoothed_diffs</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="c1"># index where the (smoothed) loss restarts to increase:
+</span><span class="n">max_</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">smoothed_diffs</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">)</span>
+<span class="c1"># handle max_ == 0 when it never restarts to increase:
+</span><span class="n">max_</span> <span class="o">=</span> <span class="n">max_</span> <span class="k">if</span> <span class="n">max_</span> <span class="o">&gt;</span> <span class="mi">0</span> <span class="k">else</span> <span class="n">smoothed_diffs</span><span class="p">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="c1"># Restrain the window to the min_, max_ interval
+</span><span class="n">smoothed_losses_</span> <span class="o">=</span> <span class="n">smoothed_losses</span><span class="p">[</span><span class="n">min_</span><span class="p">:</span> <span class="n">max_</span><span class="p">]</span>
+<span class="c1"># Take min and max loss in this restrained window
+</span><span class="n">min_smoothed_loss_</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">smoothed_losses_</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">max_smoothed_loss_</span> <span class="o">=</span> <span class="nb">max</span><span class="p">(</span><span class="n">smoothed_losses_</span><span class="p">[:</span><span class="o">-</span><span class="mi">1</span><span class="p">])</span>
+<span class="n">delta</span> <span class="o">=</span> <span class="n">max_smoothed_loss_</span> <span class="o">-</span> <span class="n">min_smoothed_loss_</span>
+
+<span class="n">lr_arg_max</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">smoothed_losses_</span> <span class="o">&lt;=</span> \
+                        <span class="n">min_smoothed_loss_</span> <span class="o">+</span> <span class="p">.</span><span class="mi">05</span> <span class="o">*</span> <span class="n">delta</span><span class="p">)</span>
+<span class="n">lr_arg_min</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">smoothed_losses_</span> <span class="o">&lt;=</span> \
+                        <span class="n">min_smoothed_loss_</span> <span class="o">+</span> <span class="p">.</span><span class="mi">5</span> <span class="o">*</span> <span class="n">delta</span><span class="p">)</span>
+
+<span class="n">lr_arg_min</span> <span class="o">+=</span> <span class="n">min_</span>
+<span class="n">lr_arg_max</span> <span class="o">+=</span> <span class="n">min_</span>
+
+<span class="n">lrs</span> <span class="o">=</span> <span class="n">lrRangeFinder</span><span class="p">.</span><span class="n">lrs</span><span class="p">[</span><span class="n">lr_arg_min</span><span class="p">:</span> <span class="n">lr_arg_max</span><span class="p">]</span>
+<span class="n">lr_min</span><span class="p">,</span> <span class="n">lr_max</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">lrs</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">lrs</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>How we derive this learning rate range is illustrated here:</p>
+
+<p><img src="assets/smoothed-model-losses.png" alt="Smoothed Model Losses" /></p>
+
+<p>Interessingly, the optimal learning rate range found here is pretty way below 1.00, the default learning rate provided by Keras for this <code class="language-plaintext highlighter-rouge">Adadelta</code> optimizer.</p>
+
+<h2 id="training-with-cyclical-learning-rate">Training with cyclical learning rate</h2>
+<p>In order to decrease cosine-wise the learning rate and restart it after each cycle as described above, we define another Keras Callback (source from <a href="https://gist.github.com/jeremyjordan/5a222e04bb78c242f5763ad40626c452">Jeremy Jordan</a>, just slightly modified to compute automatically the number of steps per epoch):</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">class</span> <span class="nc">SGDRScheduler</span><span class="p">(</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="n">Callback</span><span class="p">):</span>
+    <span class="s">"""Cosine annealing learning rate scheduler with periodic restarts.
+
+    # Usage
+        ```python
+            schedule = SGDRScheduler(min_lr=1e-5,
+                                     max_lr=1e-2,
+                                     lr_decay=0.9,
+                                     cycle_length=5,
+                                     mult_factor=1.5)
+            model.fit(X_train, Y_train, 
+                        epochs=100, 
+                        callbacks=[schedule])
+        ```
+
+    # Arguments
+        min_lr: The lower bound of the learning rate range.
+        max_lr: The upper bound of the learning rate range.
+        lr_decay: Reduce the max_lr after 
+                        completion of each cycle.
+                  Ex. To reduce the max_lr by 20% 
+                        after each cycle, set 
+                        this value to 0.8.
+        cycle_length: Initial number of epochs in a cycle.
+        mult_factor: Scale epochs_to_restart after each 
+                        full cycle completion.
+
+    # References
+        Original paper: http://arxiv.org/abs/1608.03983
+    """</span>
+    <span class="k">def</span> <span class="nf">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+                 <span class="n">min_lr</span><span class="p">,</span>
+                 <span class="n">max_lr</span><span class="p">,</span>
+                 <span class="n">lr_decay</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+                 <span class="n">cycle_length</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span>
+                 <span class="n">mult_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">):</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">min_lr</span> <span class="o">=</span> <span class="n">min_lr</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">max_lr</span> <span class="o">=</span> <span class="n">max_lr</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">lr_decay</span> <span class="o">=</span> <span class="n">lr_decay</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">batch_since_restart</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">next_restart</span> <span class="o">=</span> <span class="n">cycle_length</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">cycle_length</span> <span class="o">=</span> <span class="n">cycle_length</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">mult_factor</span> <span class="o">=</span> <span class="n">mult_factor</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">history</span> <span class="o">=</span> <span class="p">{}</span>
+
+    <span class="k">def</span> <span class="nf">clr</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="s">'''Calculate the learning rate.'''</span>
+        <span class="n">fraction_to_restart</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">batch_since_restart</span> \
+                <span class="o">/</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">steps_per_epoch</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">cycle_length</span><span class="p">)</span>
+        <span class="n">lr</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">min_lr</span> <span class="o">+</span> <span class="mf">0.5</span> \
+            <span class="o">*</span> <span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">max_lr</span> <span class="o">-</span> <span class="bp">self</span><span class="p">.</span><span class="n">min_lr</span><span class="p">)</span> \
+            <span class="o">*</span> <span class="p">(</span><span class="mi">1</span> <span class="o">+</span> <span class="n">np</span><span class="p">.</span><span class="n">cos</span><span class="p">(</span><span class="n">fraction_to_restart</span> <span class="o">*</span> <span class="n">np</span><span class="p">.</span><span class="n">pi</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">lr</span>
+
+    <span class="k">def</span> <span class="nf">on_train_begin</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="s">'''Initialize the learning rate to the 
+        minimum value at the start of training.'''</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">steps_per_epoch</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'steps'</span><span class="p">]</span> \
+            <span class="k">if</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'steps'</span><span class="p">]</span> <span class="ow">is</span> <span class="ow">not</span> <span class="bp">None</span> \
+            <span class="k">else</span> <span class="nb">round</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'samples'</span><span class="p">]</span> \
+                        <span class="o">/</span> <span class="bp">self</span><span class="p">.</span><span class="n">params</span><span class="p">[</span><span class="s">'batch_size'</span><span class="p">])</span>
+        <span class="n">logs</span> <span class="o">=</span> <span class="n">logs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">backend</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span> 
+                                    <span class="bp">self</span><span class="p">.</span><span class="n">max_lr</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_batch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="s">'''Record previous batch statistics 
+        and update the learning rate.'''</span>
+        <span class="n">logs</span> <span class="o">=</span> <span class="n">logs</span> <span class="ow">or</span> <span class="p">{}</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">history</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="s">'lr'</span><span class="p">,</span> <span class="p">[]).</span><span class="n">append</span><span class="p">(</span>
+            <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">backend</span><span class="p">.</span><span class="n">get_value</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span>
+            <span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">k</span><span class="p">,</span> <span class="n">v</span> <span class="ow">in</span> <span class="n">logs</span><span class="p">.</span><span class="n">items</span><span class="p">():</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">history</span><span class="p">.</span><span class="n">setdefault</span><span class="p">(</span><span class="n">k</span><span class="p">,</span> <span class="p">[]).</span><span class="n">append</span><span class="p">(</span><span class="n">v</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="p">.</span><span class="n">batch_since_restart</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">backend</span><span class="p">.</span><span class="n">set_value</span><span class="p">(</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">optimizer</span><span class="p">.</span><span class="n">lr</span><span class="p">,</span> 
+            <span class="bp">self</span><span class="p">.</span><span class="n">clr</span><span class="p">()</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">on_epoch_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="s">'''Check for end of current cycle, 
+        apply restarts when necessary.'''</span>
+        <span class="k">if</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span> <span class="o">==</span> <span class="bp">self</span><span class="p">.</span><span class="n">next_restart</span><span class="p">:</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">batch_since_restart</span> <span class="o">=</span> <span class="mi">0</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">cycle_length</span> <span class="o">=</span> <span class="n">np</span><span class="p">.</span><span class="n">ceil</span><span class="p">(</span>
+                <span class="bp">self</span><span class="p">.</span><span class="n">cycle_length</span> <span class="o">*</span> <span class="bp">self</span><span class="p">.</span><span class="n">mult_factor</span><span class="p">)</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">next_restart</span> <span class="o">+=</span> <span class="bp">self</span><span class="p">.</span><span class="n">cycle_length</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">max_lr</span> <span class="o">*=</span> <span class="bp">self</span><span class="p">.</span><span class="n">lr_decay</span>
+            <span class="bp">self</span><span class="p">.</span><span class="n">best_weights</span> <span class="o">=</span> <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">get_weights</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">on_train_end</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logs</span><span class="o">=</span><span class="p">{}):</span>
+        <span class="s">'''Set weights to the values from the end of 
+        the most recent cycle for best performance.'''</span>
+        <span class="bp">self</span><span class="p">.</span><span class="n">model</span><span class="p">.</span><span class="n">set_weights</span><span class="p">(</span><span class="bp">self</span><span class="p">.</span><span class="n">best_weights</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>And then we train the model with this Callback. We sort out 10% of the training data as validation data. Each time that the loss reaches a new minimum, we save the model (<code class="language-plaintext highlighter-rouge">ModelCheckPoint</code> callback). If no new minimum has been reach for 10 epochs, the training is stopped (<code class="language-plaintext highlighter-rouge">EarlyStopping</code> callback). The training is stopped after at most 100 epochs.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">scheduler</span> <span class="o">=</span> <span class="n">SGDRScheduler</span><span class="p">(</span><span class="n">min_lr</span><span class="o">=</span><span class="n">lr_min</span><span class="p">,</span> 
+                            <span class="n">max_lr</span><span class="o">=</span><span class="n">lr_max</span><span class="p">,</span> 
+                            <span class="n">lr_decay</span><span class="o">=</span><span class="p">.</span><span class="mi">9</span><span class="p">,</span> 
+                            <span class="n">cycle_length</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> 
+                            <span class="n">mult_factor</span><span class="o">=</span><span class="mf">1.5</span><span class="p">)</span>
+
+<span class="n">callbacks</span> <span class="o">=</span> <span class="p">[</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="n">EarlyStopping</span><span class="p">(</span>
+                    <span class="n">monitor</span><span class="o">=</span><span class="s">'val_loss'</span><span class="p">,</span> 
+                    <span class="n">patience</span><span class="o">=</span><span class="mi">10</span>
+                <span class="p">),</span>
+             <span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">callbacks</span><span class="p">.</span><span class="n">ModelCheckpoint</span><span class="p">(</span>
+                    <span class="n">filepath</span><span class="o">=</span><span class="s">'best_model_with_cycling.h5'</span><span class="p">,</span> 
+                    <span class="n">monitor</span><span class="o">=</span><span class="s">'val_loss'</span><span class="p">,</span> 
+                    <span class="n">save_best_only</span><span class="o">=</span><span class="bp">True</span>
+                <span class="p">),</span>
+            <span class="n">scheduler</span><span class="p">]</span>
+
+<span class="n">epochs</span> <span class="o">=</span> <span class="mi">100</span>
+
+<span class="n">model_cnn_0</span> <span class="o">=</span> <span class="n">get_model_cnn_0</span><span class="p">()</span>
+<span class="n">model_cnn_0</span><span class="p">.</span><span class="nb">compile</span><span class="p">(</span>
+    <span class="n">loss</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">losses</span><span class="p">.</span><span class="n">categorical_crossentropy</span><span class="p">,</span>
+    <span class="n">optimizer</span><span class="o">=</span><span class="n">tf</span><span class="p">.</span><span class="n">keras</span><span class="p">.</span><span class="n">optimizers</span><span class="p">.</span><span class="n">Adadelta</span><span class="p">(),</span>
+    <span class="n">metrics</span><span class="o">=</span><span class="p">[</span><span class="s">'accuracy'</span><span class="p">]</span>
+<span class="p">)</span>
+
+<span class="n">history_with_optimization</span> <span class="o">=</span> <span class="n">model_cnn_0</span><span class="p">.</span><span class="n">fit</span><span class="p">(</span>
+    <span class="n">X_train</span><span class="p">,</span> <span class="n">y_train</span><span class="p">,</span> 
+    <span class="n">validation_split</span><span class="o">=</span><span class="mf">0.1</span><span class="p">,</span> 
+    <span class="n">epochs</span><span class="o">=</span><span class="n">epochs</span><span class="p">,</span> 
+    <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> 
+    <span class="n">callbacks</span><span class="o">=</span><span class="n">callbacks</span>
+<span class="p">)</span>
+</code></pre></div></div>
+<p>The performance of the model during the training looks is following:</p>
+
+<p><img src="assets/cycling-accuracy-training.png" alt="Training Model Accuracy" />
+<img src="assets/cycling-loss-training.png" alt="Training Model Loss" /></p>
+
+<p>As a result, we get 0.85% misclassification rate with this method, versus 1.05% if we simply use the constant default learning rate. That an improvement of almost 20%.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>This method for finding the optimal learning rate range combined with this cycling training seems to bring significant improvement.</p>
+
+<p>Its advantage is also that it can be automated to a large part.</p>
+
+<p>In this example on the MNIST data, this method out-performs the default method (with constant default learning rate)  on following aspects:</p>
+<ul>
+  <li>20% better misclassification rate</li>
+  <li>best validation loss obtained during training: 0.304 vs. 0.317</li>
+  <li>best validation accuracy during training: 99.32% vs. 99.20%</li>
+</ul>
+
+<p>The disadvantage of the cycling learning rate is that it took much more time to reach those better performances. With the cycling learning rate, we had to wait until epoch 23 to reach the best performance obtained by the default method (at period 8). In this case, the cycling learning rate moved slower but farer at the end.</p>
+
+<p>You can check the <a href="https://github.com/mancap314/miscellanous/blob/master/lr_optimization.ipynb">companion colab notebook</a> for more details, and also this <a href="https://www.jeremyjordan.me/nn-learning-rate/">blog article</a> where a similar technique is described.</p>

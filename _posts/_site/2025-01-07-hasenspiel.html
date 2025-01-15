@@ -1,0 +1,229 @@
+<p>Hasenspiel (German for “Rabbit Game”) is  relatively simple game played on the
+chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to
+escape the opponent pawns. It’s a funny and not so trivial game. In this
+article, we will see how to completely solve it with an efficient
+implementation in C.</p>
+
+<h2 id="game-rules">Game Rules</h2>
+<ul>
+  <li>Initial state: black has four pawns on the four black sqaures of the first raw.
+White has one pawn in a middle black square of the last opposite raw.</li>
+  <li>Moves: white can move one square diagonally in every direction, besides it’s
+block by a board edge, or by a black pawn. Black can move one square
+diagonally, but only forward.</li>
+</ul>
+
+<p><a href="assets/hasenspiel_positions.png" title="Possible moves">Possible moves for white (left) and black (right) in given positions</a></p>
+
+<ul>
+  <li>The pawns can not jump over another pawn, and no pawn can be taken away from
+the board</li>
+  <li>White starts, then black and white alternate turns. Black can move only one
+pawn at each turn.</li>
+  <li>Goal: White wins if it can reach the first raw. Black wins if it can
+completely block the white pawn.</li>
+</ul>
+
+<p><a href="assets/hasenspiel_victories.png" title="Example
+victories for white and black">Left: white wins, it could escape to the opposite raw. Right: black wins, it
+could completely encircle white</a></p>
+
+<p>Pretty easy so far.</p>
+
+<h2 id="considerations-on-the-hasenspiel">Considerations on the Hasenspiel</h2>
+<p>The origin of this game is quite obscure. It was introduced to me by an
+acquaintance from Eastern Germany, thus it comes probably from there. I
+couldn’t find any resembling game searching on Google. If you are aware of one,
+please tell me.</p>
+
+<p>This game is a good example of a <a href="https://en.wikipedia.org/wiki/Markov_decision_process">Markov Decision Process</a>
+(MDP) with two players and perfect information: all a player needs to know to
+decide a move lays open on the board. It has the <a href="https://en.wikipedia.org/wiki/Markov_property">Markov
+property</a>, means the
+current state (board configuration + player on turn) is the only information
+required to estimate what could follow, no matter how this state was reached.
+Only the present state is relevant to make decisions, not the paste states.
+This has its importance in solving this game, as we will see later.</p>
+
+<p>Other fact worth noticing: At the end of the game, there is one winner, and
+only one. No draw or whatever. This is also important in assessing if a player
+can force victory from a given position.</p>
+
+<p>Last but not least: there is no exogenous randomness (e.g. dice roll)
+contributing to the game. Any state is the result of the decisions of the
+players only.</p>
+
+<h2 id="questions">Questions</h2>
+
+<p>After playing a certain number of games, it seems however intuitive that black
+can force victory if it makes no mistake, but that it can easily make a mistake
+leading white to escape and win. Can we prove it?</p>
+
+<p>The second question that arises is, can we define an <a href="https://towardsdatascience.com/why-does-the-optimal-policy-exist-29f30fd51f8c">optimal
+policy</a>, means an
+optimal way to play at any given state for both black and white?</p>
+
+<p>The third question is, how many possible states, means board configurations,
+are possible in this game? How many possible games are there?</p>
+
+<h2 id="methodology">Methodology</h2>
+<p>To answer those questions, we need to simulate all possible <em>hasenspiel</em> games.
+However, the number of possible games is too massive for a direct “bruteforce”
+approach. Thus the strategy is to follow a <a href="https://brilliant.org/wiki/depth-first-search-dfs/">depth-first search
+(DFS)</a> approach. White
+plays its forst possible move, then black its first possible move, etc. until
+the game reaches a final step where one of both players wins, from there we go
+up one step, explore the second last possible move, etc, until we have explored
+all possible nodes of the game. For each state, we store following information:</p>
+<ul>
+  <li>If the player on turn at this state can force victory from there</li>
+  <li>How many possible games there are from this state downward</li>
+  <li>Among all those possible games, the percentage of them where black win</li>
+</ul>
+
+<h3 id="nodes-update">Nodes update</h3>
+<p>Nodes represent states. The children of a node are the states that can be
+reached from this state through the possible actions (moves) of the player at
+turn at this state. The nodes are updates recursively following the depth-first
+search, starting from the final nodes, where a player wins, backward to its
+parent node.</p>
+
+<p>A final node has a number $N=1$ of possible games, with a proportion $p=1$ of
+winning games for the player that won at this node, and $F=true$ for this
+winning player, means the player who wins there can force the victory there
+(obviously).</p>
+
+<p>Then for a parent node:</p>
+<ul>
+  <li>The number of its possible games is the sum of the possible games of its
+children node</li>
+  <li>The number of winning games for black is the sum of the number of winning
+game for black of its children nodes.</li>
+  <li>The player on turn at the parent node can force victory
+<a href="https://en.wikipedia.org/wiki/If_and_only_if">i.i.f.</a> all the children nodes
+can’t force the victory, means its opponent has no possible move allowing him
+to force victory</li>
+</ul>
+
+<p>If a node has already been evaluated during the search and is reached through
+another path: no need to go down this node again, you can re-use its already
+computed values. This is due to the Markov property mentioned above, and saves
+a massive amount of computation.</p>
+
+<p>This way you go down to all the final nodes, up to the top node representing
+the start position, through all the intermediate nodes.</p>
+
+<h2 id="answers">Answers</h2>
+<ul>
+  <li>Black can force victory from the start of the game, whatever white plays</li>
+  <li>There are 1101.23 quintilions (\(10^27\), or billions of billions of billions)
+possible games</li>
+  <li>of which 54.59% where black wins</li>
+  <li>There are 776,283 possibles states</li>
+  <li>of which 39.45% where black can force victory, and 15.18% where white can
+force victory</li>
+</ul>
+
+<p>And this was computed in… 0.148 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
+2.50GHz. Blazingly fast. See the next section.</p>
+
+<h2 id="implementation">Implementation</h2>
+<p>This program is implemented in C, and makes a quite intensive use of <a href="https://www.tutorialspoint.com/cprogramming/c_bitwise_operators.htm">bitwise
+operations</a> and
+<a href="https://www.ibm.com/docs/en/i/7.3?topic=directive-function-like-macros">macro-functions</a>.
+A quite common opinion is that <a href="https://wiki.c2.com/?MacrosAreEvil">macros are
+evil</a>, or even <a href="https://araujo88.medium.com/the-magnificent-world-of-macros-in-c-c-4bc48623b65d">programming
+masochism</a>,
+but personally I like them. More on it on a next blog post maybe.</p>
+
+<h2 id="state-representation">State representation</h2>
+<p>In every state of the game, alle the pawns can only be on black squares, since
+they start on black square and can move only diagonally (easy <a href="https://www.scribbr.com/methodology/inductive-reasoning/">inductive
+reasoning</a>). There
+are 32 black squares on a standard chess board, numbered from 0 to 31, from
+left to right upward. Thus the position of a single pawn can be encoded in five
+bits (\(2^5=32\)), and the position of the five pawns on the board in 25 bits.
+Then, one more bit is required to encode the player at turn at this position.
+Thus 26 bits in total. This fits in a 32 bits unsigned integer type, a.k.a.
+<a href="https://www.badprog.com/c-type-what-are-uint8-t-uint16-t-uint32-t-and-uint64-t">uint32_t</a>.</p>
+
+<p>The position encoding is ordered as follows:</p>
+<ul>
+  <li>First bit for the player at turn</li>
+  <li>The five next bits for the position of the white pawn</li>
+  <li>The next 20 bits for the position of the four black pawns, in descending
+order.</li>
+</ul>
+
+<p>The descending order for encoding the position of the black pawns has two major
+advantages:</p>
+<ol>
+  <li>Position disambiguation: pawn 1 at position 4 and pawn 2 at position 8 for
+example is exactly the same as pawn 1 at position 8 with pawn 2 at 4. Thus
+by enforcing order, you prevent that various encodings encode the same
+position</li>
+  <li>The numerical value of the variable encoding the state is minimized, having
+the lowest value on the highest bits.</li>
+</ol>
+
+<p>If white is at turn, it has max. 4 possible moves available (one move
+diagonally in every direction). Black has max. 8 possible moves. Thus all
+possible moves in any given state can be <a href="https://www.geeksforgeeks.org/ml-one-hot-encoding/">one-hot encoded</a> 
+in a single <code class="language-plaintext highlighter-rouge">uint8_t</code> variable.</p>
+
+<p>Their are several pitfalls to be aware of, such as moves restricted for pawns
+on an edge, or move translation depending on the parity of the raw, e.g. move
+forward right means adding +4 to the position on even rows and +5 on odd rows.
+Also, when white wins, the game is not computed until it reaches the first row,
+but only until it passes by the last black pawn, where it is obvious that white
+is unstoppable from there. And many other tricks, leading to the performance
+mentioned above.</p>
+
+<p>In order to store the immediate state, it suffices to note that the highest
+possible numerical value for a position encoding is \(60,614,406\). After
+subtracting the lowest possible numerical value of a position encoding, you get
+the size of the array where the nodes are stored during the depth-first
+search. As mentioned above, there are roughly 776k possible states, means
+nodes,so that this array stays quite sparse and there are probably ways to map
+the states in a narrower range of values.</p>
+
+<h2 id="playing">Playing</h2>
+
+<p>When playing based on the states computed above, the agent evaluates the
+possible moves based and their resulting states, and their outlook for the
+opponent, in following priority:</p>
+<ul>
+  <li>if a move results in a state where the opponent can force victory, it’s
+ranked lower than a move resulting in a state where the opponent can’t force
+victory.</li>
+  <li>if two moves have the same effect on the opponent’s capacity to force
+victory, a move leading to a state where the opponent has a higher percentage
+of victory from all games starting from the resulting state, is ranked lower.</li>
+</ul>
+
+<p>Thus the value of a move in a given position is evaluated based on its
+<a href="https://stats.stackexchange.com/questions/411932/reinforcement-learning-afterstate-and-afterstate-value-functions">afterstate</a>.</p>
+
+<p>What we call here optimal policy, is when an agent (player) performs the
+resulting highest ranking action.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>The <em>Hasenspiel</em> is a small game with interesting properties. It is way less
+complex than chess or go, but also way for complex than tic-tac-toe. Now that
+it’s completely solved, it allows to test various reinforcement learning
+approaches like Monte-Carlo, TD learning etc. in a setting where the
+ground-truth is known.</p>
+
+<p>Its implementation shows also how to make aggressive use of macros and bitwise
+operations in a defensive programming style, for maximal performance and
+safety.</p>
+
+<p>In the future I will maybe implement this game using
+<a href="https://www.raylib.com/">Raylib</a>, to have fun
+playing against the computer. Keep in touch.</p>
+
+<h2 id="bonus-first-10-moves-when-bots-agents-play-optimally">Bonus: First 10 moves when bots agents play optimally</h2>
+
+<p><a href="assets/hasenspiel_optimal10.png" title="First 10 optimal moves">First 10 moves when white and black play optimally</a></p>
+
