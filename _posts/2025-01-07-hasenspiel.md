@@ -13,7 +13,7 @@ article, we will see how to completely solve it with an efficient
 implementation in C.
 
 ## Game Rules
-- Initial state: black has four pawns on the four black sqaures of the first raw.
+- Initial state: black has four pawns on the four black squares of the first raw.
 White has one pawn in a middle black square of the last opposite raw.
 - Moves: white can move one square diagonally in every direction, besides it's
   block by a board edge, or by a black pawn. Black can move one square
@@ -113,7 +113,7 @@ Then for a parent node:
 <figure>
     <img src="{{site.baseurl}}/assets/hasenspiel_node_update.png" alt="Node  update"/>
     <figcaption>Black position leading here to two white position: the number
-    of possible games is the sum of the number of possible game of its vhild
+    of possible games is the sum of the number of possible game of its child
     nodes; same for the number of games where black wins. Here White has one
     possibility to force victory, thus black cannot force victory.</figcaption>
 </figure>
@@ -241,7 +241,7 @@ way, the white rabbit has a hard time trying to escape. In the meanwhile, white
 moves to the middle and then tries to find a hole after coming in contact with
 black.
 
-But surpizingly, when both players play optimally, white moves forward to the
+But surprizingly, when both players play optimally, white moves forward to the
 side, and black tries to catch him with only two pawns. See a picture of the
 first 10 moves when both players play optimally:
 
