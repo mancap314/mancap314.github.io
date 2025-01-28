@@ -1,0 +1,16 @@
+current directory: /home/maca/mancap314.github.io/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8/ext/unf_ext
+/usr/bin/ruby3.1 -I /usr/lib/ruby/vendor_ruby -r ./siteconf20250128-8177-qsiu2w.rb extconf.rb
+checking for -lstdc++... yes
+creating Makefile
+
+current directory: /home/maca/mancap314.github.io/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8/ext/unf_ext
+make DESTDIR\= clean
+
+current directory: /home/maca/mancap314.github.io/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8/ext/unf_ext
+make DESTDIR\=
+compiling unf.cc
+linking shared-object unf_ext.so
+
+current directory: /home/maca/mancap314.github.io/vendor/bundle/ruby/3.1.0/gems/unf_ext-0.0.8/ext/unf_ext
+make DESTDIR\= install
+/usr/bin/install -c -m 0755 unf_ext.so ./.gem.20250128-8177-9pw1jl

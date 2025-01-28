@@ -15,6 +15,12 @@ implementation in C.
 ## Game Rules
 - Initial state: black has four pawns on the four black squares of the first raw.
 White has one pawn in a middle black square of the last opposite raw.
+
+<figure>
+    <img src="{{site.baseurl}}/assets/hasenspiel_initial_position.png" alt="Initial Position"/>
+    <figcaption>Initial Position in Hasenspiel</figcaption>
+</figure>
+
 - Moves: white can move one square diagonally in every direction, besides it's
   block by a board edge, or by a black pawn. Black can move one square
   diagonally, but only forward.

@@ -10,9 +10,9 @@
     <script type="text/javascript" src="assets/js/switch.js"></script>
     <script type="text/javascript" async
   src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
-    <!-- Begin Jekyll SEO tag v2.7.1 -->
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
 <title>Hasenspiel - Escape the White Rabbit | Data science and other stuffs</title>
-<meta name="generator" content="Jekyll v3.9.0" />
+<meta name="generator" content="Jekyll v3.9.3" />
 <meta property="og:title" content="Hasenspiel - Escape the White Rabbit" />
 <meta name="author" content="Manuel Capel" />
 <meta property="og:locale" content="en_US" />
@@ -26,7 +26,7 @@
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Hasenspiel - Escape the White Rabbit" />
 <script type="application/ld+json">
-{"description":"Hasenspiel (German for “Rabbit Game”) is relatively simple game played on the chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to escape the opponent pawns. It’s a funny and not so trivial game. In this article, we will see how to completely solve it with an efficient implementation in C.","author":{"@type":"Person","name":"Manuel Capel"},"mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/hasenspiel.html"},"@type":"BlogPosting","headline":"Hasenspiel - Escape the White Rabbit","dateModified":"2025-01-07T00:00:00+01:00","datePublished":"2025-01-07T00:00:00+01:00","url":"https://mancap314.github.io/hasenspiel.html","@context":"https://schema.org"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Manuel Capel"},"dateModified":"2025-01-07T00:00:00+01:00","datePublished":"2025-01-07T00:00:00+01:00","description":"Hasenspiel (German for “Rabbit Game”) is relatively simple game played on the chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to escape the opponent pawns. It’s a funny and not so trivial game. In this article, we will see how to completely solve it with an efficient implementation in C.","headline":"Hasenspiel - Escape the White Rabbit","mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/hasenspiel.html"},"url":"https://mancap314.github.io/hasenspiel.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -76,6 +76,14 @@ implementation in C.</p>
 <ul>
   <li>Initial state: black has four pawns on the four black squares of the first raw.
 White has one pawn in a middle black square of the last opposite raw.</li>
+</ul>
+
+<figure>
+    <img src="/assets/hasenspiel_initial_position.png" alt="Initial Position" />
+    <figcaption>Initial Position in Hasenspiel</figcaption>
+</figure>
+
+<ul>
   <li>Moves: white can move one square diagonally in every direction, besides it’s
 block by a board edge, or by a black pawn. Black can move one square
 diagonally, but only forward.</li>
