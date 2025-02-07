@@ -111,17 +111,16 @@ Then for a parent node:
   children node
 - The number of winning games for black is the sum of the number of winning
   game for black of its children nodes.
-- The player on turn at the parent node can force victory
-  [i.i.f.](https://en.wikipedia.org/wiki/If_and_only_if) all the children nodes
-  can't force the victory, means its opponent has no possible move allowing him
-  to force victory
+- If black hast turn, it can force victory[i.i.f.](https://en.wikipedia.org/wiki/If_and_only_if) 
+at least one of its child nodes can force black victory. If white is on turn, black can force victory i.i.f. 
+all of its child nodes can force black victory.
 
 <figure>
     <img src="{{site.baseurl}}/assets/hasenspiel_node_update.png" alt="Node  update"/>
     <figcaption>Black position leading here to two white position: the number
     of possible games is the sum of the number of possible game of its child
-    nodes; same for the number of games where black wins. Here White has one
-    possibility to force victory, thus black cannot force victory.</figcaption>
+    nodes; same for the number of games where black wins. Here one of the possible black actions
+    leads to a white position where black can force victory, thus black can force.</figcaption>
 </figure>
 
 If a node has already been evaluated during the search and is reached through
@@ -138,10 +137,10 @@ the start position, through all the intermediate nodes.
   possible games
 - of which 54.59% where black wins
 - There are 776,283 possibles states
-- of which 39.45% where black can force victory, and 15.18% where white can
+- of which 4.93% where black can force victory, and 2.68% where white can
   force victory
 
-And this was computed in... 0.148 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
+And this was computed in... 0.135 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
 2.50GHz. Blazingly fast. See the next section.
 
 ## Implementation
