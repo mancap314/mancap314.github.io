@@ -42,7 +42,7 @@ White has one pawn in a middle black square of the last opposite raw.
     <figcaption>Left: white wins, it could escape to the opposite raw. Right: black wins, it could completely encircle white</figcaption>
 </figure>
 
-Pretty easy so far. You can play it online [here](https://mancap314.itch.io/mancap314).
+Pretty easy so far. You can play it online [here](https://mancap314.itch.io/hasenspiel).
 
 ## Considerations on the Hasenspiel
 The origin of this game is quite obscure. It was introduced to me by an
