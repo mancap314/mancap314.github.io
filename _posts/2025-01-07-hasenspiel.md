@@ -42,7 +42,7 @@ White has one pawn in a middle black square of the last opposite raw.
     <figcaption>Left: white wins, it could escape to the opposite raw. Right: black wins, it could completely encircle white</figcaption>
 </figure>
 
-Pretty easy so far.
+Pretty easy so far. You can play it online [here](https://mancap314.itch.io/mancap314).
 
 ## Considerations on the Hasenspiel
 The origin of this game is quite obscure. It was introduced to me by an
@@ -131,16 +131,35 @@ a massive amount of computation.
 This way you go down to all the final nodes, up to the top node representing
 the start position, through all the intermediate nodes.
 
+**[UPDATE]**
+Actually just knowing which player can force victory in which position is a bit limited. 
+WE would like to quantify this. For this, we compute a state value for each position, differentiated by player. For example, such state as such value for black and such value for white. This state value should also be 0 for a player if it can't force victory from there. The idea is a bit the same than previously, augmented with idea from dynamic programming / reinforcement learning. In reinforcement learning, you can define a discount factor $$\gamma$$ correcting the reward depending on in how many steps the reward is reached. If the reward $$R$$ is reached in $$n$$ steps, from the current state, it will contribute by $$\gamma^{-n}.R$$ to the value of this state ($$\gamma \in (0, 1]$$). Thus, we define a reward of 1 when a player reached a state where he won. When backward-propagating those rewards to states further up who led to victory (or defeat), we don't directly apply a reward factor $$\gamma^{-n}$$, but instead we take $$V := n + 1$$. If $$V > 0$$, it is thus incremented by one each time it's back-forwarded to its parent state. The parent state gets all the values $$V$$ of its children states and performs following operation: it takes the MIN of the state values of the opposite player, and the MAX of its own state values. For example, if it's a state where black is at turn, it will take the MAX of the black state values of its children states, and the MIN of the white state values of its children states. The subtlety here is how to define MIN and MAX. $n$ here represents the negative of the exponent of the discount factor, and 0 represents a defeat, so we end up with following ordering of the positive integers:
+- n smaller than m i.i.f. $$n = 0$$ or $$n > m > 0$$
+
+And the previous MIN and MAX are defined according to this order.
+
+The good thing is, $$V_b(s) > 0$$ i.i.f. $$V_w(s) = 0$$ (and reversely, where $$V_b(.)$$ is the state value for black and $$V_w(.)$$ the state value for white). Thus for each state we just need to encode one value, an integer where the first bit encodes for which player this value is, and the following bits encoding the value itself (then implicitly the value of the opposite player for this state is 0). 
+
+This state value can be interpreted this way: $$V_b(s) > 0$$ means black can force victory from state $$s$$ in max. $$V_b(s)$$ moves. 
+And the policy for each player is straight forward: if there are following states with a positive value, go to the state with the smallest value (which is the biggest according to our ordering). If not, go to the state with the worse positive value for the opponent.
+
+Thus the value of a move in a given position is evaluated based on its
+[afterstate](https://stats.stackexchange.com/questions/411932/reinforcement-learning-afterstate-and-afterstate-value-functions).
+
+What we call here optimal policy, is when an agent (player) performs the resulting highest ranking action.
+
 ## Answers
 - Black can force victory from the start of the game, whatever white plays
-- There are 1101.23 quintilions (quintillion: $$10^{27}$$, or billions of billions of billions)
+- There are 2479,.39 quintilions (quintillion: $$10^{27}$$, or billions of billions of billions)
   possible games
-- of which 54.59% where black wins
-- There are 776,283 possibles states
-- of which 4.93% where black can force victory, and 2.68% where white can
+- of which 1.49% where black wins
+- There are 778,341 possibles states
+- of which 7.57% where black can force victory, and 92.43% where white can
   force victory
 
-And this was computed in... 0.135 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
+The interesting fact is, although black can force its way to victory from the beginning, this way is very narrow, and a single mistake makes his situation pretty hopeless. That makes this Hasenspiel pretty interesting.
+
+And this was computed in... 0.143 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
 2.50GHz. Blazingly fast. See the next section.
 
 ## Implementation
@@ -199,24 +218,6 @@ search. As mentioned above, there are roughly 776k possible states, means
 nodes,so that this array stays quite sparse and there are probably ways to map
 the states in a narrower range of values.
 
-## Playing
-
-When playing based on the states computed above, the agent evaluates the
-possible moves based and their resulting states, and their outlook for the
-opponent, in following priority:
-- if a move results in a state where the opponent can force victory, it's
-  ranked lower than a move resulting in a state where the opponent can't force
-  victory.
-- if two moves have the same effect on the opponent's capacity to force
-  victory, a move leading to a state where the opponent has a higher percentage
-  of victory from all games starting from the resulting state, is ranked lower.
-
-Thus the value of a move in a given position is evaluated based on its
-[afterstate](https://stats.stackexchange.com/questions/411932/reinforcement-learning-afterstate-and-afterstate-value-functions).
-
-What we call here optimal policy, is when an agent (player) performs the
-resulting highest ranking action.
-
 ## Conclusion
 
 The *Hasenspiel* is a small game with interesting properties. It is way less
@@ -231,11 +232,6 @@ safety. The game is also easy to extend, for example changing the size of the
 board, or the number of black pawn. For this it's enough to change the
 corresponding macro variables, and possible also switching from `uint32_t` to
 `uint64_t` for representing the states.
-
-In the future I will maybe implement this game using
-[Raylib](https://www.raylib.com/), to have fun
-playing against the computer. Keep in touch.
-
 
 ## Bonus: First 10 moves when bots agents play optimally
 

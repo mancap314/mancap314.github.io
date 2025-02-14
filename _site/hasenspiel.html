@@ -18,15 +18,15 @@
 <meta property="og:locale" content="en_US" />
 <meta name="description" content="Hasenspiel (German for “Rabbit Game”) is relatively simple game played on the chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to escape the opponent pawns. It’s a funny and not so trivial game. In this article, we will see how to completely solve it with an efficient implementation in C." />
 <meta property="og:description" content="Hasenspiel (German for “Rabbit Game”) is relatively simple game played on the chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to escape the opponent pawns. It’s a funny and not so trivial game. In this article, we will see how to completely solve it with an efficient implementation in C." />
-<link rel="canonical" href="http://localhost:4000/hasenspiel.html" />
-<meta property="og:url" content="http://localhost:4000/hasenspiel.html" />
+<link rel="canonical" href="https://mancap314.github.io/hasenspiel.html" />
+<meta property="og:url" content="https://mancap314.github.io/hasenspiel.html" />
 <meta property="og:site_name" content="Data science and other stuffs" />
 <meta property="og:type" content="article" />
 <meta property="article:published_time" content="2025-01-07T00:00:00+01:00" />
 <meta name="twitter:card" content="summary" />
 <meta property="twitter:title" content="Hasenspiel - Escape the White Rabbit" />
 <script type="application/ld+json">
-{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Manuel Capel"},"dateModified":"2025-01-07T00:00:00+01:00","datePublished":"2025-01-07T00:00:00+01:00","description":"Hasenspiel (German for “Rabbit Game”) is relatively simple game played on the chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to escape the opponent pawns. It’s a funny and not so trivial game. In this article, we will see how to completely solve it with an efficient implementation in C.","headline":"Hasenspiel - Escape the White Rabbit","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/hasenspiel.html"},"url":"http://localhost:4000/hasenspiel.html"}</script>
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Manuel Capel"},"dateModified":"2025-01-07T00:00:00+01:00","datePublished":"2025-01-07T00:00:00+01:00","description":"Hasenspiel (German for “Rabbit Game”) is relatively simple game played on the chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to escape the opponent pawns. It’s a funny and not so trivial game. In this article, we will see how to completely solve it with an efficient implementation in C.","headline":"Hasenspiel - Escape the White Rabbit","mainEntityOfPage":{"@type":"WebPage","@id":"https://mancap314.github.io/hasenspiel.html"},"url":"https://mancap314.github.io/hasenspiel.html"}</script>
 <!-- End Jekyll SEO tag -->
 
     <!-- Global site tag (gtag.js) - Google Analytics -->
@@ -108,7 +108,7 @@ completely block the white pawn.</li>
     <figcaption>Left: white wins, it could escape to the opposite raw. Right: black wins, it could completely encircle white</figcaption>
 </figure>
 
-<p>Pretty easy so far.</p>
+<p>Pretty easy so far. You can play it online <a href="https://mancap314.itch.io/mancap314">here</a>.</p>
 
 <h2 id="considerations-on-the-hasenspiel">Considerations on the Hasenspiel</h2>
 <p>The origin of this game is quite obscure. It was introduced to me by an
@@ -200,18 +200,39 @@ a massive amount of computation.</p>
 <p>This way you go down to all the final nodes, up to the top node representing
 the start position, through all the intermediate nodes.</p>
 
+<p><strong>[UPDATE]</strong>
+Actually just knowing which player can force victory in which position is a bit limited. 
+WE would like to quantify this. For this, we compute a state value for each position, differentiated by player. For example, such state as such value for black and such value for white. This state value should also be 0 for a player if it can’t force victory from there. The idea is a bit the same than previously, augmented with idea from dynamic programming / reinforcement learning. In reinforcement learning, you can define a discount factor \(\gamma\) correcting the reward depending on in how many steps the reward is reached. If the reward \(R\) is reached in \(n\) steps, from the current state, it will contribute by \(\gamma^{-n}.R\) to the value of this state (\(\gamma \in (0, 1]\)). Thus, we define a reward of 1 when a player reached a state where he won. When backward-propagating those rewards to states further up who led to victory (or defeat), we don’t directly apply a reward factor \(\gamma^{-n}\), but instead we take \(V := n + 1\). If \(V &gt; 0\), it is thus incremented by one each time it’s back-forwarded to its parent state. The parent state gets all the values \(V\) of its children states and performs following operation: it takes the MIN of the state values of the opposite player, and the MAX of its own state values. For example, if it’s a state where black is at turn, it will take the MAX of the black state values of its children states, and the MIN of the white state values of its children states. The subtlety here is how to define MIN and MAX. $n$ here represents the negative of the exponent of the discount factor, and 0 represents a defeat, so we end up with following ordering of the positive integers:</p>
+<ul>
+  <li>n smaller than m i.i.f. \(n = 0\) or \(n &gt; m &gt; 0\)</li>
+</ul>
+
+<p>And the previous MIN and MAX are defined according to this order.</p>
+
+<p>The good thing is, \(V_b(s) &gt; 0\) i.i.f. \(V_w(s) = 0\) (and reversely, where \(V_b(.)\) is the state value for black and \(V_w(.)\) the state value for white). Thus for each state we just need to encode one value, an integer where the first bit encodes for which player this value is, and the following bits encoding the value itself (then implicitly the value of the opposite player for this state is 0).</p>
+
+<p>This state value can be interpreted this way: \(V_b(s) &gt; 0\) means black can force victory from state \(s\) in max. \(V_b(s)\) moves. 
+And the policy for each player is straight forward: if there are following states with a positive value, go to the state with the smallest value (which is the biggest according to our ordering). If not, go to the state with the worse positive value for the opponent.</p>
+
+<p>Thus the value of a move in a given position is evaluated based on its
+<a href="https://stats.stackexchange.com/questions/411932/reinforcement-learning-afterstate-and-afterstate-value-functions">afterstate</a>.</p>
+
+<p>What we call here optimal policy, is when an agent (player) performs the resulting highest ranking action.</p>
+
 <h2 id="answers">Answers</h2>
 <ul>
   <li>Black can force victory from the start of the game, whatever white plays</li>
-  <li>There are 1101.23 quintilions (quintillion: \(10^{27}\), or billions of billions of billions)
+  <li>There are 2479,.39 quintilions (quintillion: \(10^{27}\), or billions of billions of billions)
 possible games</li>
-  <li>of which 54.59% where black wins</li>
-  <li>There are 776,283 possibles states</li>
-  <li>of which 4.93% where black can force victory, and 2.68% where white can
+  <li>of which 1.49% where black wins</li>
+  <li>There are 778,341 possibles states</li>
+  <li>of which 7.57% where black can force victory, and 92.43% where white can
 force victory</li>
 </ul>
 
-<p>And this was computed in… 0.135 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
+<p>The interesting fact is, although black can force its way to victory from the beginning, this way is very narrow, and a single mistake makes his situation pretty hopeless. That makes this Hasenspiel pretty interesting.</p>
+
+<p>And this was computed in… 0.143 seconds, on a single Intel(R) Core(TM) i5-10300H CPU @
 2.50GHz. Blazingly fast. See the next section.</p>
 
 <h2 id="implementation">Implementation</h2>
@@ -274,26 +295,6 @@ search. As mentioned above, there are roughly 776k possible states, means
 nodes,so that this array stays quite sparse and there are probably ways to map
 the states in a narrower range of values.</p>
 
-<h2 id="playing">Playing</h2>
-
-<p>When playing based on the states computed above, the agent evaluates the
-possible moves based and their resulting states, and their outlook for the
-opponent, in following priority:</p>
-<ul>
-  <li>if a move results in a state where the opponent can force victory, it’s
-ranked lower than a move resulting in a state where the opponent can’t force
-victory.</li>
-  <li>if two moves have the same effect on the opponent’s capacity to force
-victory, a move leading to a state where the opponent has a higher percentage
-of victory from all games starting from the resulting state, is ranked lower.</li>
-</ul>
-
-<p>Thus the value of a move in a given position is evaluated based on its
-<a href="https://stats.stackexchange.com/questions/411932/reinforcement-learning-afterstate-and-afterstate-value-functions">afterstate</a>.</p>
-
-<p>What we call here optimal policy, is when an agent (player) performs the
-resulting highest ranking action.</p>
-
 <h2 id="conclusion">Conclusion</h2>
 
 <p>The <em>Hasenspiel</em> is a small game with interesting properties. It is way less
@@ -308,10 +309,6 @@ safety. The game is also easy to extend, for example changing the size of the
 board, or the number of black pawn. For this it’s enough to change the
 corresponding macro variables, and possible also switching from <code class="language-plaintext highlighter-rouge">uint32_t</code> to
 <code class="language-plaintext highlighter-rouge">uint64_t</code> for representing the states.</p>
-
-<p>In the future I will maybe implement this game using
-<a href="https://www.raylib.com/">Raylib</a>, to have fun
-playing against the computer. Keep in touch.</p>
 
 <h2 id="bonus-first-10-moves-when-bots-agents-play-optimally">Bonus: First 10 moves when bots agents play optimally</h2>
 
@@ -342,14 +339,14 @@ intuition.</p>
 <div id="share-bar">
   <h4>Share this:</h4>
   <div class="share-buttons">
-    <a href="https://www.facebook.com/sharer/sharer.php?u=http://localhost:4000/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
-    <a href="https://twitter.com/intent/tweet?text=Hasenspiel - Escape the White Rabbit&url=http://localhost:4000/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
-    <a href="https://plus.google.com/share?url=http://localhost:4000/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
-    <a href="http://pinterest.com/pin/create/button/?url=http://localhost:4000/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
-    <a href="http://www.tumblr.com/share/link?url=http://localhost:4000/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
-    <a href="http://www.reddit.com/submit?url=http://localhost:4000/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
-    <a href="https://www.linkedin.com/shareArticle?mini=true&url=http://localhost:4000/hasenspiel.html&title=Hasenspiel - Escape the White Rabbit&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
-    <a href="mailto:?subject=Hasenspiel - Escape the White Rabbit&amp;body=Check out this site http://localhost:4000/hasenspiel.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
+    <a href="https://www.facebook.com/sharer/sharer.php?u=https://mancap314.github.io/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Facebook"><em class="fa fa-facebook-official share-button"> facebook</em></a>
+    <a href="https://twitter.com/intent/tweet?text=Hasenspiel - Escape the White Rabbit&url=https://mancap314.github.io/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Twitter"><em class="fa fa-twitter share-button"> twitter</em></a>
+    <a href="https://plus.google.com/share?url=https://mancap314.github.io/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on Google+"><em class="fa fa-google-plus share-button"> google</em></a>
+    <a href="http://pinterest.com/pin/create/button/?url=https://mancap314.github.io/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Pinterest"><em class="fa fa-pinterest-p share-button"> pinterest</em></a>
+    <a href="http://www.tumblr.com/share/link?url=https://mancap314.github.io/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Tumblr"><em class="fa fa-tumblr share-button"> tumblr</em></a>
+    <a href="http://www.reddit.com/submit?url=https://mancap314.github.io/hasenspiel.html" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=900,height=500,toolbar=1,resizable=0'); return false;" title="Share on Reddit"><em class="fa fa-reddit-alien share-button"> reddit</em></a>
+    <a href="https://www.linkedin.com/shareArticle?mini=true&url=https://mancap314.github.io/hasenspiel.html&title=Hasenspiel - Escape the White Rabbit&summary=&source=Data science and other stuffs" onclick="window.open(this.href, 'pop-up', 'left=20,top=20,width=500,height=500,toolbar=1,resizable=0'); return false;" title="Share on LinkedIn"><em class="fa fa-linkedin share-button"> linkedin</em></a>
+    <a href="mailto:?subject=Hasenspiel - Escape the White Rabbit&amp;body=Check out this site https://mancap314.github.io/hasenspiel.html" title="Share via Email"><em class="fa fa-envelope share-button"> email</em></a>
   </div>
 </div>
 
@@ -358,8 +355,8 @@ intuition.</p>
   <div id="disqus_thread"></div>
   <script>
     var disqus_config = function () {
-      this.page.url = 'http://localhost:4000/hasenspiel.html';
-      this.page.identifier = 'http://localhost:4000/hasenspiel.html';
+      this.page.url = 'https://mancap314.github.io/hasenspiel.html';
+      this.page.identifier = 'https://mancap314.github.io/hasenspiel.html';
     };
     (function() {
       var d = document, s = d.createElement('script');
