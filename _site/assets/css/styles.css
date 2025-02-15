@@ -105,19 +105,19 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
 
 .lineno { color: #696969; display: inline-block; padding: 0 5px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
-@media screen and (max-device-width: 640px) { body { font-size: 1.2em; }
+@media screen and (max-device-width: 640px) { body { font-size: 2em; }
   img { width: 100%; height: auto; }
   .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
   .bar1, .bar2, .bar3 { width: 5.5em; height: 1.5em; background-color: white; margin: 0.7em 0; transition: 0.4s; }
   .change .bar1, .change .bar2, .change .bar3 { background-color: #777; }
   .category-menu .categories { display: none; }
-  .category-menu .categories a { font-size: 1.2em; display: block; }
-  .main-content { max-width: 100%; padding-left: 0; font-size: 1.5em; }
+  .category-menu .categories a { font-size: 2.5em; display: block; }
+  .main-content { max-width: 100%; padding-left: 0; font-size: 2em; }
   .navigation { max-width: 100%; }
-  .navigation a { font-size: 1.2em; }
-  .navigation em { font-size: 1.2em; }
+  .navigation a { font-size: 2em; }
+  .navigation em { font-size: 2em; }
   .spacer-top { height: 14em; }
   .spacer-side { width: 0; }
-  .highlight { width: 100%; font-size: 1.5em; }
-  .horizontal-list { font-size: 1.2em; }
+  .highlight { width: 100%; font-size: 2em; }
+  .horizontal-list { font-size: 2em; }
   .MathJax_Display, .MJXc-display, .MathJax_SVG_Display { transform: scale(1.3); overflow-x: scroll; overflow-y: hidden; } }
