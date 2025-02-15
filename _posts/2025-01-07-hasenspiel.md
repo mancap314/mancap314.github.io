@@ -111,7 +111,7 @@ Then for a parent node:
   children node
 - The number of winning games for black is the sum of the number of winning
   game for black of its children nodes.
-- If black hast turn, it can force victory[i.i.f.](https://en.wikipedia.org/wiki/If_and_only_if) 
+- If black hast turn, it can force victory [i.i.f.](https://en.wikipedia.org/wiki/If_and_only_if) 
 at least one of its child nodes can force black victory. If white is on turn, black can force victory i.i.f. 
 all of its child nodes can force black victory.
 
@@ -151,7 +151,7 @@ What we call here optimal policy, is when an agent (player) performs the resulti
 In a previous version, the player who could not force victory chosed the move where it had the highest percentage of winning games starting from the resulting position. It was basically an exhaustive [Monte-Carlo Tree search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) value wise without discounting. The problem was, the opponent could sometimes directly win in one move from the resulting position, which made the program look quite dumb: it was looking at the move which optimized for absolutely all games starting from there, no matter if one of them was directly obviously losing. Optimizing with the method presented here avoids this pitfall: if one move leads to a position where the opponent can win directly, means the resulting position has vakue 1 for the opponent (the highest possible value in our ordering) and another move is not directly winning for the opponent, it will chose the other move. Thus the program feels also stronger. Even when playing white, it often puts black in position where it has e.g. 6 possible moves, but only one of them where black can keep on being able to force victory.
 
 <figure>
-    <img src="{{site.baseurl}}/assets/hasenspiel_black_one_move.png" alt="Only one good move for black" style="max-height: 750px; max-width:750px"/>
+    <img src="{{site.baseurl}}/assets/hasenspiel_black_one_move.png" alt="Only one good move for black" style="max-width:450px"/>
     <figcaption> Screenshot from <a href="https://mancap314.itch.io/hasenspiel">my app</a>.
     Here black has 6 possible moves, but only one of them where black can continue forcing victory, all the other moves make white able to force victory. Can you find this move?</figcaption>
 </figure>

@@ -74,7 +74,6 @@ body {
   max-width: 1042px;
   margin-left: auto;
   margin-right: auto;
-
 }
 
 .navigation a {
@@ -308,6 +307,10 @@ hr {
     font-size: 2em;
   }
 
+  .post-desc {
+    font-size: 0.5em;
+  }
+
   .categories {
     font-size: 1.1em;
   }
@@ -324,8 +327,12 @@ hr {
     font-size: 2em;
   }
 
+  .navigation div {
+    margin-left: 0px;
+  }
+
   .spacer-top {
-    height: 14em;
+    height: 12em;
   }
 
   .spacer-side {

@@ -95,6 +95,8 @@ body { font-family: "Lato", sans-serif; }
 
 .horizontal-list ul li:last-child:after { content: ""; }
 
+.post-desc { font-size: 1em; }
+
 .post-desc a { border-bottom: 1px dotted; text-decoration: none; margin: 0em 0.1em 0em 0.1em; }
 
 hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border: 0; height: 1px; background-image: linear-gradient(to right, rgba(0, 0, 0, 0), rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0)); }
@@ -105,18 +107,21 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
 
 .lineno { color: #696969; display: inline-block; padding: 0 5px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
 
-@media screen and (max-device-width: 640px) { body { font-size: 2em; }
+@media screen and (max-device-width: 1000px) { body { font-size: 2em; }
   img { width: 100%; height: auto; }
   .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
-  .bar1, .bar2, .bar3 { width: 5.5em; height: 1.5em; background-color: white; margin: 0.7em 0; transition: 0.4s; }
+  .bar1, .bar2, .bar3 { width: 3em; height: 0.5em; background-color: white; margin: 0.7em 0; transition: 0.4s; }
   .change .bar1, .change .bar2, .change .bar3 { background-color: #777; }
   .category-menu .categories { display: none; }
-  .category-menu .categories a { font-size: 2.5em; display: block; }
+  .category-menu .categories a { max-width: 100%; font-size: 1em; display: block; }
   .main-content { max-width: 100%; padding-left: 0; font-size: 2em; }
+  .post-desc { font-size: 0.5em; }
+  .categories { font-size: 1.1em; }
   .navigation { max-width: 100%; }
   .navigation a { font-size: 2em; }
   .navigation em { font-size: 2em; }
-  .spacer-top { height: 14em; }
+  .navigation div { margin-left: 0px; }
+  .spacer-top { height: 12em; }
   .spacer-side { width: 0; }
   .highlight { width: 100%; font-size: 2em; }
   .horizontal-list { font-size: 2em; }
