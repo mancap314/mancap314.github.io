@@ -1,7 +1,7 @@
 @import url(monokai.css);
 body { font-family: "Lato", sans-serif; }
 
-.spacer-top { height: 7em; }
+.spacer-top { height: 6em; }
 
 .spacer-side { width: 12em; }
 
@@ -19,7 +19,7 @@ body { font-family: "Lato", sans-serif; }
 .hamburger { display: none; }
 
 /* Navigation bar */
-.navigation { overflow: hidden; background-color: #111; width: 100%; top: 0; position: fixed; }
+.navigation { overflow: hidden; background-color: #111; width: 100%; top: 0; position: fixed; font-size: 1.2em; }
 
 .navigation div { max-width: 1042px; margin-left: auto; margin-right: auto; }
 
@@ -95,7 +95,7 @@ body { font-family: "Lato", sans-serif; }
 
 .horizontal-list ul li:last-child:after { content: ""; }
 
-.post-desc { font-size: 1em; }
+.post-desc { font-size: 0.8em; }
 
 .post-desc a { border-bottom: 1px dotted; text-decoration: none; margin: 0em 0.1em 0em 0.1em; }
 

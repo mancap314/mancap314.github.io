@@ -1,6 +1,6 @@
 <nav class="navigation">
   <div>
-    <p><em> A blog about data science, computer viruses, mathematics etc.</em></p>
+    <p><em>Personal nerdy stuffs</em></p>
     {% for item in site.data.navigation %}
       <a href="{{ item.link }}" {% if page.url == item.link %} class="current" {% endif %}>{{ item.name }}</a>
     {% endfor %}

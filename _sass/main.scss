@@ -5,7 +5,7 @@ body {
 }
   
 .spacer-top {
-  height: 7em;
+  height: 6em;
 }
 
 .spacer-side {
@@ -68,6 +68,7 @@ body {
   width: 100%;
   top: 0;
   position: fixed;
+  font-size: 1.2em;
 }
 
 .navigation div {
@@ -221,8 +222,9 @@ body {
 }
 
 .post-desc {
-    font-size: 1em;
+    font-size: 0.8em;
 }
+
 .post-desc a {
   border-bottom: 1px dotted;
   text-decoration: none; 
