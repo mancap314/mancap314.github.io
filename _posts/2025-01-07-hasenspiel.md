@@ -86,7 +86,7 @@ To answer those questions, we need to simulate all possible *hasenspiel* games.
 However, the number of possible games is too massive for a direct "bruteforce"
 approach. Thus the strategy is to follow a [depth-first search
 (DFS)](https://brilliant.org/wiki/depth-first-search-dfs/) approach. White
-plays its forst possible move, then black its first possible move, etc. until
+plays its first possible move, then black its first possible move, etc. until
 the game reaches a final step where one of both players wins, from there we go
 up one step, explore the second last possible move, etc, until we have explored
 all possible nodes of the game. For each state, we store following information:
@@ -133,14 +133,30 @@ the start position, through all the intermediate nodes.
 
 **[UPDATE]**
 Actually just knowing which player can force victory in which position is a bit limited. 
-WE would like to quantify this. For this, we compute a state value for each position, differentiated by player. For example, such state as such value for black and such value for white. This state value should also be 0 for a player if it can't force victory from there. The idea is a bit the same than previously, augmented with idea from dynamic programming / reinforcement learning. In reinforcement learning, you can define a discount factor $$\gamma$$ correcting the reward depending on in how many steps the reward is reached. If the reward $$R$$ is reached in $$n$$ steps, from the current state, it will contribute by $$\gamma^{-n}.R$$ to the value of this state ($$\gamma \in (0, 1]$$). Thus, we define a reward of 1 when a player reached a state where he won. When backward-propagating those rewards to states further up who led to victory (or defeat), we don't directly apply a reward factor $$\gamma^{-n}$$, but instead we take $$V := n + 1$$. If $$V > 0$$, it is thus incremented by one each time it's back-forwarded to its parent state. The parent state gets all the values $$V$$ of its children states and performs following operation: it takes the MIN of the state values of the opposite player, and the MAX of its own state values. For example, if it's a state where black is at turn, it will take the MAX of the black state values of its children states, and the MIN of the white state values of its children states. The subtlety here is how to define MIN and MAX. $n$ here represents the negative of the exponent of the discount factor, and 0 represents a defeat, so we end up with following ordering of the positive integers:
-- n smaller than m i.i.f. $$n = 0$$ or $$n > m > 0$$
+We would like to quantify this. For this, we compute a state value for each position, differentiated by player. 
+For example, such state as such value for black and such value for white. This state value should also be 0 for a player 
+if it can't force victory from there. The idea is a bit the same than previously, augmented with idea from 
+dynamic programming / reinforcement learning. In reinforcement learning, you can define a discount factor $$\gamma$$ 
+correcting the reward depending on in how many steps the reward is reached. If the reward $$R$$ is reached in $$n$$ steps, 
+from the current state, it will contribute by $$\gamma^{-n}.R$$ to the value of this state ($$\gamma \in (0, 1]$$). 
+Thus, we define a reward of 1 when a player reached a state where he won. When backward-propagating those rewards to states 
+further up who led to victory (or defeat), we don't directly apply a reward factor $$\gamma^{-n}$$, but instead 
+we take $$V := n + 1$$. If $$V > 0$$, it is thus incremented by one each time it's back-forwarded to its parent state. 
+The parent state gets all the values $$V$$ of its children states and performs following operation: it takes the MIN of 
+the state values of the opposite player, and the MAX of its own state values. For example, if it's a state where black is 
+at turn, it will take the MAX of the black state values of its children states, and the MIN of the white state values of 
+its children states. The subtlety here is how to define MIN and MAX. $$n$$ here represents the negative of the exponent 
+of the discount factor, and 0 represents a defeat, so we end up with following ordering of the positive integers:
+- $$n \preceq m$$  i.i.f. $$n = 0$$ or $$n \geqslant m \gt 0$$
 
 And the previous MIN and MAX are defined according to this order.
 
-The good thing is, $$V_b(s) > 0$$ i.i.f. $$V_w(s) = 0$$ (and reversely, where $$V_b(.)$$ is the state value for black and $$V_w(.)$$ the state value for white). Thus for each state we just need to encode one value, an integer where the first bit encodes for which player this value is, and the following bits encoding the value itself (then implicitly the value of the opposite player for this state is 0). 
+The good thing is, $$V_b(s) > 0$$ i.i.f. $$V_w(s) = 0$$ (and reversely, where $$V_b(.)$$ is the state value 
+for black and $$V_w(.)$$ the state value for white). Thus for each state we just need to encode one value, 
+an integer where the first bit encodes for which player this value is, and the following bits encoding the 
+value itself (then implicitly the value of the opposite player for this state is 0). 
 
-This state value can be interpreted this way: $$V_b(s) > 0$$ means black can force victory from state $$s$$ in max. $$V_b(s)$$ moves. 
+This state value can be interpreted this way: $$V_b(s) > 0$$ meansblack can force victory from state $$s$$ in max. $$V_b(s)$$ moves. 
 And the policy for each player is straight forward: if there are following states with a positive value, go to the state with the smallest value (which is the biggest according to our ordering). If not, go to the state with the worse positive value for the opponent.
 
 Thus the value of a move in a given position is evaluated based on its
