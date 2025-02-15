@@ -4,7 +4,7 @@ comments: true
 author: Manuel Capel
 title: Hasenspiel - Escape the White Rabbit
 date: 2025-01-07
-categories: [reinforcement learning]
+categories: [reinforcement-learning,C,programming]
 ---
 Hasenspiel (German for "Rabbit Game") is  relatively simple game played on the
 chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to
@@ -116,7 +116,7 @@ at least one of its child nodes can force black victory. If white is on turn, bl
 all of its child nodes can force black victory.
 
 <figure>
-    <img src="{{site.baseurl}}/assets/hasenspiel_node_update.png" alt="Node  update"/>
+    <img src="{{site.baseurl}}/assets/hasenspiel_node_update.png" alt="Node update"/>
     <figcaption>Black position leading here to two white position: the number
     of possible games is the sum of the number of possible game of its child
     nodes; same for the number of games where black wins. Here one of the possible black actions
@@ -147,6 +147,14 @@ Thus the value of a move in a given position is evaluated based on its
 [afterstate](https://stats.stackexchange.com/questions/411932/reinforcement-learning-afterstate-and-afterstate-value-functions).
 
 What we call here optimal policy, is when an agent (player) performs the resulting highest ranking action.
+
+In a previous version, the player who could not force victory chosed the move where it had the highest percentage of winning games starting from the resulting position. It was basically an exhaustive [Monte-Carlo Tree search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) value wise without discounting. The problem was, the opponent could sometimes directly win in one move from the resulting position, which made the program look quite dumb: it was looking at the move which optimized for absolutely all games starting from there, no matter if one of them was directly obviously losing. Optimizing with the method presented here avoids this pitfall: if one move leads to a position where the opponent can win directly, means the resulting position has vakue 1 for the opponent (the highest possible value in our ordering) and another move is not directly winning for the opponent, it will chose the other move. Thus the program feels also stronger. Even when playing white, it often puts black in position where it has e.g. 6 possible moves, but only one of them where black can keep on being able to force victory.
+
+<figure>
+    <img src="{{site.baseurl}}/assets/hasenspiel_black_one_move.png" alt="Only one good move for black" style="max-height: 750px; max-width:750px"/>
+    <figcaption> Screenshot from <a href="https://mancap314.itch.io/hasenspiel">my app</a>.
+    Here black has 6 possible moves, but only one of them where black can continue forcing victory, all the other moves make white able to force victory. Can you find this move?</figcaption>
+</figure>
 
 ## Answers
 - Black can force victory from the start of the game, whatever white plays

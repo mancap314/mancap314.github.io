@@ -9,7 +9,7 @@ body {
 }
 
 .spacer-side {
-  width: 17em;
+  width: 12em;
 }
 
 .main-content {
@@ -17,7 +17,7 @@ body {
   margin-left: auto;
   margin-right: auto;
   padding-left: 4em;
-  font-size: 1em;
+  font-size: 1.5em;
 }
 
 .post-title a {
@@ -28,7 +28,8 @@ body {
 /* Categories bar */
 .categories {
   height: 100%;
-  width: 16em;
+  width: 12em;
+  font-size: 1.2em;
   position: fixed;
   z-index: 1;
   top: 0.5em;
@@ -41,7 +42,7 @@ body {
 .categories h2 {
   padding: 1em 0em 0em 0.2em;
   text-decoration: none;
-  font-size: 2em;
+  font-size: 1.2em;
   color: #f8f8ff;
   display: block; 
 }
@@ -49,7 +50,7 @@ body {
 .categories a {
   padding: 0.3em 0em 0.3em 0.5em;
   text-decoration: none;
-  font-size: 1.5em;
+  font-size: 0.8em;
   color: #818181;
   display: block;
 }
@@ -206,7 +207,7 @@ body {
 
 
 .horizontal-list {
-    font-size: small;
+    font-size: 1em;
 }
 
 .horizontal-list ul li {
@@ -262,7 +263,7 @@ hr {
 
 @media screen and (max-device-width: 640px) {
   body {
-    font-size: 1em;
+    font-size: 1.2em;
   }
 
   img {
@@ -303,7 +304,7 @@ hr {
  .main-content {
     max-width: 100%;
     padding-left: 0;
-    font-size: 0.8em;
+    font-size: 1.5em;
   }
 
   .navigation {
@@ -311,11 +312,11 @@ hr {
   }
 
   .navigation a {
-    font-size: 3em;
+    font-size: 1.2em;
   }
 
   .navigation em {
-    font-size: 2em;
+    font-size: 1.2em;
   }
 
   .spacer-top {
@@ -332,12 +333,12 @@ hr {
   }
 
   .horizontal-list {
-    font-size: 0.8em;      
+    font-size: 1.2em;      
   }
 
   .MathJax_Display, .MJXc-display, .MathJax_SVG_Display {
-    transform: scale(1.3);
-    overflow-x: scroll;
-    overflow-y: hidden;
-}
+        transform: scale(1.3);
+        overflow-x: scroll;
+        overflow-y: hidden;
+    }
 }

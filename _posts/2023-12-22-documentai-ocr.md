@@ -9,7 +9,7 @@ categories: [deep learning,cloud]
 [OCR](https://en.wikipedia.org/wiki/Optical_character_recognition) stands for "Optical Character Recognition", and is a powerful technique for
 extracting texts (and possibly also their position, fonts etc.) out of images.
 This task is far from being trivial, given all the possible fonts, colors,
-image qualitiesi out there. The text may also not lay on a horizontal straight line...
+image qualities out there. The text may also not lay on a horizontal straight line...
 Well you guess it, everything is possible in the wild, and the first
 step to make sense out of it is to extract the characters.
 
