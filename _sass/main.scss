@@ -8,6 +8,10 @@ figcaption {
   font-size: 0.75em
 }
 
+code {
+  font-size: 1em;
+}
+
 .spacer-top {
   height: 6em;
 }
@@ -270,6 +274,10 @@ hr {
   img {
     width: 100%;
     height: auto;
+  }
+
+  code {
+    font-size: 1.2em;
   }
 
   .spacer-top {

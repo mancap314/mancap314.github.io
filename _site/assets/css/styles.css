@@ -3,6 +3,8 @@ body { font-family: "Lato", sans-serif; }
 
 figcaption { font-size: 0.75em; }
 
+code { font-size: 1em; }
+
 .spacer-top { height: 6em; }
 
 .spacer-side { width: 12em; }
@@ -109,6 +111,7 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
 
 @media screen and (max-device-width: 1000px) { body { font-size: 2em; }
   img { width: 100%; height: auto; }
+  code { font-size: 1.2em; }
   .spacer-top { height: 6em; }
   .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
   .bar1, .bar2, .bar3 { width: 3em; height: 0.5em; background-color: white; margin: 0.7em 0; transition: 0.2s; }
