@@ -16,6 +16,10 @@ pre {
   font-size: 1em;
 }
 
+.language-sh, .highlighter-rouge, .highlight, .rouge-table {
+  font-size: 1em;
+}
+
 .spacer-top {
   height: 6em;
 }
@@ -288,8 +292,12 @@ hr {
     font-size: 1.2em;
   }
 
+  .language-sh, .highlighter-rouge, .highlight, .rouge-table {
+    font-size: 1em;
+  }
+
   .spacer-top {
-    height: 3em;
+    height: 666666em;
   }
 
   .spacer-side {
