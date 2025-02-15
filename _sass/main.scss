@@ -287,8 +287,13 @@ hr {
   pre {
     font-size: 1.2em;
   }
+
   .spacer-top {
-    height: 6em;
+    height: 3em;
+  }
+
+  .spacer-side {
+    width: 1em;
   }
 
   .hamburger {
@@ -350,14 +355,6 @@ hr {
 
   .navigation div {
     margin-left: 0px;
-  }
-
-  .spacer-top {
-    height: 12em;
-  }
-
-  .spacer-side {
-    width: 0;
   }
 
   .highlight {
