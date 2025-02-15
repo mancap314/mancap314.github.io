@@ -4,7 +4,7 @@ comments: true
 author: Manuel Capel
 title: Hasenspiel - Escape the White Rabbit
 date: 2025-01-07
-categories: [reinforcement-learning,C,programming]
+categories: [RL,C,programming]
 ---
 Hasenspiel (German for "Rabbit Game") is  relatively simple game played on the
 chess board with 5 pawns. The goal is for the white pawn a.k.a. the rabbit to

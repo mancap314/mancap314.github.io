@@ -140,6 +140,7 @@ figcaption {
   border: 1px solid #D3D6D2; 
   padding: 0.2em 0.4em 0.2em 0.4em;
 }
+
 .share-button:hover {
   opacity: 1;
   color: #ffffff;
@@ -209,11 +210,6 @@ figcaption {
   background-color: #444444;
 }
 
-
-.horizontal-list {
-    font-size: 1em;
-}
-
 .horizontal-list ul li {
   display: inline; 
   white-space: pre;
@@ -226,7 +222,7 @@ figcaption {
 }
 
 .post-desc {
-    font-size: 0.8em;
+  font-size: 0.8em;
 }
 
 .post-desc a {
@@ -314,7 +310,7 @@ hr {
   }
 
   .post-desc {
-    font-size: 1em;
+    font-size: 0.8em;
   }
 
   .categories {
@@ -348,10 +344,6 @@ hr {
   .highlight {
     width: 100%;
     font-size: 2em;
-  }
-
-  .horizontal-list {
-    font-size: 1em;      
   }
 
   .MathJax_Display, .MJXc-display, .MathJax_SVG_Display {
