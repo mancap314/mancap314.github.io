@@ -164,7 +164,18 @@ Thus the value of a move in a given position is evaluated based on its
 
 What we call here optimal policy, is when an agent (player) performs the resulting highest ranking action.
 
-In a previous version, the player who could not force victory chosed the move where it had the highest percentage of winning games starting from the resulting position. It was basically an exhaustive [Monte-Carlo Tree search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) value wise without discounting. The problem was, the opponent could sometimes directly win in one move from the resulting position, which made the program look quite dumb: it was looking at the move which optimized for absolutely all games starting from there, no matter if one of them was directly obviously losing. Optimizing with the method presented here avoids this pitfall: if one move leads to a position where the opponent can win directly, means the resulting position has vakue 1 for the opponent (the highest possible value in our ordering) and another move is not directly winning for the opponent, it will chose the other move. Thus the program feels also stronger. Even when playing white, it often puts black in position where it has e.g. 6 possible moves, but only one of them where black can keep on being able to force victory.
+In a previous version, the player who could not force victory chosed the move where it had the highest percentage 
+of winning games starting from the resulting position. It was basically an 
+exhaustive [Monte-Carlo Tree search](https://en.wikipedia.org/wiki/Monte_Carlo_tree_search) 
+value wise without discounting. The problem was, the opponent could sometimes directly win in one 
+move from the resulting position, which made the program look quite dumb: it was looking 
+at the move which optimized for absolutely all games starting from there, no matter if one of 
+them was directly obviously losing. Optimizing with the method presented here avoids this pitfall: 
+if one move leads to a position where the opponent can win directly, means the resulting 
+position has vakue 1 for the opponent (the highest possible value in our ordering) and another 
+move is not directly winning for the opponent, it will chose the other move. Thus the program feels also stronger. 
+Even when playing white, it often puts black in position where it has e.g. 6 possible moves, 
+but only one of them where black can keep on being able to force victory.
 
 <figure>
     <img src="{{site.baseurl}}/assets/hasenspiel_black_one_move.png" alt="Only one good move for black" style="max-width:450px"/>
@@ -173,7 +184,7 @@ In a previous version, the player who could not force victory chosed the move wh
 </figure>
 
 ## Answers
-- Black can force victory from the start of the game, whatever white plays
+- Black can force victory from the start of the game, whatever white plays, in max. 44 moves (resp. 22 couples of (white-black moves)
 - There are 2479,.39 quintilions (quintillion: $$10^{27}$$, or billions of billions of billions)
   possible games
 - of which 1.49% where black wins
