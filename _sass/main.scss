@@ -3,7 +3,11 @@
 body {
   font-family: "Lato", sans-serif;
 }
-  
+
+figcaption {
+  font-size: 0.75em
+}
+
 .spacer-top {
   height: 6em;
 }
@@ -286,7 +290,7 @@ hr {
     height: 0.5em;
     background-color: white;
     margin: 0.7em 0;
-    transition: 0.4s; 
+    transition: 0.2s; 
   }
 
   .change .bar1, .change .bar2, .change .bar3 {
