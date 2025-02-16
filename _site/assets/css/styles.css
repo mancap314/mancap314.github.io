@@ -124,12 +124,12 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   .change .bar1, .change .bar2, .change .bar3 { background-color: #777; }
   .category-menu .categories { display: none; }
   .category-menu .categories a { max-width: 100%; font-size: 1em; display: block; }
-  .main-content { max-width: 100%; padding-left: 0; font-size: 1.8em; }
+  .main-content { max-width: 100%; padding-left: 0; padding-right: 0; font-size: 1.8em; }
   .post-desc { font-size: 0.5em; }
   .categories { font-size: 1.1em; }
   .navigation { max-width: 100%; }
   .navigation a { font-size: 1.2em; }
   .navigation em { font-size: 1.2em; }
   .navigation div { margin-left: 0px; }
-  .highlight { width: 100%; font-size: 2em; }
+  .highlight { width: 100%; font-size: 0.5em; }
   .MathJax_Display, .MJXc-display, .MathJax_SVG_Display { transform: scale(1); overflow-x: scroll; overflow-y: hidden; } }
