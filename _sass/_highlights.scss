@@ -1,7 +1,7 @@
 highlight { 
   background-color: #ffffff;
-  padding: 5px 10px;
-  margin: 20px 0;
+  padding: 0.5 1em;
+  margin: 0.5em 0;
 }
 
 .highlight pre {
@@ -19,14 +19,14 @@ code {
 
 .highlight {
   background-color: #f6f8fa;
-  margin-bottom: 1.5em;
+  margin-bottom: 1em;
   pre {
     overflow-y: auto;
     position: relative;
     margin: 0;
     padding: 1em;
   }
-  .lineno { padding-right: 24px; color: lighten(#333332,50);}
+  .lineno { padding-right: 1em; color: lighten(#333332,50);}
   .hll { background-color: #ffffcc }
   .c { color: #999988; font-style: italic } /* Comment */
   .err { color: #a61717; background-color: #e3d2d2 } /* Error */
