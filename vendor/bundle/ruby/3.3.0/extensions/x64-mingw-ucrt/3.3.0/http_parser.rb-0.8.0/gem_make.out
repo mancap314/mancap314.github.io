@@ -1,0 +1,20 @@
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
+C:/Ruby33-x64/bin/ruby.exe extconf.rb
+creating Makefile
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-19548-52di2f sitelibdir\=./.gem.20250216-19548-52di2f clean
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-19548-52di2f sitelibdir\=./.gem.20250216-19548-52di2f
+generating ruby_http_parser-x64-mingw-ucrt.def
+compiling ruby_http_parser.c
+compiling ryah_http_parser.c
+linking shared-object ruby_http_parser.so
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-19548-52di2f sitelibdir\=./.gem.20250216-19548-52di2f install
+/usr/bin/install -c -m 0755 ruby_http_parser.so ./.gem.20250216-19548-52di2f
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/http_parser.rb-0.8.0/ext/ruby_http_parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-19548-52di2f sitelibdir\=./.gem.20250216-19548-52di2f clean

@@ -21,18 +21,18 @@ pre {
 }
 
 .spacer-top {
-  height: 6em;
+  height: 3em;
 }
 
 .spacer-side {
-  width: 12em;
+  width: 1em;
 }
 
 .main-content {
-  max-width: 60%;
-  margin-left: auto;
-  margin-right: auto;
-  padding-left: 4em;
+  max-width: 80%;
+  margin-left: 0em;
+  margin-right: 3em;
+  padding-left: 1em;
   font-size: 1.5em;
 }
 
@@ -44,7 +44,8 @@ pre {
 /* Categories bar */
 .categories {
   height: 100%;
-  width: 12em;
+  width: 8em;
+  max-width: 20%;
   font-size: 1.2em;
   position: fixed;
   z-index: 1;
@@ -85,6 +86,12 @@ pre {
   top: 0;
   position: fixed;
   font-size: 1.2em;
+  margin: 0em;
+}
+
+
+.navigation  p {
+  margin: 0.3em;
 }
 
 .navigation div {
@@ -98,7 +105,8 @@ pre {
   color: #f2f2f2;
   text-align: center;
   text-decoration: none;
-  padding: 0.5em 1em;
+  padding: 0.25em 1em;
+  margin: 0em;
   font-size: 1.1em;
 }
 
@@ -140,9 +148,6 @@ pre {
   font-weight: 400;
 }
 
-/* All buttons */
-.share-buttons {
-}
 
 /* Each button */
 .share-button {
@@ -253,12 +258,7 @@ hr {
 }
 
 .article-summary {
-  padding-left: 2em;
-}
-
-.highlight {
-  width: 100%;
-  font-size: 1.1em;
+  padding-left: 1em;
 }
 
 .lineno { 
@@ -297,7 +297,7 @@ hr {
   }
 
   .spacer-top {
-    height: 6em;
+    height: 3em;
   }
 
   .spacer-side {

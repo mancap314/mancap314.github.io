@@ -1,0 +1,25 @@
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/json-2.10.1/ext/json/ext/parser
+C:/Ruby33-x64/bin/ruby.exe extconf.rb
+checking for rb_enc_interned_str() in ruby.h... yes
+checking for rb_hash_new_capa() in ruby.h... yes
+checking for rb_hash_bulk_insert() in ruby.h... yes
+checking for rb_category_warn() in ruby.h... yes
+checking for strnlen() in string.h... yes
+checking for whether -std=c99 is accepted as CFLAGS... yes
+creating Makefile
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/json-2.10.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-45860-cohgbz sitelibdir\=./.gem.20250216-45860-cohgbz clean
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/json-2.10.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-45860-cohgbz sitelibdir\=./.gem.20250216-45860-cohgbz
+generating parser-x64-mingw-ucrt.def
+compiling parser.c
+linking shared-object json/ext/parser.so
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/json-2.10.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-45860-cohgbz sitelibdir\=./.gem.20250216-45860-cohgbz install
+/usr/bin/install -c -m 0755 parser.so ./.gem.20250216-45860-cohgbz/json/ext
+
+current directory: C:/Users/manue/Documents/code/mancap314.github.io/vendor/bundle/ruby/3.3.0/gems/json-2.10.1/ext/json/ext/parser
+make DESTDIR\= sitearchdir\=./.gem.20250216-45860-cohgbz sitelibdir\=./.gem.20250216-45860-cohgbz clean
