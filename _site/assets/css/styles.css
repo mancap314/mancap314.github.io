@@ -5,6 +5,17 @@ figcaption { font-size: 0.75em; }
 
 code { font-size: 1em; }
 
+/* copy button 
+code.table { float: left;
+}
+
+.highlight button { opacity: 0; position: absolute; top: 0px; right: 0px; font-size: 0.8em; color: #818181; background-color: #111;
+}
+
+.highlight:active > button,
+.highlight:hover > button { opacity: 1;
+}
+*/
 pre { font-size: 1em; }
 
 .language-sh, .highlighter-rouge, .highlight, .rouge-table { font-size: 1em; }
@@ -61,16 +72,16 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   img { width: 100%; height: auto; }
   code { font-size: 1.2em; }
   pre { font-size: 1.2em; }
-  .navigation { width: 100%; font-size: 1.3em; line-height: 2em; margin-left: 0em; padding-left: 0em; }
+  .navigation { width: 100%; font-size: 1.1em; line-height: 2em; margin-left: 0em; padding-left: 0em; }
   .navigation a { margin: 0em; }
-  .navigation em { padding: 0em 1.6em 1em 0em; margin: 0; line-height: 2em; }
+  .navigation em { padding: 0em 1em 1em 0em; margin: 0; line-height: 2em; }
   .language-sh, .highlighter-rouge, .highlight, .rouge-table { font-size: 1.2em; }
   .spacer-top { height: 2.5em; }
   .spacer-side { width: 0em; }
   .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
   .bar1, .bar2, .bar3 { width: 1.5em; height: 0.2em; background-color: white; margin: 0.3em 0.2em 0 3em; transition: 0.1s; }
   .change .bar1, .change .bar2, .change .bar3 { background-color: #777; }
-  .category-menu .categories { display: none; }
+  .category-menu .categories { display: none; height: 25em; }
   .category-menu .categories a { font-size: 1em; display: block; }
   .main-content { max-width: 100%; padding-left: 0.0; padding-right: 0.0; margin: 0em; font-size: 1.8em; }
   .main-content h1 { font-size: 1.2em; }
