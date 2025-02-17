@@ -12,26 +12,26 @@ code {
   font-size: 1em;
 }
 
-/* copy button 
-code.table {
-  float: left;
+h1 {
+  margin: 0.7em 0em 0em 0em;
 }
+
+/* copy button */
 
 .highlight button {
-  opacity: 0;
-  position: absolute;
-  top: 0px;
-  right: 0px;
+  color: black;
+  background-color: white;
   font-size: 0.8em;
-  color: #818181;
-  background-color: #111;
+  padding: 0.2em 2em;
+  float: right;
+  opacity: 0;
 }
 
-.highlight:active > button,
-.highlight:hover > button {
+
+.highlight:active > .highlight button,
+.highlight:hover > .highlight button {
   opacity: 1;
 }
-*/
 
 pre {
   font-size: 1em;
