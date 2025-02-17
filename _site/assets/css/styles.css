@@ -62,7 +62,7 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
 
 .article-summary { padding-left: 1em; }
 
-.lineno { color: #696969; display: inline-block; padding: 0 10px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; }
+.lineno { color: #696969; display: inline-block; padding: 0 10px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; font-size: 1em; }
 
 @media screen and (max-device-width: 1000px) { body { font-size: 1.8em; }
   img { width: 100%; height: auto; }
@@ -92,4 +92,5 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   .navigation em { font-size: 1.2em; margin-right: 1em; }
   .navigation div { margin-left: 0px; }
   .highlight { width: 100%; font-size: 0.6em; overflow-x: scroll; }
+  .lineno { font-size: 1.2em; }
   .MathJax_Display, .MJXc-display, .MathJax_SVG_Display { transform: scale(1); overflow-x: scroll; overflow-y: hidden; } }

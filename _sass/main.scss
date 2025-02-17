@@ -194,6 +194,7 @@ hr {
   -moz-user-select: none;
   -ms-user-select: none;
   user-select: none;
+  font-size: 1em;
 }
 
 @media screen and (max-device-width: 1000px) {
@@ -335,6 +336,10 @@ hr {
     width: 100%;
     font-size: 0.6em;
     overflow-x: scroll;
+  }
+  
+  .lineno { 
+    font-size: 1.2em;
   }
 
   .MathJax_Display, .MJXc-display, .MathJax_SVG_Display {
