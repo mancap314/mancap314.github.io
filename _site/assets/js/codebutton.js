@@ -1,5 +1,5 @@
 // assets/js/post.js
-var codeBlocks = document.querySelectorAll('code');
+var codeBlocks = document.querySelectorAll('.highlight code');
 
 codeBlocks.forEach(function (codeBlock) {
   var copyButton = document.createElement('button');
