@@ -64,14 +64,14 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
 
 .lineno { color: #696969; display: inline-block; padding: 0 10px; border-right: 1px solid #696969; -webkit-touch-callout: none; -webkit-user-select: none; -khtml-user-select: none; -moz-user-select: none; -ms-user-select: none; user-select: none; font-size: 1em; }
 
-@media screen and (max-device-width: 1000px) { body { font-size: 1.8em; }
+@media screen and (max-device-width: 1000px) { body { font-size: 1.4em; }
   img { width: 100%; height: auto; }
   code { font-size: 1.2em; }
   pre { font-size: 1.2em; }
-  .navigation { width: 100%; font-size: 1.1em; line-height: 2em; margin-left: 0em; padding-left: 0em; }
+  .navigation { width: 100%; font-size: 1.5em; line-height: 2em; margin-left: 0em; padding-left: 0em; }
   .navigation a { margin: 0em; }
   .navigation em { padding: 0em 1em 1em 0em; margin: 0; line-height: 2em; }
-  .language-sh, .highlighter-rouge, .highlight, .rouge-table { font-size: 1.2em; }
+  .language-sh, .highlighter-rouge, .highlight, .rouge-table { font-size: 1.4em; }
   .spacer-top { height: 2.5em; }
   .spacer-side { width: 0em; }
   .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
@@ -84,7 +84,7 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   .main-content h2 { font-size: 1.1em; }
   .main-content h3 { font-size: 1em; }
   .main-content h4 { font-size: 1em; }
-  .post-desc { font-size: 0.5em; }
+  .post-desc { font-size: 0.8em; }
   .article-summary { padding-left: 0em; }
   .categories { height: 100%; width: 15em; max-width: 50%; font-size: 1em; }
   .navigation { max-width: 100%; }
