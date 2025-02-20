@@ -72,7 +72,7 @@ hr { width: 75%; margin-left: 0em; margin-bottom: 1.5em; margin-top: 1em; border
   .navigation { width: 100%; font-size: 1.5em; line-height: 2em; margin-left: 0em; padding-left: 0em; }
   .navigation a { margin: 0em; }
   .navigation em { padding: 0em 1em 1em 0em; margin: 0; line-height: 2em; }
-  .language-sh, .highlighter-rouge, .highlight, .rouge-table { font-size: 1.4em; }
+  .language-sh, .highlighter-rouge, .highlight, .rouge-table .lineno { font-size: 1.4em; }
   .spacer-top { height: 2.5em; }
   .spacer-side { width: 0em; }
   .hamburger { display: inline-block; cursor: pointer; position: fixed; top: 0; right: 0; z-index: 2; }
