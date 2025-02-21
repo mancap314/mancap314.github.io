@@ -184,7 +184,7 @@ but only one of them where black can keep on being able to force victory.
 </figure>
 
 ## Answers
-- Black can force victory from the start of the game, whatever white plays, in max. 44 [plies](https://en.wikipedia.org/wiki/Ply_(game_theory)) (half-moves, or 22 couples of (white-black moves)
+- Black can force victory from the start of the game, whatever white plays, in max. 44 moves (resp. 22 couples of (white-black moves)
 - There are 2479,.39 quintilions (quintillion: $$10^{27}$$, or billions of billions of billions)
   possible games
 - of which 1.49% where black wins
