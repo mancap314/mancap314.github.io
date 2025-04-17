@@ -1,0 +1,183 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> Solver for Des Chiffres Et Des Lettres</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>Solver for Des Chiffres Et Des Lettres | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="Solver for Des Chiffres Et Des Lettres" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="Des Chiffres et des Lettres was a French TV game broadcasted from 1965 up until 2024, means almost 60 years long, a record. It consists in two games: chiffres, where you get a set of number and combine them to reach a target number as close as possible; and lettres, where you combine a set of letters to get the longest possible word. This article presents a solver for those games implemented in C." />
+<meta property="og:description" content="Des Chiffres et des Lettres was a French TV game broadcasted from 1965 up until 2024, means almost 60 years long, a record. It consists in two games: chiffres, where you get a set of number and combine them to reach a target number as close as possible; and lettres, where you combine a set of letters to get the longest possible word. This article presents a solver for those games implemented in C." />
+<link rel="canonical" href="http://localhost:4000/des-chiffres-et-des-lettres.html" />
+<meta property="og:url" content="http://localhost:4000/des-chiffres-et-des-lettres.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2025-04-17T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="Solver for Des Chiffres Et Des Lettres" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Manuel Capel"},"dateModified":"2025-04-17T00:00:00+02:00","datePublished":"2025-04-17T00:00:00+02:00","description":"Des Chiffres et des Lettres was a French TV game broadcasted from 1965 up until 2024, means almost 60 years long, a record. It consists in two games: chiffres, where you get a set of number and combine them to reach a target number as close as possible; and lettres, where you combine a set of letters to get the longest possible word. This article presents a solver for those games implemented in C.","headline":"Solver for Des Chiffres Et Des Lettres","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/des-chiffres-et-des-lettres.html"},"url":"http://localhost:4000/des-chiffres-et-des-lettres.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <em>Personal nerdy stuffs</em>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <h1>Solver for Des Chiffres Et Des Lettres</h1>
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>17 Apr 2025</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/c/">C</a>&nbsp;<a href="/programming/">programming</a></li>
+  </ul>
+</div>
+
+      <p><a href="https://en.wikipedia.org/wiki/Des_chiffres_et_des_lettres">Des Chiffres et des Lettres</a> was a French TV game broadcasted from 1965 up until 2024, means almost 60 years long, a record. It consists in two games: <em>chiffres</em>, where you get a set of number and combine them to reach a target number as close as possible; and <em>lettres</em>, where you combine a set of letters to get the longest possible word. This article presents a solver for those games implemented in C.</p>
+
+<h2 id="game-rules">Game Rules</h2>
+<h3 id="chiffres">Chiffres</h3>
+<p>In <em>chiffres</em> you get a set of positive integers, and you must combine them using basic arithmetic operations (addition, subtraction, multiplication and division) to approach as close as possible a target number, which is also a positive integer. For example you get <code class="language-plaintext highlighter-rouge">10</code>, <code class="language-plaintext highlighter-rouge">3</code> and <code class="language-plaintext highlighter-rouge">5</code> and your target is <code class="language-plaintext highlighter-rouge">36</code>. The best you can approach the target with those numbers is by reaching <code class="language-plaintext highlighter-rouge">35</code>, and there are two ways to do it:</p>
+<ul>
+  <li>Solution 1:
+    <ul>
+      <li>10 - 3 = 7</li>
+      <li>7 * 5 = 35</li>
+    </ul>
+  </li>
+  <li>Solution 2:
+    <ul>
+      <li>10 * 3 = 30</li>
+      <li>30 + 5 = 35</li>
+    </ul>
+  </li>
+</ul>
+
+<p>You are allowed to use each initial number and each intermediary result only once, no re-use. All intermediary results must be a positive integer as well.</p>
+
+<p>In the TV version, there were 6 initial numbers sampled without from {1..10, 25, 50, 75, 100} and the target was sampled in {101..999}.</p>
+
+<h3 id="lettres">Lettres</h3>
+<p>For this game, 10 letters are sampled from the latin alphabet (26 letters). Each candidate chooses alternatively if he wants a vowel or a consonant to be picked are random, until there are 10 letters. With those 10 letters, you must form the longest possible valid french word. If a lwords contains accentuented letters like <code class="language-plaintext highlighter-rouge">à</code> or <code class="language-plaintext highlighter-rouge">é</code>, they are considered non-accentuated for the purpose of this game (e.g. you can form the word “âme” with the letters <code class="language-plaintext highlighter-rouge">à</code>, <code class="language-plaintext highlighter-rouge">m</code> and <code class="language-plaintext highlighter-rouge">e</code>).</p>
+
+<h2 id="implementation">Implementation</h2>
+<h3 id="chiffres-1">Chiffres</h3>
+<p>At the beginning we have a list of numbers, all marked as <code class="language-plaintext highlighter-rouge">unused</code>. The first two numbers are picked, and combined with an operation. If the result is invalid (negative or fractional), then pass. Otherwise mark those two numbers as <code class="language-plaintext highlighter-rouge">used</code>, the result is appended to the list of numbers, and from there we proceed recursively. The result is structured in a set of <em>solution</em>s containing <em>step</em>s. A step consists in three positive integers (the two operands and the result) and the operation (<code class="language-plaintext highlighter-rouge">+</code> or <code class="language-plaintext highlighter-rouge">-</code> or…). If a better solution is found, the set of solutions is re-initialized, so that the final result contains only solutions for the best possible result.</p>
+
+<p>N.B.:</p>
+<ul>
+  <li>A solution is “better” than another if it approximates the target better, or if it approximates the target with the same precision, but has a less number of steps</li>
+  <li>If some numbers are repeated in the input, some solutions maybe repeated, since each repeated number is considered distinct in this implementation</li>
+</ul>
+
+<p>On top of this, there is also a mechanism to avoid <em>dead steps</em>, means steps which results are not used to compute the final result.</p>
+
+<p>Let’s try:</p>
+<pre><code class="language-{sh}">./chiffres_lettres.o --chiffres --target 594 --values 8,5,75,100,9,3
+[INFO] Solving chiffres with following parameters:
+        - chiffres: 8, 5, 75, 100, 9, 3
+        - target: 594
+[INFO] All combinations computed for 6 chiffres in 0.26s.
+SUCCESS
+Best solution(s) found:
+- 2995512 combinations computed (from which 1173663 or 39.18% are valid)
+- Min. delta to target reached: 0.
+- 4 solutions:
+solution 1:
+        1. 8 * 75 = 600
+        2. 9 - 3 = 6
+        3. 600 - 6 = 594
+===
+solution 2:
+        1. 8 * 75 = 600
+        2. 3 + 600 = 603
+        3. 603 - 9 = 594
+===
+solution 3:
+        1. 8 * 75 = 600
+        2. 600 - 9 = 591
+        3. 3 + 591 = 594
+===
+solution 4:
+        1. 9 - 3 = 6
+        2. 8 * 75 = 600
+        3. 600 - 6 = 594
+===
+</code></pre>
+
+<p>This output displays the numbers of combinations (steps) computed. A combination is invalid if it produces a negative or fractional number. Interestingly, the percentage of valid steps is pretty stable, around 38 +- 2% most of the time empirically. It’s also pretty fast, as you can see. You can also notice that <code class="language-plaintext highlighter-rouge">solution 1</code> and <code class="language-plaintext highlighter-rouge">solution 4</code> are the same, just we steps in a different order. A possible improvement would be to remove such identical solutions, or better, not compute them in the first place (though I implemented already some mechanisms to reduce quite drastically the numbers of computed steps, that would be quite overwhelming otherwise in a naïve implementation).</p>
+
+<p>In the current implementation, you can input max. 10 numbers containing max. 10 digits, and it computes max. 10 solutions.</p>
+
+<h3 id="lettres-1">Lettres</h3>
+<p>All the permutations of the input letters are combined with a (non-recursive) <a href="https://en.wikipedia.org/wiki/Heap%27s_algorithm">Heap’s algorithm</a>. For the list of French words, I used the one made by <a href="http://www.pallier.org/">Christophe Pallier</a> in his <a href="http://openlexicon.fr/">openlexicon</a> containing 336k+ French words. For each permutation, we use binary search to find the longest word in this list starting with the same letters (modulo accents).</p>
+
+<p>For example I was curious to find out which are the longest French words containing the first 10 letters of the alphabet:</p>
+<pre><code class="language-{sh}">./chiffres_lettres.o --lettres --values abcdefghij     
+[INFO] Solving for lettres with following parameters:
+        - lettres: A, B, C, D, E, F, G, H, I, J
+[INFO] main(): number of lines in liste.de.mots.francais.frgut.txt: 336531
+[INFO] main(): 336531 words loaded from dictionnaire file in 0.100s.
+[INFO] main(): matches for 10 letters found in 0.673s.
+matches:
+        * fichage
+        * déficha
+</code></pre>
+<p>Ok, both contain 7 letters.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+<p>It’s a pretty efficient implementation of a solver for <em>des chiffres et des lettres</em>, that could be extended to other languages. Feel free to try. The code is available on <a href="https://github.com/mancap314/chiffres_lettres">this Github repo</a>. If someone would like to use it as a backend for an app to play this game, it would be great :)</p>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://localhost:4000/des-chiffres-et-des-lettres.html';
+      this.page.identifier = 'http://localhost:4000/des-chiffres-et-des-lettres.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+  <script src="/assets/js/codebutton.js"></script>
+</html>
