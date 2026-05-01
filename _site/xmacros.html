@@ -1,0 +1,261 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <title> XMacros</title>
+    <link rel="stylesheet" href="/assets/css/styles.css">
+    <link rel="shortcut icon" type="image/png" href="favicon.png">
+    <!-- Load an icon library to show a hamburger menu (bars) on small screens -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    <script type="text/javascript" src="assets/js/switch.js"></script>
+    <script type="text/javascript" async
+  src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML"></script>
+    <!-- Begin Jekyll SEO tag v2.8.0 -->
+<title>XMacros | Data science and other stuffs</title>
+<meta name="generator" content="Jekyll v3.10.0" />
+<meta property="og:title" content="XMacros" />
+<meta name="author" content="Manuel Capel" />
+<meta property="og:locale" content="en_US" />
+<meta name="description" content="XMacros are a way for the C preprocessor to process lists. They are quite unknown. Many would probably qualify them as Macro wizardry, but their logic makes sense once understood. Anyway, it’s a good trick to know. We will see how it work along a simple example: find the position of the first bit set in a 8-bits integer. This is called ffs (find first set) or clz (count leading zeros)." />
+<meta property="og:description" content="XMacros are a way for the C preprocessor to process lists. They are quite unknown. Many would probably qualify them as Macro wizardry, but their logic makes sense once understood. Anyway, it’s a good trick to know. We will see how it work along a simple example: find the position of the first bit set in a 8-bits integer. This is called ffs (find first set) or clz (count leading zeros)." />
+<link rel="canonical" href="http://localhost:4000/xmacros.html" />
+<meta property="og:url" content="http://localhost:4000/xmacros.html" />
+<meta property="og:site_name" content="Data science and other stuffs" />
+<meta property="og:type" content="article" />
+<meta property="article:published_time" content="2026-05-01T00:00:00+02:00" />
+<meta name="twitter:card" content="summary" />
+<meta property="twitter:title" content="XMacros" />
+<script type="application/ld+json">
+{"@context":"https://schema.org","@type":"BlogPosting","author":{"@type":"Person","name":"Manuel Capel"},"dateModified":"2026-05-01T00:00:00+02:00","datePublished":"2026-05-01T00:00:00+02:00","description":"XMacros are a way for the C preprocessor to process lists. They are quite unknown. Many would probably qualify them as Macro wizardry, but their logic makes sense once understood. Anyway, it’s a good trick to know. We will see how it work along a simple example: find the position of the first bit set in a 8-bits integer. This is called ffs (find first set) or clz (count leading zeros).","headline":"XMacros","mainEntityOfPage":{"@type":"WebPage","@id":"http://localhost:4000/xmacros.html"},"url":"http://localhost:4000/xmacros.html"}</script>
+<!-- End Jekyll SEO tag -->
+
+    <!-- Global site tag (gtag.js) - Google Analytics -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=UA-135039700-1"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-135039700-1');
+    </script>
+  </head>
+  <body>
+    <nav class="navigation">
+  <div>
+    <em>Personal nerdy stuffs</em>
+    
+      <a href="/" >Home</a>
+    
+      <a href="/about.html" >About</a>
+    
+  </div>
+</nav>
+<div class="spacer-top">
+  &nbsp;
+</div>
+
+    <div class="main-content">
+      <h1>XMacros</h1>
+      
+<div class="post-desc horizontal-list">
+  <ul>
+    <li>01 May 2026</li>
+    <li>Manuel Capel</li>
+    <li>Tags: <a href="/c/">C</a>&nbsp;<a href="/programming/">programming</a></li>
+  </ul>
+</div>
+
+      <p>XMacros are a way for the C preprocessor to process lists.
+They are quite unknown.
+Many would probably qualify them as Macro wizardry,
+but their logic makes sense once understood.
+Anyway, it’s a good trick to know.
+We will see how it work along a simple example:
+find the position of the first bit set in a 8-bits integer.
+This is called <em>ffs</em> (find first set) or <em>clz</em> (count leading zeros).</p>
+
+<h2 id="foreword-clz-algorithm">Foreword: CLZ algorithm</h2>
+
+<p>An 8-bits integer <code class="language-plaintext highlighter-rouge">u</code> is represented by a sequence of 8 bits et to 0 or 1.
+If it contains a 1, then <code class="language-plaintext highlighter-rouge">u &amp; -u</code> will contain only one 1,
+at the position of the first set 1.
+Thus in order to find the position of this 1, we have to test 7 possibilities:
+is <code class="language-plaintext highlighter-rouge">u &amp; -u</code> equals <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 1</code> or … or <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 7</code>.
+For this, we will use a <code class="language-plaintext highlighter-rouge">switch</code> branching for those 7 values.</p>
+
+<p>N.B.: if <code class="language-plaintext highlighter-rouge">u == 0</code> or <code class="language-plaintext highlighter-rouge">(u &amp; -u) == 1</code>, we return <code class="language-plaintext highlighter-rouge">0</code>.</p>
+
+<h2 id="syntax">Syntax</h2>
+
+<h3 id="list-inside-function">List inside Function</h3>
+
+<p>Here we first define the list of elements to process:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+</pre></td><td class="rouge-code"><pre><span class="cp">#define U8CLZ_LIST \
+  U8CLZ(1) U8CLZ(2) U8CLZ(3) U8CLZ(4) U8CLZ(5) U8CLZ(6) U8CLZ(7)
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Note that each element is wrapped around <code class="language-plaintext highlighter-rouge">U8CLZ()</code>,
+which will be the function applied to each element.
+Now we define this <code class="language-plaintext highlighter-rouge">U8CLZ()</code>, and tell it to apply to each element in <code class="language-plaintext highlighter-rouge">U8CLZ_LIST</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+</pre></td><td class="rouge-code"><pre><span class="cp">#define U8CLZ(u)  \
+  case 1 &lt;&lt; u:    \
+    ret = u;      \
+    break;
+</span>    <span class="n">U8CLZ_LIST</span>
+<span class="cp">#undef U8CLZ
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Later if we want we can also reuse <code class="language-plaintext highlighter-rouge">U8CLZ_LIST</code> with another <code class="language-plaintext highlighter-rouge">U8CLZ()</code> macro function.</p>
+
+<p>If we compile with the <code class="language-plaintext highlighter-rouge">-L</code> option to get the expanded macros,
+we can see this expands to:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+6
+7
+8
+9
+10
+11
+12
+13
+14
+15
+16
+17
+18
+19
+20
+21
+</pre></td><td class="rouge-code"><pre><span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">1</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">2</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">2</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">3</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">3</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">5</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">5</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">6</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">6</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+<span class="k">case</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">7</span><span class="p">:</span>
+  <span class="n">ret</span> <span class="o">=</span> <span class="mi">7</span><span class="p">;</span>
+  <span class="k">break</span><span class="p">;</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Instead of writing this fastidous list and having it in our code,
+we can neatly let the compiler generate it for us.</p>
+
+<p>To summarize, we have compacter, (imho) cleaner code,
+in a list we can re-use in other macro functions.</p>
+
+<h3 id="function-inside-list">Function inside List</h3>
+
+<p>The code above is wrapped in a vanilla C function called <code class="language-plaintext highlighter-rouge">u8clz()</code>.
+Here we want to test this function for various values.</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="cp">#define FOR_TEST_VALUES(DO) DO(1) DO(40) DO(255) DO(18) DO(1 &lt;&lt; 4)
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>This time, the values are defined through a macro function taking <code class="language-plaintext highlighter-rouge">DO</code> as argument,
+and this <code class="language-plaintext highlighter-rouge">DO</code> wraps each value in the list.</p>
+
+<p>Note: by convention, such a function is prefixed by <code class="language-plaintext highlighter-rouge">FOR_</code>.</p>
+
+<p>Then we define the macro function that will play the role of <code class="language-plaintext highlighter-rouge">DO</code>:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre><span class="cp">#define PRINT_VALUE_AND_CLZ(v) printf("u8clz(%u): %u\n", v, u8clz(v));
+</span></pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Which, for a given <code class="language-plaintext highlighter-rouge">v</code>, <code class="language-plaintext highlighter-rouge">printf()</code> <code class="language-plaintext highlighter-rouge">v</code> and <code class="language-plaintext highlighter-rouge">u8clz(v)</code>.</p>
+
+<p>Now we can proceed to the final call:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+</pre></td><td class="rouge-code"><pre>  <span class="n">FOR_TEST_VALUES</span><span class="p">(</span><span class="n">PRINT_VALUE_AND_CLZ</span><span class="p">)</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>This expands then to:</p>
+
+<div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre><span class="n">printf</span><span class="p">(</span><span class="s">"u8clz(%u): %u</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">u8clz</span><span class="p">(</span><span class="mi">1</span><span class="p">));</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"u8clz(%u): %u</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">40</span><span class="p">,</span> <span class="n">u8clz</span><span class="p">(</span><span class="mi">40</span><span class="p">));</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"u8clz(%u): %u</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">255</span><span class="p">,</span> <span class="n">u8clz</span><span class="p">(</span><span class="mi">255</span><span class="p">));</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"u8clz(%u): %u</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">18</span><span class="p">,</span> <span class="n">u8clz</span><span class="p">(</span><span class="mi">18</span><span class="p">));</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">"u8clz(%u): %u</span><span class="se">\n</span><span class="s">"</span><span class="p">,</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">,</span> <span class="n">u8clz</span><span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">4</span><span class="p">));</span>
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>Personally I find this “function inside list” approach cleaner,
+since function and list are more decoupled here:
+you don’t have to wrap the values inside a function
+named after the actual function that will process them.</p>
+
+<h2 id="conclusion">Conclusion</h2>
+
+<p>When you run the program, it looks fine:</p>
+
+<div class="language-sh highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
+2
+3
+4
+5
+</pre></td><td class="rouge-code"><pre>l2u8<span class="o">(</span>1<span class="o">)</span>: 0
+l2u8<span class="o">(</span>40<span class="o">)</span>: 3
+l2u8<span class="o">(</span>255<span class="o">)</span>: 0
+l2u8<span class="o">(</span>18<span class="o">)</span>: 1
+l2u8<span class="o">(</span>16<span class="o">)</span>: 4
+</pre></td></tr></tbody></table></code></pre></div></div>
+
+<p>X-Macros are a neat nice little trick doing small wonders,
+good to have in your toolbox.
+The complete code is available on this <a href="https://gist.github.com/mancap314/9c9d7f3d5dc9b43b16841b38530f7fdf">snippet</a>.
+Thanks for reading!</p>
+
+      <hr>
+      
+  <div id="disqus_thread"></div>
+  <script>
+    var disqus_config = function () {
+      this.page.url = 'http://localhost:4000/xmacros.html';
+      this.page.identifier = 'http://localhost:4000/xmacros.html';
+    };
+    (function() {
+      var d = document, s = d.createElement('script');
+      s.src = 'https://mc-data.disqus.com/embed.js';
+      s.setAttribute('data-timestamp', +new Date());
+      (d.head || d.body).appendChild(s);
+    })();
+  </script>
+  <noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+  </body>
+  <script src="/assets/js/codebutton.js"></script>
+</html>
