@@ -75,11 +75,11 @@ This is called <em>ffs</em> (find first set) or <em>clz</em> (count leading zero
 
 <h2 id="foreword-clz-algorithm">Foreword: CLZ algorithm</h2>
 
-<p>An 8-bits integer <code class="language-plaintext highlighter-rouge">u</code> is represented by a sequence of 8 bits et to 0 or 1.
+<p>An 8-bits integer <code class="language-plaintext highlighter-rouge">u</code> is represented by a sequence of 8 bits set to 0 or 1.
 If it contains a 1, then <code class="language-plaintext highlighter-rouge">u &amp; -u</code> will contain only one 1,
-at the position of the first set 1.
+at the position of the first bi set to 1 in <code class="language-plaintext highlighter-rouge">u</code>.
 Thus in order to find the position of this 1, we have to test 7 possibilities:
-is <code class="language-plaintext highlighter-rouge">u &amp; -u</code> equals <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 1</code> or … or <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 7</code>.
+is <code class="language-plaintext highlighter-rouge">u &amp; -u</code> equals to <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 1</code> or to <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 2</code>, …, or to <code class="language-plaintext highlighter-rouge">1 &lt;&lt; 7</code>.
 For this, we will use a <code class="language-plaintext highlighter-rouge">switch</code> branching for those 7 values.</p>
 
 <p>N.B.: if <code class="language-plaintext highlighter-rouge">u == 0</code> or <code class="language-plaintext highlighter-rouge">(u &amp; -u) == 1</code>, we return <code class="language-plaintext highlighter-rouge">0</code>.</p>
@@ -175,7 +175,9 @@ in a list we can re-use in other macro functions.</p>
 Here we want to test this function for various values.</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="cp">#define FOR_TEST_VALUES(DO) DO(1) DO(40) DO(255) DO(18) DO(1 &lt;&lt; 4)
+2
+</pre></td><td class="rouge-code"><pre><span class="cp">#define FOR_TEST_VALUES(DO) \
+  DO(1) DO(40) DO(255) DO(18) DO(1 &lt;&lt; 4)
 </span></pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>This time, the values are defined through a macro function taking <code class="language-plaintext highlighter-rouge">DO</code> as argument,
@@ -186,7 +188,9 @@ and this <code class="language-plaintext highlighter-rouge">DO</code> wraps each
 <p>Then we define the macro function that will play the role of <code class="language-plaintext highlighter-rouge">DO</code>:</p>
 
 <div class="language-c highlighter-rouge"><div class="highlight"><pre class="highlight"><code><table class="rouge-table"><tbody><tr><td class="rouge-gutter gl"><pre class="lineno">1
-</pre></td><td class="rouge-code"><pre><span class="cp">#define PRINT_VALUE_AND_CLZ(v) printf("u8clz(%u): %u\n", v, u8clz(v));
+2
+</pre></td><td class="rouge-code"><pre><span class="cp">#define PRINT_VALUE_AND_CLZ(v) \
+  printf("u8clz(%u): %u\n", v, u8clz(v));
 </span></pre></td></tr></tbody></table></code></pre></div></div>
 
 <p>Which, for a given <code class="language-plaintext highlighter-rouge">v</code>, <code class="language-plaintext highlighter-rouge">printf()</code> <code class="language-plaintext highlighter-rouge">v</code> and <code class="language-plaintext highlighter-rouge">u8clz(v)</code>.</p>
